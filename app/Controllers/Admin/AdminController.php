@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Config\Database;
+use App\Config\Env;
+use App\Helpers\Audit;
 use App\Helpers\Csrf;
 use App\Helpers\Response;
 use App\Middleware\AdminMiddleware;
@@ -62,6 +64,28 @@ class AdminController
         // 4. Daftar paket aktif
         $allPlans = $this->plans->findAllActive();
 
+        // 5. WAHA Health Check
+        $wahaUrl = (string) Env::get('WAHA_BASE_URL', 'http://localhost:3000');
+        $wahaStatus = $this->checkWahaHealth($wahaUrl);
+
+        // 6. Job Queue Stats
+        $jobStats = [
+            'pending'   => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "pending"')->fetchColumn(),
+            'completed' => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "completed"')->fetchColumn(),
+            'failed'    => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "failed"')->fetchColumn(),
+        ];
+
+        // 7. Pengumuman Aktif
+        $activeAnnouncement = $this->db->query('SELECT * FROM announcements WHERE is_active = 1 ORDER BY id DESC LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+
+        // 8. Audit Logs
+        $auditLogs = $this->db->query('
+            SELECT a.*, u.name AS admin_name
+            FROM audit_logs a
+            LEFT JOIN users u ON u.id = a.admin_id
+            ORDER BY a.id DESC LIMIT 15
+        ')->fetchAll(PDO::FETCH_ASSOC);
+
         $success = $_SESSION['flash_admin_success'] ?? null;
         unset($_SESSION['flash_admin_success']);
         $error = $_SESSION['flash_admin_error'] ?? null;
@@ -70,25 +94,42 @@ class AdminController
         require __DIR__ . '/../../../views/admin/index.php';
     }
 
-    /**
-     * POST /admin/payment/approve
-     * Admin approves a pending/verifying payment → activates subscription.
-     */
+    /** Cek status koneksi WAHA */
+    private function checkWahaHealth(string $baseUrl): array
+    {
+        $ch = curl_init(rtrim($baseUrl, '/') . '/api/version');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 3,
+            CURLOPT_CONNECTTIMEOUT => 2,
+        ]);
+        $startTime = microtime(true);
+        $res = curl_exec($ch);
+        $latency = round((microtime(true) - $startTime) * 1000);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode >= 200 && $httpCode < 400) {
+            return ['status' => 'ONLINE', 'latency' => $latency, 'url' => $baseUrl];
+        }
+        return ['status' => 'OFFLINE', 'latency' => 0, 'url' => $baseUrl];
+    }
+
+    /** POST /admin/payment/approve */
     public function approvePayment(): void
     {
-        $user = AdminMiddleware::handle();
+        $admin = AdminMiddleware::handle();
 
         if (!Csrf::verify($_POST['_csrf'] ?? null)) {
             Response::redirect('/admin');
         }
 
         $paymentId = (int) ($_POST['payment_id'] ?? 0);
-        $months    = (int) ($_POST['months'] ?? 1);
 
         $this->db->beginTransaction();
         try {
             $stmt = $this->db->prepare('
-                SELECT p.*, pl.id AS plan_id, pl.message_limit, pl.duration_days
+                SELECT p.*, pl.id AS plan_id, pl.message_limit, pl.duration_days, pl.name AS plan_name
                 FROM payments p
                 JOIN plans pl ON pl.id = p.plan_id
                 WHERE p.id = :id AND p.status IN ("pending","verifying")
@@ -101,18 +142,15 @@ class AdminController
                 throw new \Exception('Pembayaran tidak ditemukan atau sudah diproses.');
             }
 
-            // Ekstrak bulan dari provider field
             $parts  = explode(':', $payment['provider'] ?? '');
             $months = isset($parts[1]) ? (int)$parts[1] : 1;
             $scaledLimit = (int) $payment['message_limit'] * $months;
 
-            // Nonaktifkan subscription lama
             $this->db->prepare('
                 UPDATE subscriptions SET status = "cancelled"
                 WHERE user_id = :uid AND status = "active"
             ')->execute([':uid' => $payment['user_id']]);
 
-            // Buat subscription baru
             $stmtSub = $this->db->prepare('
                 INSERT INTO subscriptions (user_id, plan_id, start_at, end_at, status)
                 VALUES (:user_id, :plan_id, NOW(), DATE_ADD(NOW(), INTERVAL :months MONTH), "active")
@@ -124,13 +162,11 @@ class AdminController
             ]);
             $subId = (int) $this->db->lastInsertId();
 
-            // Inisialisasi kuota
             $this->db->prepare('
                 INSERT INTO subscription_usage (subscription_id, messages_used, messages_limit)
                 VALUES (:sub_id, 0, :limit)
             ')->execute([':sub_id' => $subId, ':limit' => $scaledLimit]);
 
-            // Update status payment
             $this->db->prepare('
                 UPDATE payments
                 SET status = "paid", paid_at = NOW(), subscription_id = :sub_id
@@ -138,7 +174,15 @@ class AdminController
             ')->execute([':sub_id' => $subId, ':id' => $paymentId]);
 
             $this->db->commit();
-            $_SESSION['flash_admin_success'] = "✅ Pembayaran #{$payment['external_id']} berhasil disetujui. Paket {$payment['plan_name']} aktif untuk {$months} bulan.";
+
+            Audit::log($admin['id'], 'APPROVE_PAYMENT', 'payment', (string) $paymentId, [
+                'user_id'  => $payment['user_id'],
+                'amount'   => $payment['amount'],
+                'plan'     => $payment['plan_name'],
+                'months'   => $months
+            ]);
+
+            $_SESSION['flash_admin_success'] = "✅ Pembayaran #{$payment['external_id']} berhasil disetujui.";
             Response::redirect('/admin');
         } catch (\Exception $e) {
             $this->db->rollBack();
@@ -147,13 +191,10 @@ class AdminController
         }
     }
 
-    /**
-     * POST /admin/payment/reject
-     * Admin rejects a pending payment.
-     */
+    /** POST /admin/payment/reject */
     public function rejectPayment(): void
     {
-        $user = AdminMiddleware::handle();
+        $admin = AdminMiddleware::handle();
 
         if (!Csrf::verify($_POST['_csrf'] ?? null)) {
             Response::redirect('/admin');
@@ -168,17 +209,16 @@ class AdminController
             WHERE id = :id AND status IN ("pending","verifying")
         ')->execute([':reason' => $reason, ':id' => $paymentId]);
 
+        Audit::log($admin['id'], 'REJECT_PAYMENT', 'payment', (string) $paymentId, ['reason' => $reason]);
+
         $_SESSION['flash_admin_success'] = "❌ Pembayaran #{$paymentId} telah ditolak.";
         Response::redirect('/admin');
     }
 
-    /**
-     * POST /admin/plan/update
-     * Admin manually overrides a user's active plan.
-     */
+    /** POST /admin/plan/update */
     public function updatePlan(): void
     {
-        $user = AdminMiddleware::handle();
+        $admin = AdminMiddleware::handle();
 
         if (!Csrf::verify($_POST['_csrf'] ?? null)) {
             Response::redirect('/admin');
@@ -218,6 +258,9 @@ class AdminController
             ')->execute([':sub_id' => $subId, ':limit' => $plan['message_limit']]);
 
             $this->db->commit();
+
+            Audit::log($admin['id'], 'OVERRIDE_PLAN', 'user', (string) $targetUserId, ['new_plan' => $plan['name']]);
+
             $_SESSION['flash_admin_success'] = "Paket pengguna #{$targetUserId} diperbarui menjadi {$plan['name']}.";
             Response::redirect('/admin');
         } catch (\Exception $e) {
@@ -225,5 +268,124 @@ class AdminController
             $_SESSION['flash_admin_error'] = 'Gagal: ' . $e->getMessage();
             Response::redirect('/admin');
         }
+    }
+
+    /** POST /admin/user/status — Suspend/Ban/Activate User */
+    public function updateUserStatus(): void
+    {
+        $admin = AdminMiddleware::handle();
+
+        if (!Csrf::verify($_POST['_csrf'] ?? null)) {
+            Response::redirect('/admin');
+        }
+
+        $targetUserId = (int) ($_POST['user_id'] ?? 0);
+        $newStatus    = trim((string) ($_POST['status'] ?? 'active'));
+
+        if (!in_array($newStatus, ['active', 'suspended', 'banned'], true)) {
+            $_SESSION['flash_admin_error'] = 'Status tidak valid.';
+            Response::redirect('/admin');
+            return;
+        }
+
+        $stmt = $this->db->prepare('UPDATE users SET status = :status WHERE id = :id');
+        $stmt->execute([':status' => $newStatus, ':id' => $targetUserId]);
+
+        Audit::log($admin['id'], 'CHANGE_USER_STATUS', 'user', (string) $targetUserId, ['new_status' => $newStatus]);
+
+        $_SESSION['flash_admin_success'] = "Status pengguna #{$targetUserId} diubah menjadi '{$newStatus}'.";
+        Response::redirect('/admin');
+    }
+
+    /** POST /admin/jobs/retry-failed — Process failed background jobs again */
+    public function retryFailedJobs(): void
+    {
+        $admin = AdminMiddleware::handle();
+
+        if (!Csrf::verify($_POST['_csrf'] ?? null)) {
+            Response::redirect('/admin');
+        }
+
+        $stmt = $this->db->prepare('UPDATE jobs SET status = "pending", attempts = 0 WHERE status = "failed"');
+        $stmt->execute();
+        $count = $stmt->rowCount();
+
+        Audit::log($admin['id'], 'RETRY_FAILED_JOBS', 'job_queue', null, ['count' => $count]);
+
+        $_SESSION['flash_admin_success'] = "{$count} job gagal dikembalikan ke antrean pending.";
+        Response::redirect('/admin');
+    }
+
+    /** POST /admin/announcement — Broadcast Announcement */
+    public function saveAnnouncement(): void
+    {
+        $admin = AdminMiddleware::handle();
+
+        if (!Csrf::verify($_POST['_csrf'] ?? null)) {
+            Response::redirect('/admin');
+        }
+
+        $message = trim((string) ($_POST['message'] ?? ''));
+        $type    = trim((string) ($_POST['type'] ?? 'info'));
+
+        if ($message === '') {
+            $_SESSION['flash_admin_error'] = 'Pesan pengumuman wajib diisi.';
+            Response::redirect('/admin');
+            return;
+        }
+
+        $this->db->exec('UPDATE announcements SET is_active = 0');
+
+        $stmt = $this->db->prepare('INSERT INTO announcements (message, type, is_active, created_at) VALUES (:msg, :type, 1, NOW())');
+        $stmt->execute([':msg' => $message, ':type' => $type]);
+
+        Audit::log($admin['id'], 'CREATE_ANNOUNCEMENT', 'announcement', (string) $this->db->lastInsertId(), ['message' => $message]);
+
+        $_SESSION['flash_admin_success'] = 'Pengumuman sistem berhasil dipublikasikan!';
+        Response::redirect('/admin');
+    }
+
+    /** POST /admin/announcement/delete */
+    public function deleteAnnouncement(): void
+    {
+        $admin = AdminMiddleware::handle();
+
+        if (!Csrf::verify($_POST['_csrf'] ?? null)) {
+            Response::redirect('/admin');
+        }
+
+        $this->db->exec('UPDATE announcements SET is_active = 0');
+        Audit::log($admin['id'], 'DELETE_ANNOUNCEMENT', 'announcement', null);
+
+        $_SESSION['flash_admin_success'] = 'Pengumuman dinonaktifkan.';
+        Response::redirect('/admin');
+    }
+
+    /** GET /admin/export-payments — Export Payment Records to CSV */
+    public function exportPaymentsCsv(): void
+    {
+        AdminMiddleware::handle();
+
+        $stmt = $this->db->query('
+            SELECT p.external_id, u.name AS user_name, u.email AS user_email,
+                   pl.name AS plan_name, p.amount, p.status, p.created_at, p.paid_at
+            FROM payments p
+            JOIN users u ON u.id = p.user_id
+            LEFT JOIN plans pl ON pl.id = p.plan_id
+            ORDER BY p.id DESC
+        ');
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=payments_export_' . date('Y-m-d') . '.csv');
+
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['External ID', 'User Name', 'User Email', 'Plan', 'Amount', 'Status', 'Created At', 'Paid At']);
+
+        foreach ($rows as $row) {
+            fputcsv($output, $row);
+        }
+        fclose($output);
+        exit;
     }
 }

@@ -61,6 +61,11 @@ $router->get('/admin', [AdminController::class, 'index']);
 $router->post('/admin/plan/update', [AdminController::class, 'updatePlan']);
 $router->post('/admin/payment/approve', [AdminController::class, 'approvePayment']);
 $router->post('/admin/payment/reject', [AdminController::class, 'rejectPayment']);
+$router->post('/admin/user/status', [AdminController::class, 'updateUserStatus']);
+$router->post('/admin/jobs/retry-failed', [AdminController::class, 'retryFailedJobs']);
+$router->post('/admin/announcement', [AdminController::class, 'saveAnnouncement']);
+$router->post('/admin/announcement/delete', [AdminController::class, 'deleteAnnouncement']);
+$router->get('/admin/export-payments', [AdminController::class, 'exportPaymentsCsv']);
 
 
 

@@ -212,3 +212,20 @@ if (!empty($_SESSION['user_id'])) {
   <!-- Content Container -->
   <div class="flex-1 bg-gray-50 flex flex-col justify-between min-h-screen">
     <div class="p-6 md:p-10">
+      <?php
+        $dbAnn = \App\Config\Database::connection();
+        $announcement = $dbAnn->query('SELECT * FROM announcements WHERE is_active = 1 ORDER BY id DESC LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+      ?>
+      <?php if (!empty($announcement)): ?>
+        <?php 
+          $annBg = match($announcement['type']) {
+            'warning' => 'bg-amber-50 border-amber-200 text-amber-800',
+            'danger'  => 'bg-red-50 border-red-200 text-red-800',
+            default   => 'bg-purple-50 border-purple-200 text-purple-800'
+          };
+        ?>
+        <div class="mb-6 rounded-xl border p-4 text-sm font-semibold flex items-center gap-3 shadow-sm <?= $annBg ?>">
+          <span class="text-base">📢</span>
+          <div class="flex-1"><?= htmlspecialchars($announcement['message']) ?></div>
+        </div>
+      <?php endif; ?>
