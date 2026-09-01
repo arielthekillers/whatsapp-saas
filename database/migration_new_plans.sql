@@ -4,10 +4,10 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Nonaktifkan atau ganti paket lama jika ada
-UPDATE plans SET status = 'inactive' WHERE name IN ('FREE', 'BASIC', 'PRO', 'ENTERPRISE');
+-- Nonaktifkan semua paket lama agar tidak ada paket ganda/duplikat
+UPDATE plans SET status = 'inactive';
 
--- Insert or Update new positioning plans
+-- Insert atau Aktifkan 3 paket utama baru
 INSERT INTO plans (name, description, price, duration_days, message_limit, session_limit, rate_limit_per_minute, status)
 VALUES
 ('LITE', 'Untuk integrasi project kecil & testing API', 29000.00, 30, 2000, 1, 30, 'active'),
