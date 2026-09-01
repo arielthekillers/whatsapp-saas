@@ -31,7 +31,15 @@ class SessionController
 
     public function showCreate(): void
     {
-        AuthMiddleware::handle();
+        $user = AuthMiddleware::handle();
+        $subscription = (new SubscriptionRepository())->findActiveForUser($user['id']);
+
+        if (!$subscription) {
+            $_SESSION['flash_billing_error'] = 'Anda belum memiliki paket aktif. Silakan pilih paket langganan terlebih dahulu untuk membuat WhatsApp Session.';
+            Response::redirect('/billing');
+            return;
+        }
+
         $error = null;
         require __DIR__ . '/../../../views/sessions/create.php';
     }
@@ -46,6 +54,13 @@ class SessionController
             return;
         }
 
+        $subscription = (new SubscriptionRepository())->findActiveForUser($user['id']);
+        if (!$subscription) {
+            $_SESSION['flash_billing_error'] = 'Anda belum memiliki paket aktif. Silakan pilih paket langganan terlebih dahulu untuk membuat WhatsApp Session.';
+            Response::redirect('/billing');
+            return;
+        }
+
         $label = trim((string) ($_POST['name'] ?? ''));
         if ($label === '') {
             $error = 'Nama session wajib diisi.';
@@ -53,10 +68,9 @@ class SessionController
             return;
         }
 
-        $subscription = (new SubscriptionRepository())->findActiveForUser($user['id']);
-        $sessionLimit = $subscription['session_limit'] ?? 1;
+        $sessionLimit = (int) ($subscription['session_limit'] ?? 0);
         if ($this->sessions->countActiveForUser($user['id']) >= $sessionLimit) {
-            $error = 'Batas jumlah session pada plan Anda sudah tercapai. Upgrade plan untuk menambah session.';
+            $error = 'Batas jumlah session pada paket ' . htmlspecialchars($subscription['plan_name'] ?? '') . ' Anda (' . $sessionLimit . ' session) sudah tercapai. Silakan upgrade paket Anda.';
             require __DIR__ . '/../../../views/sessions/create.php';
             return;
         }
