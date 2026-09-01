@@ -62,7 +62,7 @@ if (!empty($_SESSION['user_id'])) {
         <?php if ($isAdmin): ?>
           <!-- ADMIN SIDEBAR MENUS -->
           <div>
-            <p class="text-[10px] font-bold uppercase tracking-wider text-purple-600 mb-2.5 px-3">System Administration</p>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-purple-600 mb-2.5 px-3 whitespace-nowrap truncate">ADMIN SYSTEM</p>
             <div class="space-y-1">
               <a href="<?= url('/admin') ?>" class="<?= getMenuClass('admin', $currentPath) ?>">
                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px;">
@@ -74,7 +74,7 @@ if (!empty($_SESSION['user_id'])) {
           </div>
 
           <div>
-            <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2.5 px-3">System Resources</p>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2.5 px-3 whitespace-nowrap truncate">RESOURCES</p>
             <div class="space-y-1">
               <a href="<?= url('/docs') ?>" class="<?= getMenuClass('docs', $currentPath) ?>">
                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px;">
