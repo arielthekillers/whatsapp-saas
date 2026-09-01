@@ -1,112 +1,114 @@
-# WhatsApp API SaaS berbasis WAHA — Phase 1
+# WhatsApp API SaaS (WAHA Platform)
 
-Bootstrap aplikasi: koneksi DB, autentikasi customer, `WahaService`,
-manajemen WhatsApp session + QR, dashboard dasar.
+Platform SaaS penyedia REST API WhatsApp berbasis **WAHA (WhatsApp HTTP API)** dengan manajemen multi-session, kuota pesan, billing pembayaran manual, webhook, dan admin panel.
 
-## 1. Requirement
+---
 
-- PHP 8.2+ dengan ekstensi `pdo_mysql` dan `curl`
-- MySQL 8.0+ atau MariaDB 10.6+
-- WAHA sudah berjalan dan bisa diakses dari server ini
+## 🚀 Fitur Utama
 
-## 2. Setup
+### 👤 Customer Dashboard
+- **Autentikasi**: Register, Login, Logout, & Manajemen Profil/Password.
+- **WhatsApp Sessions**: Tambah sesi, scan QR code, pantau status real-time, dan hentikan sesi.
+- **API Keys**: Generate & revoke API Key (dikunci dengan SHA-256) untuk akses REST API.
+- **Usage & Quota**: Monitoring penggunaan kuota pesan dan rate limit per menit secara real-time.
+- **Webhooks**: Daftarkan URL webhook untuk menerima event pesan masuk/status secara otomatis.
+- **Billing & Subscription**: Pilih paket/plan, checkout, dan upload/konfirmasi pembayaran transfer bank.
+- **Dokumentasi API**: Terintegrasi langsung di dashboard (`/docs`).
 
+### 🛡️ Admin Panel (`/admin`)
+- **Manajemen Plan**: Atur harga, limit sesi, dan batas kuota pesan bulanan.
+- **Verifikasi Pembayaran**: Setujui (approve) atau tolak (reject) konfirmasi pembayaran manual pelanggan.
+
+### 🔌 REST API (`/v1/*`)
+- **Kirim Pesan**: `POST /v1/messages/send` dengan fitur *Idempotency Key* (mencegah pesan ganda).
+- **Manajemen Sesi API**: `GET/POST /v1/sessions`, `POST /v1/sessions/{id}/start`, `POST /v1/sessions/{id}/stop`.
+- **Informasi Akun & Penggunaan**: `GET /v1/account`, `GET /v1/usage`.
+- **Proteksi**: Autentikasi `Bearer Token`, Atomic Quota Reservation, dan Fixed-Window Rate Limiting per menit.
+
+---
+
+## 🛠️ Persyaratan Sistem
+
+- **PHP 8.2+** (ekstensi `pdo_mysql`, `curl`)
+- **MySQL 8.0+** atau **MariaDB 10.6+**
+- **WAHA Instance** (WhatsApp HTTP API service yang sudah berjalan)
+
+---
+
+## ⚡ Panduan Instalasi Cepat
+
+### 1. Clone & Konfigurasi `.env`
 ```bash
+git clone <URL_REPO_ANDA> whatsapp-saas
+cd whatsapp-saas
 cp .env.example .env
-# edit .env: isi DB_*, WAHA_BASE_URL, WAHA_API_KEY, APP_URL
+```
+Edit file `.env` dan sesuaikan koneksi database serta alamat WAHA Anda:
+```env
+DB_HOST=127.0.0.1
+DB_NAME=whatsapp_saas
+DB_USER=root
+DB_PASS=
 
-mysql -u root -p -e "CREATE DATABASE whatsapp_saas CHARACTER SET utf8mb4"
-mysql -u root -p whatsapp_saas < database/migrations.sql
+WAHA_BASE_URL=http://localhost:3000
+WAHA_API_KEY=
 ```
 
-Tambahkan minimal satu baris WAHA instance (Phase 1 masih single-instance;
-kolom `api_key_enc` boleh diisi placeholder karena `WahaService` saat ini
-membaca kredensial dari `.env`, bukan dari tabel ini — tabel ini disiapkan
-untuk multi-instance di fase berikutnya):
+### 2. Import Database
+```bash
+mysql -u root -p -e "CREATE DATABASE whatsapp_saas CHARACTER SET utf8mb4"
+mysql -u root -p whatsapp_saas < database/migrations.sql
+mysql -u root -p whatsapp_saas < database/migration_manual_payment.sql
+```
 
+### 3. Tambah WAHA Instance Default
 ```sql
 INSERT INTO waha_instances (name, base_url, api_key_enc, status)
 VALUES ('primary', 'http://127.0.0.1:3000', 'not-used-yet', 'active');
 ```
 
-## 3. Menjalankan (development)
+---
 
+## 🏃 Menjalankan Aplikasi
+
+### Local Development Server
 ```bash
 php -S 0.0.0.0:8000 -t public public/router.php
 ```
+Akses aplikasi di browser:
+- **Landing Page**: `http://localhost:8000/`
+- **Register/Login**: `http://localhost:8000/register`
+- **Dashboard**: `http://localhost:8000/dashboard`
+- **Admin Panel**: `http://localhost:8000/admin`
 
-`router.php` dipakai supaya built-in dev server bisa membedakan
-`/v1/*` (API), `/webhook/waha`, dan dashboard di satu perintah yang
-sama. Di production (Apache/Nginx), arahkan lewat rewrite rule biasa
-ke `public/index.php`, `public/api.php`, `public/webhook.php`.
+---
 
-Buka `http://localhost:8000/register` untuk membuat akun pertama —
-akun baru otomatis mendapat subscription plan **FREE** (asalkan sudah
-di-seed lewat `migrations.sql`) supaya quota & rate limit langsung aktif.
+## 🐳 Docker Deployment
 
-## 4. Yang sudah jalan sampai Phase 2
-
-**Phase 1**
-- Register / Login / Logout (session-based, CSRF protected, password di-hash)
-- Dashboard ringkas, CRUD WhatsApp session + QR Code + polling status
-- `WahaService` sebagai satu-satunya titik komunikasi ke WAHA REST API
-
-**Phase 2**
-- Halaman **API Keys** (`/api-keys`) — generate key (ditampilkan sekali,
-  disimpan sebagai SHA-256 hash), cabut key
-- Public API `/v1/...` dengan autentikasi `Authorization: Bearer <API_KEY>`:
-  - `POST /v1/messages/send` — kirim pesan teks, dengan **idempotency key**
-    (body `idempotency_key` atau header `Idempotency-Key`) supaya retry
-    customer tidak mengirim pesan dobel
-  - `GET/POST /v1/sessions`, `GET /v1/sessions/{id}`,
-    `POST /v1/sessions/{id}/start`, `POST /v1/sessions/{id}/stop`
-  - `GET /v1/account`, `GET /v1/usage`
-- **Quota**: direservasi atomik di database SEBELUM memanggil WAHA
-  (`UPDATE ... WHERE messages_used < messages_limit`), aman terhadap
-  request paralel
-- **Rate limit**: fixed-window per menit berdasarkan `rate_limit_per_minute`
-  pada plan aktif customer, tabel `rate_limit_counters`
-- **Session limit** per plan ditegakkan baik di dashboard maupun API
-- Halaman **Usage** (`/usage`) menampilkan pemakaian kuota customer
-
-### Contoh curl
-
+Aplikasi ini sudah dilengkapi Dockerfile & supervisord:
 ```bash
-# Kirim pesan
-curl -X POST http://localhost:8000/v1/messages/send \
-  -H "Authorization: Bearer wsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: order-12345" \
-  -d '{"session": "marketing", "to": "628123456789", "text": "Halo dari API"}'
-
-# Cek usage
-curl http://localhost:8000/v1/usage \
-  -H "Authorization: Bearer wsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+docker build -t whatsapp-saas .
+docker run -d -p 8000:8000 --env-file .env whatsapp-saas
 ```
 
-## 5. Yang BELUM ada (menyusul di phase berikutnya)
+---
 
-- Phase 3: webhook WAHA penuh (saat ini `public/webhook.php` baru placeholder
-  yang mencatat payload ke log dan membalas 200), customer webhook, HMAC
-  signature, retry + exponential backoff, worker CLI (`worker.php`)
-- Phase 4: halaman upgrade/downgrade plan, integrasi payment gateway
-  (saat ini plan FREE di-assign otomatis, belum ada alur beli plan berbayar)
-- Phase 5: admin panel, dokumentasi API publik (`/api-docs`), landing page
+## 📖 Contoh Penggunaan API
 
-## 6. Catatan penting
+**Kirim Pesan WhatsApp via Curl:**
+```bash
+curl -X POST http://localhost:8000/v1/messages/send \
+  -H "Authorization: Bearer wsk_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: invoice-99182" \
+  -d '{
+    "session": "marketing",
+    "to": "628123456789",
+    "text": "Halo, pesan ini dikirim dari WhatsApp API SaaS!"
+  }'
+```
 
-- `WahaService` (`app/Services/WahaService.php`) mengikuti dokumentasi
-  publik WAHA per saat kode ini dibuat. **Wajib dicek ulang** terhadap
-  Swagger UI WAHA milikmu sendiri (`{WAHA_BASE_URL}/`) sebelum production —
-  lihat komentar di bagian atas file tersebut. Semua penyesuaian endpoint
-  cukup dilakukan di satu file ini.
-- Nama session internal WAHA di-generate otomatis (`SessionNameGenerator`)
-  agar tidak membocorkan ID customer mentah dan menghindari collision.
-- QR code disimpan sementara di kolom `qr_code` dan otomatis dihapus
-  begitu status menjadi `WORKING`.
-- Field ID pesan pada response `sendText` WAHA (`app/Controllers/Api/MessageApiController.php`)
-  diasumsikan berada di `id` atau `_data.id` — **verifikasi terhadap response
-  WAHA-mu yang sebenarnya** dan sesuaikan bila perlu.
-- API key di-hash dengan SHA-256 (bukan bcrypt) karena API key sudah berupa
-  random string berentropi tinggi, bukan password pilihan manusia — ini
-  praktik standar dan lebih cepat untuk lookup per-request.
+---
+
+## 📄 Lisensi
+[MIT License](LICENSE)
