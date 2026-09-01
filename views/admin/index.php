@@ -118,59 +118,81 @@
             $label  = match($months) { 3 => '3 Bulan (-5%)', 6 => '6 Bulan (-10%)', 12 => '1 Tahun (-20%)', default => '1 Bulan' };
             $isVerifying = ($pmt['status'] === 'verifying');
           ?>
-          <div class="rounded-2xl border-2 <?= $isVerifying ? 'border-blue-200 bg-blue-50/20' : 'border-amber-200 bg-amber-50/20' ?> p-5 transition-all hover:shadow-md">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div class="flex items-start gap-4">
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-extrabold text-white text-lg shrink-0 <?= $isVerifying ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gradient-to-br from-amber-500 to-orange-600' ?>">
+          <div class="bg-gradient-to-r from-gray-50 via-white to-gray-50 rounded-2xl border-2 <?= $isVerifying ? 'border-blue-300 shadow-md shadow-blue-500/5' : 'border-amber-300 shadow-md shadow-amber-500/5' ?> p-6 transition-all hover:shadow-xl">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              
+              <!-- Left: User & Order Details -->
+              <div class="flex items-start gap-4 flex-1">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-extrabold text-white text-lg shrink-0 shadow-md <?= $isVerifying ? 'bg-gradient-to-br from-blue-600 to-indigo-600' : 'bg-gradient-to-br from-amber-500 to-orange-600' ?>">
                   <?= strtoupper(substr($pmt['user_name'], 0, 1)) ?>
                 </div>
-                <div>
-                  <div class="flex items-center gap-2 mb-1 flex-wrap">
-                    <span class="text-xs font-bold <?= $isVerifying ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800' ?> px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                      <span class="w-1.5 h-1.5 rounded-full <?= $isVerifying ? 'bg-blue-600 animate-ping' : 'bg-amber-600 animate-ping' ?>"></span>
-                      <?= $isVerifying ? 'Dikonfirmasi Pelanggan' : 'Menunggu Transfer' ?>
+                
+                <div class="space-y-2 flex-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-extrabold <?= $isVerifying ? 'bg-blue-100 text-blue-800 border border-blue-200' : 'bg-amber-100 text-amber-800 border border-amber-200' ?> px-3 py-1 rounded-full inline-flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full <?= $isVerifying ? 'bg-blue-600 animate-ping' : 'bg-amber-600 animate-ping' ?>"></span>
+                      <?= $isVerifying ? '🔍 Bukti Transfer Dikonfirmasi' : '⏳ Menunggu Transfer' ?>
                     </span>
-                    <span class="text-xs text-gray-400 font-mono bg-gray-100 px-2 py-0.5 rounded-md">ID: <?= htmlspecialchars($pmt['external_id']) ?></span>
+                    <span class="text-xs text-gray-500 font-mono bg-white border border-gray-200 px-2.5 py-0.5 rounded-lg shadow-2xs">ID: <?= htmlspecialchars($pmt['external_id']) ?></span>
                   </div>
-                  <p class="font-bold text-gray-900 text-base"><?= htmlspecialchars($pmt['user_name']) ?> <span class="font-normal text-gray-400 text-xs">(<?= htmlspecialchars($pmt['user_email']) ?>)</span></p>
-                  <p class="text-sm text-gray-600 mt-1">
-                    Membeli Paket <strong class="text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100"><?= htmlspecialchars($pmt['plan_name']) ?></strong> — <?= $label ?>
-                  </p>
+
+                  <div>
+                    <h3 class="font-extrabold text-gray-900 text-lg leading-snug"><?= htmlspecialchars($pmt['user_name']) ?></h3>
+                    <p class="text-xs text-gray-500 font-mono"><?= htmlspecialchars($pmt['user_email']) ?></p>
+                  </div>
+
+                  <div class="flex items-center gap-2 pt-1 text-xs text-gray-600 flex-wrap">
+                    <span>Membeli Paket:</span>
+                    <span class="font-extrabold text-purple-700 bg-purple-100/80 border border-purple-200 px-2.5 py-0.5 rounded-md text-xs"><?= htmlspecialchars($pmt['plan_name']) ?></span>
+                    <span class="text-gray-400">•</span>
+                    <span class="font-semibold text-gray-700"><?= $label ?></span>
+                    <span class="text-gray-400">•</span>
+                    <span class="text-gray-400">Order: <?= htmlspecialchars($pmt['created_at']) ?></span>
+                  </div>
+
                   <?php if ($pmt['transfer_note']): ?>
-                    <div class="mt-2.5 bg-white border border-blue-200 rounded-xl p-3 text-xs text-blue-900 shadow-sm">
-                      <strong class="font-bold text-blue-700">Catatan Transfer Pelanggan:</strong>
-                      <p class="mt-0.5 font-mono text-gray-700 break-all"><?= htmlspecialchars($pmt['transfer_note']) ?></p>
+                    <div class="mt-3 bg-white border border-blue-200 rounded-xl p-3 text-xs text-blue-950 shadow-xs">
+                      <p class="font-bold text-blue-700 mb-0.5 flex items-center gap-1">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Catatan Pengirim Transfer:
+                      </p>
+                      <p class="font-mono text-gray-800 bg-gray-50 p-2 rounded-lg border border-gray-200/60 mt-1 break-all"><?= htmlspecialchars($pmt['transfer_note']) ?></p>
                     </div>
                   <?php endif; ?>
-                  <p class="text-[11px] text-gray-400 mt-2">Waktu Order: <?= htmlspecialchars($pmt['created_at']) ?></p>
                 </div>
               </div>
 
-              <div class="flex items-center gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
-                <div class="text-right">
-                  <span class="text-xs text-gray-400 block font-medium">Total Nominal</span>
-                  <span class="text-xl font-extrabold text-purple-700 font-display">Rp <?= number_format((float)$pmt['amount'], 0, ',', '.') ?></span>
+              <!-- Right: Price Callout & Action Buttons -->
+              <div class="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-4 shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0 border-gray-200/80 min-w-[220px]">
+                <div class="text-left lg:text-right">
+                  <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider block">Total Tagihan</span>
+                  <span class="text-2xl font-black text-purple-700 font-display tracking-tight">Rp <?= number_format((float)$pmt['amount'], 0, ',', '.') ?></span>
                 </div>
-                <div class="flex gap-2">
-                  <!-- Approve -->
-                  <form method="POST" action="<?= url('/admin/payment/approve') ?>" onsubmit="return confirm('Setujui pembayaran ini dan aktifkan paket?')">
+
+                <div class="flex items-center gap-2">
+                  <!-- Approve Button -->
+                  <form method="POST" action="<?= url('/admin/payment/approve') ?>" onsubmit="return confirm('Setujui pembayaran ini dan langsung aktifkan masa berlaku paket untuk pelanggan?')">
                     <?= \App\Helpers\Csrf::field() ?>
                     <input type="hidden" name="payment_id" value="<?= (int)$pmt['id'] ?>">
-                    <button type="submit" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-md shadow-emerald-500/20 transition-all hover:scale-[1.03]">
-                      ✅ Setujui
+                    <button type="submit" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.03] flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                      <span>Setujui Pembayaran</span>
                     </button>
                   </form>
-                  <!-- Reject -->
+
+                  <!-- Reject Button -->
                   <form method="POST" action="<?= url('/admin/payment/reject') ?>" onsubmit="var r=prompt('Alasan penolakan:','Transfer tidak sesuai');if(!r)return false;this.querySelector('[name=reason]').value=r;return true;">
                     <?= \App\Helpers\Csrf::field() ?>
                     <input type="hidden" name="payment_id" value="<?= (int)$pmt['id'] ?>">
                     <input type="hidden" name="reason" value="">
-                    <button type="submit" class="bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-extrabold px-4 py-2.5 rounded-xl border border-rose-200 transition-all">
-                      ❌ Tolak
+                    <button type="submit" class="bg-white hover:bg-rose-50 text-rose-600 text-xs font-bold px-3.5 py-2.5 rounded-xl border border-rose-200 shadow-xs transition-all hover:scale-[1.03] flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                      <span>Tolak</span>
                     </button>
                   </form>
                 </div>
               </div>
+
             </div>
           </div>
         <?php endforeach; ?>
