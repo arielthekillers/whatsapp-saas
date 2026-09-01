@@ -78,6 +78,7 @@ class AuthController
         $_SESSION['user_id']    = (int) $user['id'];
         $_SESSION['user_name']  = $user['name'];
         $_SESSION['user_email'] = $user['email'];
+        $_SESSION['user_role']  = $user['role'] ?? 'customer';
 
         Response::redirect('/dashboard');
     }
