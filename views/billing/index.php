@@ -86,6 +86,12 @@
           </div>
 
           <ul class="space-y-3 text-sm text-gray-600 mb-6">
+            <li class="flex items-center gap-2 font-semibold text-purple-700 bg-purple-50 p-2 rounded-lg border border-purple-100">
+              <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span><strong><?= (int)$p['session_limit'] ?></strong> WhatsApp Session</span>
+            </li>
             <li class="flex items-center gap-2">
               <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -96,14 +102,42 @@
               <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              <span>Maksimal <strong><?= (int)$p['session_limit'] ?></strong> Sesi WhatsApp</span>
+              <span>Rate Limit <strong><?= (int)$p['rate_limit_per_minute'] ?></strong> req/menit</span>
             </li>
             <li class="flex items-center gap-2">
               <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              <span>Rate Limit <strong><?= (int)$p['rate_limit_per_minute'] ?></strong> req/menit</span>
+              <span>API Key &amp; Webhook Instant</span>
             </li>
+            <?php if ($p['name'] === 'PRO' || $p['name'] === 'BUSINESS'): ?>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Kirim Gambar &amp; Dokumen (Media)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Priority Server Processing</span>
+              </li>
+            <?php endif; ?>
+            <?php if ($p['name'] === 'BUSINESS'): ?>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Kirim Audio, Video &amp; Location</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Custom Device Label &amp; Priority Support</span>
+              </li>
+            <?php endif; ?>
           </ul>
         </div>
 

@@ -318,19 +318,18 @@ curl -X POST http://localhost/wapify/v1/messages/send \
               </div>
 
               <ul class="space-y-3.5 border-t pt-6">
-                <li class="flex items-center text-sm text-gray-600 gap-3">
-                  <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                <li class="flex items-center text-sm font-semibold text-purple-700 bg-purple-50 p-2.5 rounded-xl border border-purple-100 gap-3">
+                  <svg class="w-5 h-5 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
-                  <span><strong><?= number_format($plan['message_limit']) ?></strong> Pesan / bulan</span>
+                  <span><strong><?= (int) $plan['session_limit'] ?></strong> WhatsApp Session</span>
                 </li>
                 <li class="flex items-center text-sm text-gray-600 gap-3">
                   <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Maks. <strong><?= (int) $plan['session_limit'] ?></strong> WA Session</span>
+                  <span><strong><?= number_format($plan['message_limit']) ?></strong> Pesan / bulan</span>
                 </li>
                 <li class="flex items-center text-sm text-gray-600 gap-3">
                   <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -344,7 +343,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Keamanan API Keys Terenkripsi</span>
+                  <span>API Keys &amp; Webhook Instant</span>
                 </li>
               </ul>
             </div>
