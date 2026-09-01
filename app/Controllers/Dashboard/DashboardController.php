@@ -10,7 +10,12 @@ class DashboardController
 {
     public function index(): void
     {
-        $user     = AuthMiddleware::handle();
+        $user = AuthMiddleware::handle();
+
+        if (($_SESSION['user_role'] ?? 'customer') === 'admin') {
+            Response::redirect('/admin');
+        }
+
         $sessions = (new SessionRepository())->findAllForUser($user['id']);
         require __DIR__ . '/../../../views/dashboard/index.php';
     }

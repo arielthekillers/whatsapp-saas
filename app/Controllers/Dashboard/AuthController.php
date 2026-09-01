@@ -80,6 +80,10 @@ class AuthController
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_role']  = $user['role'] ?? 'customer';
 
+        if ($_SESSION['user_role'] === 'admin') {
+            Response::redirect('/admin');
+        }
+
         Response::redirect('/dashboard');
     }
 
