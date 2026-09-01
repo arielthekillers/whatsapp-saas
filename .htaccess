@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # ---------------------------------------------------
+    # LOCAL (XAMPP): comment out line below, uncomment the one after
+    # PRODUCTION (Coolify/root domain): comment out local line, use /
+    # ---------------------------------------------------
+    RewriteBase /whatsapp-saas/
+    # RewriteBase /
+
+    # 1. API routes
+    RewriteRule ^v1/(.*)$ public/api.php [L,QSA]
+
+    # 2. Webhook routes
+    RewriteRule ^webhook/(.*)$ public/webhook.php [L,QSA]
+
+    # 3. Static files inside public folder
+    RewriteCond %{DOCUMENT_ROOT}/whatsapp-saas/public/$1 -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # 4. Standard web routes
+    RewriteRule ^$ public/index.php [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/index.php [L,QSA]
+</IfModule>
