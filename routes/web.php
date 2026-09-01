@@ -36,6 +36,7 @@ $router->post('/sessions/{id}/logout', [SessionController::class, 'logoutSession
 $router->get('/api-keys', [ApiKeyController::class, 'index']);
 $router->post('/api-keys', [ApiKeyController::class, 'store']);
 $router->post('/api-keys/{id}/revoke', [ApiKeyController::class, 'revoke']);
+$router->post('/api-keys/{id}/delete', [ApiKeyController::class, 'delete']);
 
 $router->get('/usage', [UsageController::class, 'index']);
 

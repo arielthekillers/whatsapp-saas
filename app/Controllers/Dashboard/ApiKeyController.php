@@ -58,4 +58,16 @@ class ApiKeyController
         $this->keys->revoke($user['id'], $id);
         Response::redirect('/api-keys');
     }
+
+    public function delete(int $id): void
+    {
+        $user = AuthMiddleware::handle();
+
+        if (!Csrf::verify($_POST['_csrf'] ?? null)) {
+            Response::redirect('/api-keys');
+        }
+
+        $this->keys->delete($user['id'], $id);
+        Response::redirect('/api-keys');
+    }
 }

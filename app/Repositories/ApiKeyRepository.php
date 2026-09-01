@@ -75,4 +75,10 @@ class ApiKeyRepository
         $stmt = $this->db->prepare('UPDATE api_keys SET status = "revoked" WHERE id = ? AND user_id = ?');
         $stmt->execute([$apiKeyId, $userId]);
     }
+
+    public function delete(int $userId, int $apiKeyId): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM api_keys WHERE id = ? AND user_id = ?');
+        $stmt->execute([$apiKeyId, $userId]);
+    }
 }

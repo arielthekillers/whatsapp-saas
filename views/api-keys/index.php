@@ -51,13 +51,17 @@
                 <span class="px-2 py-1 rounded-full text-xs bg-red-100 text-red-700">revoked</span>
               <?php endif; ?>
             </td>
-            <td class="px-4 py-3 text-right">
+            <td class="px-4 py-3 text-right flex items-center justify-end gap-3">
               <?php if ($k['status'] === 'active'): ?>
-                <form method="POST" action="<?= url('/api-keys/' . (int) $k['id'] . '/revoke') ?>" onsubmit="return confirm('Cabut API key ini?');">
+                <form method="POST" action="<?= url('/api-keys/' . (int) $k['id'] . '/revoke') ?>" onsubmit="return confirm('Cabut API key ini? Key ini tidak akan bisa digunakan lagi.');">
                   <?= \App\Helpers\Csrf::field() ?>
-                  <button type="submit" class="text-red-600 hover:underline">Cabut</button>
+                  <button type="submit" class="text-amber-600 hover:text-amber-800 text-xs font-semibold">Cabut</button>
                 </form>
               <?php endif; ?>
+              <form method="POST" action="<?= url('/api-keys/' . (int) $k['id'] . '/delete') ?>" onsubmit="return confirm('Hapus API key ini secara permanen dari daftar?');">
+                <?= \App\Helpers\Csrf::field() ?>
+                <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold">Hapus</button>
+              </form>
             </td>
           </tr>
         <?php endforeach; ?>
