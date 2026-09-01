@@ -24,6 +24,14 @@ class WebhookController
     public function index(): void
     {
         $user = AuthMiddleware::handle();
+
+        $subscription = (new \App\Repositories\SubscriptionRepository())->findActiveForUser($user['id']);
+        if (!$subscription) {
+            $_SESSION['flash_billing_error'] = 'Anda belum memiliki paket aktif. Silakan pilih paket langganan terlebih dahulu untuk mengakses fitur Webhook.';
+            Response::redirect('/billing');
+            return;
+        }
+
         $webhooks = $this->webhooks->listByUser($user['id']);
         $sessions = $this->sessions->findAllForUser($user['id']);
         
@@ -41,6 +49,13 @@ class WebhookController
 
         if (!Csrf::verify($_POST['_csrf'] ?? null)) {
             Response::redirect('/webhooks');
+        }
+
+        $subscription = (new \App\Repositories\SubscriptionRepository())->findActiveForUser($user['id']);
+        if (!$subscription) {
+            $_SESSION['flash_billing_error'] = 'Anda belum memiliki paket aktif. Silakan pilih paket langganan terlebih dahulu untuk menghubungkan Webhook.';
+            Response::redirect('/billing');
+            return;
         }
 
         $url = trim((string) ($_POST['url'] ?? ''));
