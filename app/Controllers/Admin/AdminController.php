@@ -146,43 +146,93 @@ class AdminController
             $months = isset($parts[1]) ? (int)$parts[1] : 1;
             $scaledLimit = (int) $payment['message_limit'] * $months;
 
-            $this->db->prepare('
-                UPDATE subscriptions SET status = "cancelled"
-                WHERE user_id = :uid AND status = "active"
-            ')->execute([':uid' => $payment['user_id']]);
+            // Check current active subscription for user
+            $subRepo = new \App\Repositories\SubscriptionRepository();
+            $currentActive = $subRepo->findActiveForUser($payment['user_id']);
 
-            $stmtSub = $this->db->prepare('
-                INSERT INTO subscriptions (user_id, plan_id, start_at, end_at, status)
-                VALUES (:user_id, :plan_id, NOW(), DATE_ADD(NOW(), INTERVAL :months MONTH), "active")
-            ');
-            $stmtSub->execute([
-                ':user_id' => $payment['user_id'],
-                ':plan_id' => $payment['plan_id'],
-                ':months'  => $months,
-            ]);
-            $subId = (int) $this->db->lastInsertId();
+            $isUpgrade = ($currentActive === null) || ((float)$payment['price'] > (float)($currentActive['plan_price'] ?? 0));
 
-            $this->db->prepare('
-                INSERT INTO subscription_usage (subscription_id, messages_used, messages_limit)
-                VALUES (:sub_id, 0, :limit)
-            ')->execute([':sub_id' => $subId, ':limit' => $scaledLimit]);
+            if ($isUpgrade) {
+                // INSTANT UPGRADE: Cancel old sub, activate new sub immediately
+                if ($currentActive) {
+                    $this->db->prepare('
+                        UPDATE subscriptions SET status = "cancelled"
+                        WHERE id = :sub_id
+                    ')->execute([':sub_id' => $currentActive['subscription_id']]);
+                }
 
-            $this->db->prepare('
-                UPDATE payments
-                SET status = "paid", paid_at = NOW(), subscription_id = :sub_id
-                WHERE id = :id
-            ')->execute([':sub_id' => $subId, ':id' => $paymentId]);
+                $stmtSub = $this->db->prepare('
+                    INSERT INTO subscriptions (user_id, plan_id, start_at, end_at, status)
+                    VALUES (:user_id, :plan_id, NOW(), DATE_ADD(NOW(), INTERVAL :months MONTH), "active")
+                ');
+                $stmtSub->execute([
+                    ':user_id' => $payment['user_id'],
+                    ':plan_id' => $payment['plan_id'],
+                    ':months'  => $months,
+                ]);
+                $subId = (int) $this->db->lastInsertId();
 
-            $this->db->commit();
+                $this->db->prepare('
+                    INSERT INTO subscription_usage (subscription_id, messages_used, messages_limit)
+                    VALUES (:sub_id, 0, :limit)
+                ')->execute([':sub_id' => $subId, ':limit' => $scaledLimit]);
 
-            Audit::log($admin['id'], 'APPROVE_PAYMENT', 'payment', (string) $paymentId, [
-                'user_id'  => $payment['user_id'],
-                'amount'   => $payment['amount'],
-                'plan'     => $payment['plan_name'],
-                'months'   => $months
-            ]);
+                $this->db->prepare('
+                    UPDATE payments
+                    SET status = "paid", paid_at = NOW(), subscription_id = :sub_id
+                    WHERE id = :id
+                ')->execute([':sub_id' => $subId, ':id' => $paymentId]);
 
-            $_SESSION['flash_admin_success'] = "✅ Pembayaran #{$payment['external_id']} berhasil disetujui.";
+                $this->db->commit();
+
+                Audit::log($admin['id'], 'APPROVE_INSTANT_UPGRADE', 'payment', (string) $paymentId, [
+                    'user_id'  => $payment['user_id'],
+                    'amount'   => $payment['amount'],
+                    'plan'     => $payment['plan_name'],
+                    'months'   => $months
+                ]);
+
+                $_SESSION['flash_admin_success'] = "✅ Pembayaran #{$payment['external_id']} disetujui. Instant Upgrade ke paket {$payment['plan_name']} telah AKTIF.";
+            } else {
+                // SCHEDULED DOWNGRADE / EXTENSION QUEUE: Schedule after current sub ends
+                $queueStart = $currentActive['end_at'];
+
+                $stmtSub = $this->db->prepare('
+                    INSERT INTO subscriptions (user_id, plan_id, start_at, end_at, status)
+                    VALUES (:user_id, :plan_id, :queue_start, DATE_ADD(:queue_start, INTERVAL :months MONTH), "queued")
+                ');
+                $stmtSub->execute([
+                    ':user_id'     => $payment['user_id'],
+                    ':plan_id'     => $payment['plan_id'],
+                    ':queue_start' => $queueStart,
+                    ':months'      => $months,
+                ]);
+                $subId = (int) $this->db->lastInsertId();
+
+                $this->db->prepare('
+                    INSERT INTO subscription_usage (subscription_id, messages_used, messages_limit)
+                    VALUES (:sub_id, 0, :limit)
+                ')->execute([':sub_id' => $subId, ':limit' => $scaledLimit]);
+
+                $this->db->prepare('
+                    UPDATE payments
+                    SET status = "paid", paid_at = NOW(), subscription_id = :sub_id
+                    WHERE id = :id
+                ')->execute([':sub_id' => $subId, ':id' => $paymentId]);
+
+                $this->db->commit();
+
+                Audit::log($admin['id'], 'APPROVE_SCHEDULED_QUEUE', 'payment', (string) $paymentId, [
+                    'user_id'     => $payment['user_id'],
+                    'amount'      => $payment['amount'],
+                    'plan'        => $payment['plan_name'],
+                    'months'      => $months,
+                    'queue_start' => $queueStart
+                ]);
+
+                $_SESSION['flash_admin_success'] = "✅ Pembayaran #{$payment['external_id']} disetujui. Paket {$payment['plan_name']} telah DIANTREKAN dan akan otomatis aktif pada {$queueStart} setelah paket aktif saat ini selesai.";
+            }
+
             Response::redirect('/admin');
         } catch (\Exception $e) {
             $this->db->rollBack();

@@ -59,16 +59,45 @@ class SubscriptionRepository
         }
     }
 
+    public function promoteQueuedSubscriptions(int $userId): void
+    {
+        // 1. Expire any active subscriptions whose end_at is in the past
+        $this->db->prepare('
+            UPDATE subscriptions SET status = "expired"
+            WHERE user_id = :uid AND status = "active" AND end_at <= NOW()
+        ')->execute([':uid' => $userId]);
+
+        // 2. If no active sub exists, find earliest queued sub and activate it
+        $stmtActive = $this->db->prepare('SELECT COUNT(*) FROM subscriptions WHERE user_id = ? AND status = "active"');
+        $stmtActive->execute([$userId]);
+        if ((int)$stmtActive->fetchColumn() === 0) {
+            $stmtQueued = $this->db->prepare('
+                SELECT id, start_at FROM subscriptions
+                WHERE user_id = ? AND status = "queued" AND start_at <= NOW()
+                ORDER BY id ASC LIMIT 1
+            ');
+            $stmtQueued->execute([$userId]);
+            $queued = $stmtQueued->fetch(PDO::FETCH_ASSOC);
+
+            if ($queued) {
+                $this->db->prepare('UPDATE subscriptions SET status = "active" WHERE id = ?')
+                    ->execute([$queued['id']]);
+            }
+        }
+    }
+
     public function findActiveForUser(int $userId): ?array
     {
+        $this->promoteQueuedSubscriptions($userId);
+
         $stmt = $this->db->prepare(
             'SELECT s.id AS subscription_id, s.end_at, s.status,
-                    p.id AS plan_id, p.name AS plan_name, p.session_limit, p.rate_limit_per_minute,
+                    p.id AS plan_id, p.name AS plan_name, p.price AS plan_price, p.session_limit, p.rate_limit_per_minute,
                     u.messages_used, u.messages_limit
              FROM subscriptions s
              JOIN plans p ON p.id = s.plan_id
              JOIN subscription_usage u ON u.subscription_id = s.id
-             WHERE s.user_id = ? AND s.status = "active"
+             WHERE s.user_id = ? AND s.status = "active" AND s.end_at > NOW()
              ORDER BY s.id DESC LIMIT 1'
         );
         $stmt->execute([$userId]);
