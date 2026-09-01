@@ -188,6 +188,8 @@
                 $badge = match($pay['status']) {
                   'paid' => 'bg-green-50 text-green-700 border border-green-200',
                   'pending' => 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+                  'verifying' => 'bg-blue-50 text-blue-700 border border-blue-200',
+                  'cancelled' => 'bg-gray-100 text-gray-600 border border-gray-200',
                   'expired', 'failed' => 'bg-red-50 text-red-700 border border-red-200',
                   default => 'bg-gray-50 text-gray-600'
                 };

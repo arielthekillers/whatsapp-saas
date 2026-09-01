@@ -192,7 +192,7 @@ class BillingController
 
         $stmt = $this->db->prepare('
             UPDATE payments
-            SET status = "expired"
+            SET status = "cancelled"
             WHERE external_id = :external_id AND user_id = :user_id AND status IN ("pending","verifying")
         ');
         $stmt->execute([
@@ -200,7 +200,7 @@ class BillingController
             ':user_id'     => $user['id'],
         ]);
 
-        $_SESSION['flash_billing_error'] = 'Invoice dibatalkan.';
+        $_SESSION['flash_billing_error'] = 'Invoice berhasil dibatalkan.';
         Response::redirect('/billing');
     }
 }
