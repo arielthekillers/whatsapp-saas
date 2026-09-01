@@ -39,13 +39,34 @@ class AuthController
         $email    = trim((string) ($_POST['email'] ?? ''));
         $password = (string) ($_POST['password'] ?? '');
 
+        // Anti Brute-force rate limiting: max 5 failed attempts per 15 mins per IP
+        $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $attemptKey = 'login_attempts_' . md5($clientIp);
+        $attempts = $_SESSION[$attemptKey] ?? ['count' => 0, 'time' => time()];
+
+        if ($attempts['count'] >= 5 && (time() - $attempts['time']) < 900) {
+            $remaining = ceil((900 - (time() - $attempts['time'])) / 60);
+            $error = "Terlalu banyak percobaan login gagal. Silakan coba lagi dalam {$remaining} menit.";
+            require __DIR__ . '/../../../views/auth/login.php';
+            return;
+        }
+
         $user = $this->users->findByEmail($email);
 
         if (!$user || !password_verify($password, $user['password'])) {
+            if ((time() - $attempts['time']) > 900) {
+                $attempts = ['count' => 1, 'time' => time()];
+            } else {
+                $attempts['count']++;
+            }
+            $_SESSION[$attemptKey] = $attempts;
+
             $error = 'Email atau password salah.';
             require __DIR__ . '/../../../views/auth/login.php';
             return;
         }
+
+        unset($_SESSION[$attemptKey]);
 
         if ($user['status'] !== 'active') {
             $error = 'Akun Anda tidak aktif. Hubungi support kami.';

@@ -16,6 +16,16 @@
   h1, h2, h3, h4, .font-display {
     font-family: 'Outfit', sans-serif;
   }
+  @keyframes toastSlideIn {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .animate-toast {
+    animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen">
+<body class="bg-gray-50 text-gray-800 min-h-screen relative">
+<!-- Toast Container -->
+<div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-3 max-w-sm pointer-events-none"></div>
+

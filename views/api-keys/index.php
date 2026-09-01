@@ -4,8 +4,14 @@
 
   <?php if (!empty($newKey)): ?>
     <div class="mb-6 rounded-lg bg-green-50 border border-green-200 p-4">
-      <p class="text-sm font-medium text-green-800 mb-1">API Key baru dibuat. Simpan sekarang — kunci ini hanya ditampilkan sekali:</p>
-      <code class="block bg-white border rounded px-3 py-2 text-sm break-all"><?= htmlspecialchars($newKey) ?></code>
+      <p class="text-sm font-medium text-green-800 mb-2">API Key baru dibuat. Simpan sekarang — kunci ini hanya ditampilkan sekali:</p>
+      <div class="flex items-center space-x-2">
+        <code class="flex-1 bg-white border border-green-300 rounded-lg px-3 py-2 text-sm font-mono break-all text-green-900 shadow-sm"><?= htmlspecialchars($newKey) ?></code>
+        <button type="button" onclick="copyToClipboard('<?= htmlspecialchars($newKey) ?>', this)" class="bg-green-600 hover:bg-green-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition-all flex items-center shrink-0">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+          Salin
+        </button>
+      </div>
     </div>
   <?php endif; ?>
 

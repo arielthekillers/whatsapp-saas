@@ -6,7 +6,7 @@ namespace App\Controllers\Admin;
 use App\Config\Database;
 use App\Helpers\Csrf;
 use App\Helpers\Response;
-use App\Middleware\AuthMiddleware;
+use App\Middleware\AdminMiddleware;
 use App\Repositories\PlanRepository;
 use PDO;
 
@@ -23,7 +23,7 @@ class AdminController
 
     public function index(): void
     {
-        $user = AuthMiddleware::handle();
+        $user = AdminMiddleware::handle();
 
         // 1. Stats ringkasan
         $totalUsers   = (int) $this->db->query('SELECT COUNT(*) FROM users')->fetchColumn();
@@ -76,7 +76,7 @@ class AdminController
      */
     public function approvePayment(): void
     {
-        $user = AuthMiddleware::handle();
+        $user = AdminMiddleware::handle();
 
         if (!Csrf::verify($_POST['_csrf'] ?? null)) {
             Response::redirect('/admin');
@@ -153,7 +153,7 @@ class AdminController
      */
     public function rejectPayment(): void
     {
-        $user = AuthMiddleware::handle();
+        $user = AdminMiddleware::handle();
 
         if (!Csrf::verify($_POST['_csrf'] ?? null)) {
             Response::redirect('/admin');
@@ -178,7 +178,7 @@ class AdminController
      */
     public function updatePlan(): void
     {
-        $user = AuthMiddleware::handle();
+        $user = AdminMiddleware::handle();
 
         if (!Csrf::verify($_POST['_csrf'] ?? null)) {
             Response::redirect('/admin');

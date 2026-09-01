@@ -52,8 +52,14 @@
 }</pre>
         </div>
 
-        <h4 class="font-bold text-gray-800 pt-2 text-xs uppercase tracking-wider">Contoh Implementasi cURL</h4>
-        <div class="bg-gray-900 text-gray-200 rounded-xl p-4 font-mono text-xs overflow-x-auto">
+        <div class="flex justify-between items-center pt-2">
+          <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Contoh Implementasi cURL</h4>
+          <button type="button" onclick="copyToClipboard(`curl -X POST http://localhost/whatsapp-saas/v1/messages/send \\\n  -H &quot;Authorization: Bearer wsk_your_secret_api_key&quot; \\\n  -H &quot;X-Idempotency-Key: uuid-unique-string-12345&quot; \\\n  -H &quot;Content-Type: application/json&quot; \\\n  -d '{\n    &quot;session&quot;: &quot;marketing&quot;,\n    &quot;chatId&quot;: &quot;6281359774765@c.us&quot;,\n    &quot;text&quot;: &quot;Halo, ini pesan test integrasi API Wapify!&quot;\n  }'`, this)" class="text-xs text-purple-600 hover:text-purple-700 font-semibold flex items-center">
+            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            Salin Code
+          </button>
+        </div>
+        <div class="bg-gray-900 text-gray-200 rounded-xl p-4 font-mono text-xs overflow-x-auto relative">
 <pre>curl -X POST http://localhost/whatsapp-saas/v1/messages/send \
   -H "Authorization: Bearer wsk_your_secret_api_key" \
   -H "X-Idempotency-Key: uuid-unique-string-12345" \

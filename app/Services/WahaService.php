@@ -206,7 +206,7 @@ class WahaService
         $url = $this->baseUrl . $path;
         $ch  = curl_init($url);
 
-        $headers = array_merge(['X-Api-Key: ' . $this->apiKey], $extraHeaders);
+        $headers = array_merge(['X-Api-Key: ' . $this->apiKey, 'Connection: keep-alive'], $extraHeaders);
 
         curl_setopt_array($ch, [
             CURLOPT_CUSTOMREQUEST  => $method,
@@ -214,6 +214,8 @@ class WahaService
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_TIMEOUT        => $this->timeout,
             CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TCP_KEEPALIVE  => 1,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
         ]);
 
         if ($rawBody !== null) {

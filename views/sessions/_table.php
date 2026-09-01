@@ -15,17 +15,30 @@
       <?php endif; ?>
       <?php foreach ($sessions as $s): ?>
         <?php
-          $badge = match ($s['status']) {
-              'WORKING' => 'bg-green-100 text-green-700',
-              'SCAN_QR', 'SCAN_QR_CODE', 'STARTING', 'CREATED' => 'bg-yellow-100 text-yellow-700',
-              'FAILED', 'LOGGED_OUT' => 'bg-red-100 text-red-700',
-              default => 'bg-gray-100 text-gray-600',
+          $badgeClass = match ($s['status']) {
+              'WORKING' => 'bg-green-100 text-green-700 border-green-200',
+              'SCAN_QR', 'SCAN_QR_CODE', 'STARTING', 'CREATED' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
+              'FAILED', 'LOGGED_OUT', 'STOPPED' => 'bg-red-100 text-red-700 border-red-200',
+              default => 'bg-gray-100 text-gray-600 border-gray-200',
+          };
+          $pingColor = match ($s['status']) {
+              'WORKING' => 'bg-green-500',
+              'SCAN_QR', 'SCAN_QR_CODE', 'STARTING', 'CREATED' => 'bg-yellow-500',
+              default => 'bg-red-500',
           };
         ?>
         <tr>
           <td class="px-4 py-3 font-medium"><?= htmlspecialchars($s['name']) ?></td>
           <td class="px-4 py-3 text-gray-500"><?= htmlspecialchars($s['phone_number'] ?? '-') ?></td>
-          <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs <?= $badge ?>"><?= htmlspecialchars($s['status']) ?></span></td>
+          <td class="px-4 py-3">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border <?= $badgeClass ?>">
+              <span class="relative flex h-2 w-2 mr-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full <?= $pingColor ?> opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 <?= $pingColor ?>"></span>
+              </span>
+              <?= htmlspecialchars($s['status']) ?>
+            </span>
+          </td>
           <td class="px-4 py-3 text-gray-500"><?= htmlspecialchars($s['created_at']) ?></td>
           <td class="px-4 py-3 text-right"><a href="<?= url('/sessions/' . (int) $s['id']) ?>" class="text-purple-600 hover:underline">Kelola</a></td>
         </tr>
