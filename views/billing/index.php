@@ -145,17 +145,79 @@
           <?php if ($isActive): ?>
             <button disabled class="w-full bg-gray-100 text-gray-400 font-bold py-2.5 rounded-xl cursor-not-allowed text-sm">Paket Anda Saat Ini</button>
           <?php else: ?>
-            <form method="POST" action="<?= url('/billing/checkout') ?>">
-              <?= \App\Helpers\Csrf::field() ?>
-              <input type="hidden" name="plan_id" value="<?= (int) $p['id'] ?>">
-              <!-- Hidden input durasi yang disinkronkan dengan switcher atas -->
-              <input type="hidden" name="duration_months" class="duration-input" value="1">
-              <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all hover:scale-[1.01] shadow-lg shadow-purple-500/10">Pilih Paket</button>
-            </form>
+            <button type="button" onclick="openCheckoutModal(<?= (int)$p['id'] ?>, '<?= htmlspecialchars($p['name'], ENT_QUOTES) ?>', <?= (float)$p['price'] ?>)" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all hover:scale-[1.01] shadow-lg shadow-purple-500/10">Pilih Paket</button>
           <?php endif; ?>
         </div>
       </div>
     <?php endforeach; ?>
+  </div>
+
+  <!-- Modal Konfirmasi Pemesanan -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity" onclick="closeCheckoutModal()"></div>
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+      <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100">
+        <div class="bg-white p-6 space-y-5">
+          <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-lg">
+                🛒
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-gray-900 font-display">Konfirmasi Pemesanan</h3>
+                <p class="text-xs text-gray-500">Periksa rincian paket sebelum membuat tagihan invoice.</p>
+              </div>
+            </div>
+            <button type="button" onclick="closeCheckoutModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+              ✕
+            </button>
+          </div>
+
+          <div class="bg-purple-50/50 rounded-xl p-4 border border-purple-100 space-y-2 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500">Paket Diminta:</span>
+              <span id="modal-plan-name" class="font-extrabold text-purple-700 font-display">-</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500">Durasi Langganan:</span>
+              <span id="modal-duration" class="font-semibold text-gray-800">1 Bulan</span>
+            </div>
+            <div class="flex justify-between items-center text-xs text-gray-500">
+              <span>Harga Dasar:</span>
+              <span id="modal-base-price">Rp 0 / bln</span>
+            </div>
+            <div id="modal-discount-row" class="flex justify-between items-center text-xs text-green-600 hidden">
+              <span>Potongan Diskon:</span>
+              <span id="modal-discount-val" class="font-bold">- Rp 0</span>
+            </div>
+            <div class="border-t border-purple-200/60 pt-2.5 mt-2 flex justify-between items-baseline">
+              <span class="font-bold text-gray-900">Total Pembayaran:</span>
+              <span id="modal-total-price" class="text-2xl font-black text-purple-700 font-display">Rp 0</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-500 bg-gray-50 p-3 rounded-xl border border-gray-100 leading-relaxed">
+            💡 Invoice pembayaran dengan status <strong>pending</strong> hanya akan dibuat setelah Anda menekan tombol konfirmasi di bawah.
+          </p>
+
+          <form id="checkout-confirm-form" method="POST" action="<?= url('/billing/checkout') ?>">
+            <?= \App\Helpers\Csrf::field() ?>
+            <input type="hidden" name="plan_id" id="modal-input-plan-id" value="">
+            <input type="hidden" name="duration_months" id="modal-input-duration" value="1">
+            
+            <div class="flex items-center justify-end gap-3 pt-2">
+              <button type="button" onclick="closeCheckoutModal()" class="px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs hover:bg-gray-50 transition-colors">
+                Batal
+              </button>
+              <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold text-xs transition-all shadow-md shadow-purple-500/20">
+                Konfirmasi &amp; Lanjutkan Pembayaran →
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Riwayat Pembayaran -->
@@ -210,7 +272,13 @@
 </div>
 
 <script>
+var currentSelectedDuration = 1;
+var currentSelectedDiscount = 0.00;
+
 function selectDuration(months, discount, button) {
+    currentSelectedDuration = months;
+    currentSelectedDiscount = discount;
+
     // 1. Update tombol active
     var buttons = document.querySelectorAll('.duration-btn');
     buttons.forEach(btn => btn.classList.remove('active-duration-btn'));
@@ -219,7 +287,7 @@ function selectDuration(months, discount, button) {
     // 2. Update harga dan input di semua kartu plan
     var cards = document.querySelectorAll('.plan-card');
     cards.forEach(card => {
-        // Update hidden input
+        // Update hidden input jika ada
         var input = card.querySelector('.duration-input');
         if (input) {
             input.value = months;
@@ -245,6 +313,41 @@ function selectDuration(months, discount, button) {
             totalDisplay.classList.add('hidden');
         }
     });
+}
+
+function openCheckoutModal(planId, planName, basePrice) {
+    document.getElementById('modal-input-plan-id').value = planId;
+    document.getElementById('modal-input-duration').value = currentSelectedDuration;
+    
+    document.getElementById('modal-plan-name').innerText = planName;
+    
+    var durationText = currentSelectedDuration === 12 ? '1 Tahun' : currentSelectedDuration + ' Bulan';
+    if (currentSelectedDiscount > 0) {
+        durationText += ' (Diskon ' + (Math.round(currentSelectedDiscount * 100)) + '%)';
+    }
+    document.getElementById('modal-duration').innerText = durationText;
+    
+    document.getElementById('modal-base-price').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(basePrice) + ' / bln';
+    
+    var rawTotal = basePrice * currentSelectedDuration;
+    var total = rawTotal * (1 - currentSelectedDiscount);
+    var discountVal = rawTotal - total;
+    
+    var discountRow = document.getElementById('modal-discount-row');
+    if (discountVal > 0) {
+        discountRow.classList.remove('hidden');
+        document.getElementById('modal-discount-val').innerText = '- Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(discountVal));
+    } else {
+        discountRow.classList.add('hidden');
+    }
+    
+    document.getElementById('modal-total-price').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(total));
+    
+    document.getElementById('checkout-modal').classList.remove('hidden');
+}
+
+function closeCheckoutModal() {
+    document.getElementById('checkout-modal').classList.add('hidden');
 }
 </script>
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

@@ -218,14 +218,24 @@ if (!empty($_SESSION['user_id'])) {
       ?>
       <?php if (!empty($announcement)): ?>
         <?php 
-          $annBg = match($announcement['type']) {
-            'warning' => 'bg-amber-50 border-amber-200 text-amber-800',
-            'danger'  => 'bg-red-50 border-red-200 text-red-800',
-            default   => 'bg-purple-50 border-purple-200 text-purple-800'
+          $type = $announcement['type'] ?? 'info';
+          $annStyle = match($type) {
+            'warning' => 'background: #FEF3C7; border: 1px solid #FDE68A; color: #92400E;',
+            'danger'  => 'background: #FFE4E6; border: 1px solid #FECDD3; color: #9F1239;',
+            default   => 'background: #F3E8FF; border: 1px solid #D8B4FE; color: #6B21A8;'
+          };
+          $badgeStyle = match($type) {
+            'warning' => 'background: #F59E0B; color: white;',
+            'danger'  => 'background: #E11D48; color: white;',
+            default   => 'background: #9333EA; color: white;'
           };
         ?>
-        <div class="mb-6 rounded-xl border p-4 text-sm font-semibold flex items-center gap-3 shadow-sm <?= $annBg ?>">
-          <span class="text-base">📢</span>
-          <div class="flex-1"><?= htmlspecialchars($announcement['message']) ?></div>
+        <div style="<?= $annStyle ?>" class="mb-6 rounded-2xl p-4 text-xs font-medium flex items-start gap-3 shadow-xs">
+          <span style="<?= $badgeStyle ?>" class="w-6 h-6 rounded-lg font-bold flex items-center justify-center text-xs shrink-0 shadow-xs mt-0.5">
+            📢
+          </span>
+          <div class="flex-1 leading-relaxed font-sans">
+            <?= nl2br(htmlspecialchars($announcement['message'])) ?>
+          </div>
         </div>
       <?php endif; ?>
