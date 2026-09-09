@@ -22,8 +22,11 @@ $ogImage   = htmlspecialchars($appUrl . '/og-image.jpg');
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="<?= $canonicalUrl ?>">
 
-<!-- Favicon -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+<!-- Favicon Icons -->
+<link rel="shortcut icon" href="<?= $appUrl ?>/favicon.ico" type="image/x-icon">
+<link rel="icon" href="<?= $appUrl ?>/favicon.ico" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="<?= $appUrl ?>/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="<?= $appUrl ?>/apple-touch-icon.png">
 
 <!-- Open Graph / Facebook / WhatsApp / Telegram -->
 <meta property="og:type" content="website">
