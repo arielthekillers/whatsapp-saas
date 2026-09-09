@@ -28,63 +28,108 @@ class AdminController
         $user = AdminMiddleware::handle();
 
         // 1. Stats ringkasan
-        $totalUsers   = (int) $this->db->query('SELECT COUNT(*) FROM users')->fetchColumn();
-        $totalSessions = (int) $this->db->query('SELECT COUNT(*) FROM whatsapp_sessions')->fetchColumn();
-        $totalRevenue  = (float) $this->db->query('SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = "paid"')->fetchColumn();
-        $pendingPayments = (int) $this->db->query('SELECT COUNT(*) FROM payments WHERE status IN ("pending","verifying")')->fetchColumn();
+        try {
+            $totalUsers = (int) $this->db->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        } catch (\Throwable $e) {
+            $totalUsers = 0;
+        }
+
+        try {
+            $totalSessions = (int) $this->db->query('SELECT COUNT(*) FROM whatsapp_sessions')->fetchColumn();
+        } catch (\Throwable $e) {
+            $totalSessions = 0;
+        }
+
+        try {
+            $totalRevenue = (float) $this->db->query('SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = "paid"')->fetchColumn();
+        } catch (\Throwable $e) {
+            $totalRevenue = 0.0;
+        }
+
+        try {
+            $pendingPayments = (int) $this->db->query('SELECT COUNT(*) FROM payments WHERE status IN ("pending","verifying")')->fetchColumn();
+        } catch (\Throwable $e) {
+            $pendingPayments = 0;
+        }
 
         // 2. Semua user + subscription aktif
-        $stmtUsers = $this->db->prepare('
-            SELECT u.id AS user_id, u.name, u.email, u.status AS user_status, u.created_at,
-                   s.id AS sub_id, s.end_at, s.status AS sub_status,
-                   p.name AS plan_name, p.id AS plan_id,
-                   usg.messages_used, usg.messages_limit
-            FROM users u
-            LEFT JOIN subscriptions s ON u.id = s.user_id AND s.status = "active"
-            LEFT JOIN plans p ON s.plan_id = p.id
-            LEFT JOIN subscription_usage usg ON s.id = usg.subscription_id
-            ORDER BY u.id DESC
-        ');
-        $stmtUsers->execute();
-        $usersList = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmtUsers = $this->db->prepare('
+                SELECT u.id AS user_id, u.name, u.email, u.status AS user_status, u.created_at,
+                       s.id AS sub_id, s.end_at, s.status AS sub_status,
+                       p.name AS plan_name, p.id AS plan_id,
+                       usg.messages_used, usg.messages_limit
+                FROM users u
+                LEFT JOIN subscriptions s ON u.id = s.user_id AND s.status = "active"
+                LEFT JOIN plans p ON s.plan_id = p.id
+                LEFT JOIN subscription_usage usg ON s.id = usg.subscription_id
+                ORDER BY u.id DESC
+            ');
+            $stmtUsers->execute();
+            $usersList = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            $usersList = [];
+        }
 
         // 3. Pembayaran pending verifikasi
-        $stmtPending = $this->db->prepare('
-            SELECT p.*, u.name AS user_name, u.email AS user_email,
-                   pl.name AS plan_name, pl.id AS plan_id, pl.message_limit, pl.duration_days
-            FROM payments p
-            JOIN users u ON u.id = p.user_id
-            LEFT JOIN plans pl ON pl.id = p.plan_id
-            WHERE p.status IN ("pending", "verifying")
-            ORDER BY p.id DESC
-        ');
-        $stmtPending->execute();
-        $pendingList = $stmtPending->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmtPending = $this->db->prepare('
+                SELECT p.*, u.name AS user_name, u.email AS user_email,
+                       pl.name AS plan_name, pl.id AS plan_id, pl.message_limit, pl.duration_days
+                FROM payments p
+                JOIN users u ON u.id = p.user_id
+                LEFT JOIN plans pl ON pl.id = p.plan_id
+                WHERE p.status IN ("pending", "verifying")
+                ORDER BY p.id DESC
+            ');
+            $stmtPending->execute();
+            $pendingList = $stmtPending->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            $pendingList = [];
+        }
 
         // 4. Daftar paket aktif
-        $allPlans = $this->plans->findAllActive();
+        try {
+            $allPlans = $this->plans->findAllActive();
+        } catch (\Throwable $e) {
+            $allPlans = [];
+        }
 
         // 5. WAHA Health Check
         $wahaUrl = (string) Env::get('WAHA_BASE_URL', 'http://localhost:3000');
         $wahaStatus = $this->checkWahaHealth($wahaUrl);
 
         // 6. Job Queue Stats
-        $jobStats = [
-            'pending'   => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "pending"')->fetchColumn(),
-            'completed' => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "completed"')->fetchColumn(),
-            'failed'    => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "failed"')->fetchColumn(),
-        ];
+        try {
+            $jobStats = [
+                'pending'   => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "pending"')->fetchColumn(),
+                'completed' => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "completed"')->fetchColumn(),
+                'failed'    => (int) $this->db->query('SELECT COUNT(*) FROM jobs WHERE status = "failed"')->fetchColumn(),
+            ];
+        } catch (\Throwable $e) {
+            $jobStats = ['pending' => 0, 'completed' => 0, 'failed' => 0];
+        }
 
         // 7. Pengumuman Aktif
-        $activeAnnouncement = $this->db->query('SELECT * FROM announcements WHERE is_active = 1 ORDER BY id DESC LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+        try {
+            $resAnn = $this->db->query('SELECT * FROM announcements WHERE is_active = 1 ORDER BY id DESC LIMIT 1');
+            $activeAnnouncement = $resAnn ? $resAnn->fetch(PDO::FETCH_ASSOC) : null;
+        } catch (\Throwable $e) {
+            $activeAnnouncement = null;
+        }
 
         // 8. Audit Logs
-        $auditLogs = $this->db->query('
-            SELECT a.*, u.name AS admin_name
-            FROM audit_logs a
-            LEFT JOIN users u ON u.id = a.admin_id
-            ORDER BY a.id DESC LIMIT 15
-        ')->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $resAudit = $this->db->query('
+                SELECT a.*, u.name AS admin_name
+                FROM audit_logs a
+                LEFT JOIN users u ON u.id = a.admin_id
+                ORDER BY a.id DESC LIMIT 15
+            ');
+            $auditLogs = $resAudit ? $resAudit->fetchAll(PDO::FETCH_ASSOC) : [];
+        } catch (\Throwable $e) {
+            $auditLogs = [];
+        }
 
         $success = $_SESSION['flash_admin_success'] ?? null;
         unset($_SESSION['flash_admin_success']);
