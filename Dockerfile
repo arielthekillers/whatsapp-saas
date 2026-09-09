@@ -42,7 +42,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # Set permissions
-RUN mkdir -p storage/logs storage/uploads \
+RUN mkdir -p storage/logs storage/uploads /var/log/supervisor \
     && chmod -R 775 storage \
     && chown -R www-data:www-data storage
 
