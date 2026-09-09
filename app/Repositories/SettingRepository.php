@@ -47,10 +47,10 @@ class SettingRepository
         try {
             $stmt = $db->prepare('
                 INSERT INTO settings (`key`, `value`)
-                VALUES (:key, :val)
-                ON DUPLICATE KEY UPDATE `value` = :val
+                VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)
             ');
-            $stmt->execute([':key' => $key, ':val' => $value]);
+            $stmt->execute([$key, $value]);
         } catch (\Throwable $e) {
             // Auto-create tabel settings jika belum dibuat
             $db->exec('
@@ -63,10 +63,10 @@ class SettingRepository
 
             $stmt = $db->prepare('
                 INSERT INTO settings (`key`, `value`)
-                VALUES (:key, :val)
-                ON DUPLICATE KEY UPDATE `value` = :val
+                VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)
             ');
-            $stmt->execute([':key' => $key, ':val' => $value]);
+            $stmt->execute([$key, $value]);
         }
     }
 
