@@ -39,17 +39,35 @@ class SettingRepository
     }
 
     /**
-     * Simpan / update nilai setting di database.
+     * Simpan / update nilai setting di database dengan auto-create table jika belum ada.
      */
     public static function set(string $key, string $value): void
     {
         $db = Database::connection();
-        $stmt = $db->prepare('
-            INSERT INTO settings (`key`, `value`)
-            VALUES (:key, :val)
-            ON DUPLICATE KEY UPDATE `value` = :val
-        ');
-        $stmt->execute([':key' => $key, ':val' => $value]);
+        try {
+            $stmt = $db->prepare('
+                INSERT INTO settings (`key`, `value`)
+                VALUES (:key, :val)
+                ON DUPLICATE KEY UPDATE `value` = :val
+            ');
+            $stmt->execute([':key' => $key, ':val' => $value]);
+        } catch (\Throwable $e) {
+            // Auto-create tabel settings jika belum dibuat
+            $db->exec('
+                CREATE TABLE IF NOT EXISTS settings (
+                    `key`        VARCHAR(100) PRIMARY KEY,
+                    `value`      TEXT NULL,
+                    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB;
+            ');
+
+            $stmt = $db->prepare('
+                INSERT INTO settings (`key`, `value`)
+                VALUES (:key, :val)
+                ON DUPLICATE KEY UPDATE `value` = :val
+            ');
+            $stmt->execute([':key' => $key, ':val' => $value]);
+        }
     }
 
     /**

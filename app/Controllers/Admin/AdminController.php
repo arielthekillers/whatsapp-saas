@@ -180,33 +180,43 @@ class AdminController
     /** POST /admin/settings/waha — Simpan konfigurasi WAHA Server */
     public function saveWahaSettings(): void
     {
-        $admin = AdminMiddleware::handle();
+        try {
+            $admin = AdminMiddleware::handle();
 
-        if (!Csrf::verify($_POST['_csrf'] ?? null)) {
-            Response::redirect('/admin');
+            if (!Csrf::verify($_POST['_csrf'] ?? null)) {
+                Response::redirect('/admin');
+                return;
+            }
+
+            $baseUrl = trim((string) ($_POST['waha_base_url'] ?? ''));
+            $apiKey  = trim((string) ($_POST['waha_api_key'] ?? ''));
+            $timeout = (int) ($_POST['waha_timeout'] ?? 15);
+
+            if ($baseUrl === '') {
+                $_SESSION['flash_admin_error'] = 'Base URL WAHA tidak boleh kosong.';
+                Response::redirect('/admin');
+                return;
+            }
+
+            SettingRepository::set('WAHA_BASE_URL', $baseUrl);
+            SettingRepository::set('WAHA_API_KEY', $apiKey);
+            SettingRepository::set('WAHA_TIMEOUT', (string) max(5, min(60, $timeout)));
+
+            try {
+                Audit::log((int) $admin['id'], 'UPDATE_WAHA_SETTINGS', 'setting', 'WAHA', [
+                    'baseUrl' => $baseUrl,
+                    'hasApiKey' => !empty($apiKey),
+                    'timeout' => $timeout,
+                ]);
+            } catch (\Throwable $te) {
+                // Ignore audit failure if foreign key mismatch
+            }
+
+            $_SESSION['flash_admin_success'] = 'Pengaturan WAHA Server berhasil diperbarui!';
+        } catch (\Throwable $e) {
+            $_SESSION['flash_admin_error'] = 'Gagal menyimpan pengaturan: ' . $e->getMessage();
         }
 
-        $baseUrl = trim((string) ($_POST['waha_base_url'] ?? ''));
-        $apiKey  = trim((string) ($_POST['waha_api_key'] ?? ''));
-        $timeout = (int) ($_POST['waha_timeout'] ?? 15);
-
-        if ($baseUrl === '') {
-            $_SESSION['flash_admin_error'] = 'Base URL WAHA tidak boleh kosong.';
-            Response::redirect('/admin');
-            return;
-        }
-
-        SettingRepository::set('WAHA_BASE_URL', $baseUrl);
-        SettingRepository::set('WAHA_API_KEY', $apiKey);
-        SettingRepository::set('WAHA_TIMEOUT', (string) max(5, min(60, $timeout)));
-
-        Audit::log($admin['id'], 'UPDATE_WAHA_SETTINGS', 'setting', 'WAHA', [
-            'baseUrl' => $baseUrl,
-            'hasApiKey' => !empty($apiKey),
-            'timeout' => $timeout,
-        ]);
-
-        $_SESSION['flash_admin_success'] = 'Pengaturan WAHA Server berhasil diperbarui!';
         Response::redirect('/admin');
     }
 
