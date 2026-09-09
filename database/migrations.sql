@@ -36,6 +36,7 @@ CREATE TABLE users (
     name                VARCHAR(150) NOT NULL,
     email               VARCHAR(150) NOT NULL UNIQUE,
     password            VARCHAR(255) NOT NULL,
+    role                ENUM('customer','admin') NOT NULL DEFAULT 'customer',
     email_verified_at   DATETIME NULL,
     status              ENUM('active','suspended','banned') NOT NULL DEFAULT 'active',
     created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
