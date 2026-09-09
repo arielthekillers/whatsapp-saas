@@ -23,11 +23,11 @@ $ogImage   = htmlspecialchars($appUrl . '/og-image.jpg');
 <link rel="canonical" href="<?= $canonicalUrl ?>">
 
 <!-- Favicon Icons -->
-<link rel="shortcut icon" href="<?= $appUrl ?>/favicon.ico" type="image/x-icon">
-<link rel="icon" href="<?= $appUrl ?>/favicon.ico" type="image/x-icon">
-<link rel="icon" type="image/png" href="<?= $appUrl ?>/favicon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="<?= $appUrl ?>/favicon-32x32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="<?= $appUrl ?>/apple-touch-icon.png">
+<link rel="shortcut icon" href="<?= url('/favicon.ico') ?>" type="image/x-icon">
+<link rel="icon" href="<?= url('/favicon.ico') ?>" type="image/x-icon">
+<link rel="icon" type="image/png" href="<?= url('/favicon.png') ?>">
+<link rel="icon" type="image/png" sizes="32x32" href="<?= url('/favicon-32x32.png') ?>">
+<link rel="apple-touch-icon" sizes="180x180" href="<?= url('/apple-touch-icon.png') ?>">
 
 <!-- Open Graph / Facebook / WhatsApp / Telegram -->
 <meta property="og:type" content="website">
