@@ -14,21 +14,19 @@ class Env
             return;
         }
 
-        if (!is_file($path)) {
-            throw new \RuntimeException(".env file tidak ditemukan di {$path}. Salin dari .env.example terlebih dahulu.");
-        }
-
-        foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-            $line = trim($line);
-            if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) {
-                continue;
-            }
-            [$key, $value] = explode('=', $line, 2);
-            $key = trim($key);
-            $value = trim(trim($value), "\"'");
-            self::$vars[$key] = $value;
-            if (getenv($key) === false) {
-                putenv("{$key}={$value}");
+        if (is_file($path)) {
+            foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+                $line = trim($line);
+                if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) {
+                    continue;
+                }
+                [$key, $value] = explode('=', $line, 2);
+                $key = trim($key);
+                $value = trim(trim($value), "\"'");
+                self::$vars[$key] = $value;
+                if (getenv($key) === false) {
+                    putenv("{$key}={$value}");
+                }
             }
         }
 
@@ -37,10 +35,15 @@ class Env
 
     public static function get(string $key, $default = null)
     {
+        $envVal = getenv($key);
+        if ($envVal !== false && $envVal !== '') {
+            return $envVal;
+        }
+
         if (array_key_exists($key, self::$vars)) {
             return self::$vars[$key];
         }
-        $val = getenv($key);
-        return $val === false ? $default : $val;
+
+        return $default;
     }
 }

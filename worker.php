@@ -11,15 +11,23 @@ use App\Services\WebhookDispatchService;
 
 Env::load(__DIR__ . '/.env');
 
-$db = Database::connection();
+echo "Wapify Queue Worker started. Press Ctrl+C to stop.\n";
+set_time_limit(0);
+
+// Wait for database connection during startup
+$db = null;
+while ($db === null) {
+    try {
+        $db = Database::connection();
+    } catch (\Throwable $e) {
+        echo "[" . date('Y-m-d H:i:s') . "] Waiting for database connection: " . $e->getMessage() . "\n";
+        sleep(3);
+    }
+}
+
 $jobRepo = new JobRepository();
 $wahaWebhookService = new WahaWebhookService();
 $webhookDispatchService = new WebhookDispatchService();
-
-echo "Wapify Queue Worker started. Press Ctrl+C to stop.\n";
-
-// Set timeout tak terbatas untuk CLI script
-set_time_limit(0);
 
 while (true) {
     $hasWork = false;
