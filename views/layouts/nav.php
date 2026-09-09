@@ -213,8 +213,13 @@ if (!empty($_SESSION['user_id'])) {
   <div class="flex-1 bg-gray-50 flex flex-col justify-between min-h-screen">
     <div class="p-6 md:p-10">
       <?php
-        $dbAnn = \App\Config\Database::connection();
-        $announcement = $dbAnn->query('SELECT * FROM announcements WHERE is_active = 1 ORDER BY id DESC LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+        $announcement = null;
+        try {
+            $dbAnn = \App\Config\Database::connection();
+            $announcement = $dbAnn->query('SELECT * FROM announcements WHERE is_active = 1 ORDER BY id DESC LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            $announcement = null;
+        }
       ?>
       <?php if (!empty($announcement)): ?>
         <?php 
