@@ -151,30 +151,36 @@ class AdminController
     /** Cek status koneksi WAHA */
     private function checkWahaHealth(string $baseUrl, string $apiKey = ''): array
     {
-        $ch = curl_init(rtrim($baseUrl, '/') . '/api/version');
+        $url = rtrim($baseUrl, '/') . '/api/version';
+        $ch = curl_init($url);
         $headers = ['Accept: application/json'];
         if ($apiKey !== '') {
             $headers[] = 'X-Api-Key: ' . $apiKey;
         }
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 4,
-            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT        => 5,
+            CURLOPT_CONNECTTIMEOUT => 4,
             CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
         ]);
         $startTime = microtime(true);
         $res = curl_exec($ch);
         $latency = round((microtime(true) - $startTime) * 1000);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr  = curl_error($ch);
         curl_close($ch);
 
         if ($httpCode >= 200 && $httpCode < 400) {
-            return ['status' => 'ONLINE', 'latency' => $latency, 'url' => $baseUrl, 'http_code' => $httpCode];
+            return ['status' => 'ONLINE', 'latency' => $latency, 'url' => $baseUrl, 'http_code' => $httpCode, 'error' => null];
         }
         if ($httpCode === 401 || $httpCode === 403) {
-            return ['status' => 'UNAUTHORIZED (API Key Invalid)', 'latency' => $latency, 'url' => $baseUrl, 'http_code' => $httpCode];
+            return ['status' => 'UNAUTHORIZED (API Key Salah)', 'latency' => $latency, 'url' => $baseUrl, 'http_code' => $httpCode, 'error' => 'API Key tidak diterima (HTTP ' . $httpCode . ')'];
         }
-        return ['status' => 'OFFLINE', 'latency' => 0, 'url' => $baseUrl, 'http_code' => $httpCode];
+
+        $errDetail = $curlErr !== '' ? $curlErr : ('HTTP ' . $httpCode);
+        return ['status' => 'OFFLINE (' . $errDetail . ')', 'latency' => 0, 'url' => $baseUrl, 'http_code' => $httpCode, 'error' => $errDetail];
     }
 
     /** POST /admin/settings/waha — Simpan konfigurasi WAHA Server */

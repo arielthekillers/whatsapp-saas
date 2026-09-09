@@ -211,6 +211,8 @@ class WahaService
             CURLOPT_CONNECTTIMEOUT => 5,
             CURLOPT_TCP_KEEPALIVE  => 1,
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
         ]);
 
         if ($rawBody !== null) {
