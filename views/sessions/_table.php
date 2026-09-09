@@ -1,17 +1,17 @@
-<div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
+<div class="overflow-x-auto">
   <table class="w-full text-sm">
-    <thead class="bg-gray-50 text-left text-gray-500">
+    <thead class="bg-gray-50/80 text-left">
       <tr>
-        <th class="px-4 py-3">Nama</th>
-        <th class="px-4 py-3">Nomor</th>
-        <th class="px-4 py-3">Status</th>
-        <th class="px-4 py-3">Dibuat</th>
-        <th class="px-4 py-3"></th>
+        <th class="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">Nama</th>
+        <th class="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">Nomor</th>
+        <th class="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">Status</th>
+        <th class="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">Dibuat</th>
+        <th class="px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500"></th>
       </tr>
     </thead>
-    <tbody class="divide-y">
+    <tbody class="divide-y divide-gray-100">
       <?php if (empty($sessions)): ?>
-        <tr><td colspan="5" class="px-4 py-6 text-center text-gray-400">Belum ada session. <a href="<?= url('/sessions/create') ?>" class="text-purple-600 hover:underline">Buat sekarang</a>.</td></tr>
+        <tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">Belum ada session. <a href="<?= url('/sessions/create') ?>" class="text-purple-600 font-medium hover:underline">Buat sekarang</a>.</td></tr>
       <?php endif; ?>
       <?php foreach ($sessions as $s): ?>
         <?php
@@ -27,10 +27,10 @@
               default => 'bg-red-500',
           };
         ?>
-        <tr>
-          <td class="px-4 py-3 font-medium"><?= htmlspecialchars($s['name']) ?></td>
-          <td class="px-4 py-3 text-gray-500"><?= htmlspecialchars($s['phone_number'] ?? '-') ?></td>
-          <td class="px-4 py-3">
+        <tr class="hover:bg-gray-50/50 transition-colors">
+          <td class="px-6 py-4 font-medium text-gray-900"><?= htmlspecialchars($s['name']) ?></td>
+          <td class="px-6 py-4 text-gray-500"><?= htmlspecialchars($s['phone_number'] ?? '-') ?></td>
+          <td class="px-6 py-4">
             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border <?= $badgeClass ?>">
               <span class="relative flex h-2 w-2 mr-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full <?= $pingColor ?> opacity-75"></span>
@@ -39,8 +39,8 @@
               <?= htmlspecialchars($s['status']) ?>
             </span>
           </td>
-          <td class="px-4 py-3 text-gray-500"><?= htmlspecialchars($s['created_at']) ?></td>
-          <td class="px-4 py-3 text-right"><a href="<?= url('/sessions/' . (int) $s['id']) ?>" class="text-purple-600 hover:underline">Kelola</a></td>
+          <td class="px-6 py-4 text-gray-500 text-xs"><?= htmlspecialchars($s['created_at']) ?></td>
+          <td class="px-6 py-4 text-right"><a href="<?= url('/sessions/' . (int) $s['id']) ?>" class="text-purple-600 font-medium hover:underline">Kelola</a></td>
         </tr>
       <?php endforeach; ?>
     </tbody>

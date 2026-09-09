@@ -4,6 +4,8 @@
     <h1 class="text-xl font-semibold">WhatsApp Sessions</h1>
     <a href="<?= url('/sessions/create') ?>" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm px-4 py-2 rounded-lg shadow-md shadow-purple-500/10 transition-all">+ Session Baru</a>
   </div>
-  <?php require __DIR__ . '/_table.php'; ?>
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <?php require __DIR__ . '/_table.php'; ?>
+  </div>
 </div>
 <?php require __DIR__ . '/../layouts/footer.php'; ?>
