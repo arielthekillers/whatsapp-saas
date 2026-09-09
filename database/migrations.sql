@@ -364,6 +364,15 @@ CREATE TABLE IF NOT EXISTS announcements (
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+-- ---------------------------------------------------------------------
+-- SETTINGS (pengaturan dinamik sistem & WAHA)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS settings (
+    `key`        VARCHAR(100) PRIMARY KEY,
+    `value`      TEXT NULL,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =====================================================================

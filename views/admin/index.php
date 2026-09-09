@@ -124,6 +124,11 @@
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
         Audit Log
       </button>
+
+      <button type="button" id="btn-tab-waha" onclick="switchAdminTab('waha', this)" class="admin-tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2.5 border-b-2 font-medium inline-flex items-center gap-2 whitespace-nowrap focus:outline-none">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span>Pengaturan WAHA</span>
+      </button>
     </nav>
   </div>
 
@@ -148,17 +153,22 @@
               </div>
             </div>
 
-            <span style="<?= $isOnline ? 'background: #10B981; color: white;' : 'background: #6B7280; color: white;' ?>" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-xs">
-              <?php if ($isOnline): ?>
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                </span>
-              <?php else: ?>
-                <span class="w-2 h-2 rounded-full bg-gray-300"></span>
-              <?php endif; ?>
-              <?= $wahaStatus['status'] ?>
-            </span>
+            <div class="flex items-center gap-2">
+              <span style="<?= $isOnline ? 'background: #10B981; color: white;' : 'background: #6B7280; color: white;' ?>" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-xs">
+                <?php if ($isOnline): ?>
+                  <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                  </span>
+                <?php else: ?>
+                  <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+                <?php endif; ?>
+                <?= $wahaStatus['status'] ?>
+              </span>
+              <button type="button" onclick="document.getElementById('btn-tab-waha').click()" class="bg-white/80 hover:bg-white text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-lg border border-gray-200 shadow-xs transition-colors">
+                ⚙️ Setting
+              </button>
+            </div>
           </div>
 
           <div style="<?= $isOnline ? 'background: rgba(255,255,255,0.7); border: 1px solid #A7F3D0;' : 'background: rgba(255,255,255,0.7); border: 1px solid #E5E7EB;' ?>" class="rounded-xl p-3 text-xs space-y-1.5 backdrop-blur-xs">
@@ -480,6 +490,59 @@
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: PENGATURAN WAHA SERVER -->
+  <div id="tab-waha" class="admin-tab-content hidden space-y-6">
+    <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 max-w-3xl space-y-6">
+      
+      <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg">⚙️</div>
+          <div>
+            <h2 class="text-base font-bold text-gray-900">Konfigurasi WAHA REST API Gateway</h2>
+            <p class="text-xs text-gray-500">Atur Base URL, API Key, dan Timeout koneksi ke server WAHA WhatsApp.</p>
+          </div>
+        </div>
+
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold <?= ($wahaStatus['status'] === 'ONLINE') ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' ?>">
+          <?= $wahaStatus['status'] ?>
+        </span>
+      </div>
+
+      <form method="POST" action="<?= url('/admin/settings/waha') ?>" class="space-y-5">
+        <?= \App\Helpers\Csrf::field() ?>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">WAHA Base URL API</label>
+          <input type="url" name="waha_base_url" value="<?= htmlspecialchars($wahaSettings['baseUrl'] ?? '') ?>" required placeholder="http://36.95.108.50:3000 atau http://waha:3000" class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition-all shadow-xs">
+          <p class="text-[11px] text-gray-500 mt-1">URL endpoint server WAHA lengkap dengan port (misal: <code>http://36.95.108.50:3000</code>).</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">WAHA API Key (Secret Key)</label>
+            <input type="text" name="waha_api_key" value="<?= htmlspecialchars($wahaSettings['apiKey'] ?? '') ?>" placeholder="secret123" class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition-all shadow-xs">
+            <p class="text-[11px] text-gray-500 mt-1">Dikirim sebagai header <code>X-Api-Key</code> ke server WAHA.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">HTTP Connection Timeout (detik)</label>
+            <input type="number" name="waha_timeout" value="<?= (int) ($wahaSettings['timeout'] ?? 15) ?>" min="5" max="60" class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition-all shadow-xs">
+            <p class="text-[11px] text-gray-500 mt-1">Batas waktu koneksi request (Default: 15 detik).</p>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-gray-100 flex items-center justify-between">
+          <span class="text-xs text-gray-400">Pengaturan ini akan tersimpan permanen di Database.</span>
+          <button type="submit" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-xs hover:shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Simpan Pengaturan WAHA
+          </button>
+        </div>
+      </form>
+
     </div>
   </div>
 

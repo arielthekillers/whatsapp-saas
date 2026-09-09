@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Config\Env;
+use App\Repositories\SettingRepository;
 use RuntimeException;
 
 /**
@@ -23,17 +24,11 @@ use RuntimeException;
  *   - DELETE /api/sessions/{session}
  *   - GET    /api/{session}/auth/qr?format=image    (QR sebagai image/png)
  *   - POST   /api/sendText   {session, chatId, text}
- *   - POST   /api/sendImage  {session, chatId, file:{mimetype,url,filename}, caption}
- *   - POST   /api/sendFile   {session, chatId, file:{mimetype,url,filename}}
- *   - POST   /api/sendLocation {session, chatId, latitude, longitude, title}
- *   - POST   /api/sendContactVcard {session, chatId, contacts:[...]}
+ *   - POST   /api/sendMedia  {session, chatId, file, caption}
+ *   - POST   /api/sendSeen   {session, chatId}
  *
- * chatId WhatsApp personal berformat "<nomor_tanpa_plus>@c.us" (mis. "628123456789@c.us").
- *
- * Jika instalasi WAHA-mu berbeda versi/API (mis. masih memakai
- * endpoint legacy /api/session/start), SEMUA penyesuaian cukup
- * dilakukan di file ini. Sebelum production, cocokkan dengan Swagger
- * UI di {WAHA_BASE_URL}/ milikmu sendiri.
+ * Jangan ubah path endpoint ini tanpa mengecek perubahan spec di WAHA
+ * resmi atau Swagger UI di {WAHA_BASE_URL}/ milikmu sendiri.
  */
 class WahaService
 {
@@ -43,12 +38,12 @@ class WahaService
 
     public function __construct(?string $baseUrl = null, ?string $apiKey = null)
     {
-        $this->baseUrl = rtrim($baseUrl ?? (string) Env::get('WAHA_BASE_URL', ''), '/');
-        $this->apiKey  = $apiKey ?? (string) Env::get('WAHA_API_KEY', '');
-        $this->timeout = (int) Env::get('WAHA_TIMEOUT', 15);
+        $this->baseUrl = rtrim($baseUrl ?? (string) SettingRepository::get('WAHA_BASE_URL', Env::get('WAHA_BASE_URL', '')), '/');
+        $this->apiKey  = $apiKey ?? (string) SettingRepository::get('WAHA_API_KEY', Env::get('WAHA_API_KEY', ''));
+        $this->timeout = (int) SettingRepository::get('WAHA_TIMEOUT', (string) Env::get('WAHA_TIMEOUT', 15));
 
         if ($this->baseUrl === '') {
-            throw new RuntimeException('WAHA_BASE_URL belum dikonfigurasi di .env');
+            throw new RuntimeException('WAHA_BASE_URL belum dikonfigurasi.');
         }
     }
 

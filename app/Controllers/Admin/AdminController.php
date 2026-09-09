@@ -10,6 +10,7 @@ use App\Helpers\Csrf;
 use App\Helpers\Response;
 use App\Middleware\AdminMiddleware;
 use App\Repositories\PlanRepository;
+use App\Repositories\SettingRepository;
 use PDO;
 
 class AdminController
@@ -95,9 +96,17 @@ class AdminController
             $allPlans = [];
         }
 
-        // 5. WAHA Health Check
-        $wahaUrl = (string) Env::get('WAHA_BASE_URL', 'http://localhost:3000');
-        $wahaStatus = $this->checkWahaHealth($wahaUrl);
+        // 5. WAHA Settings & Health Check
+        $wahaUrl = (string) SettingRepository::get('WAHA_BASE_URL', (string) Env::get('WAHA_BASE_URL', 'http://36.95.108.50:3000'));
+        $wahaApiKey = (string) SettingRepository::get('WAHA_API_KEY', (string) Env::get('WAHA_API_KEY', 'secret123'));
+        $wahaTimeout = (int) SettingRepository::get('WAHA_TIMEOUT', (string) Env::get('WAHA_TIMEOUT', 15));
+
+        $wahaStatus = $this->checkWahaHealth($wahaUrl, $wahaApiKey);
+        $wahaSettings = [
+            'baseUrl' => $wahaUrl,
+            'apiKey'  => $wahaApiKey,
+            'timeout' => $wahaTimeout,
+        ];
 
         // 6. Job Queue Stats
         try {
@@ -140,13 +149,18 @@ class AdminController
     }
 
     /** Cek status koneksi WAHA */
-    private function checkWahaHealth(string $baseUrl): array
+    private function checkWahaHealth(string $baseUrl, string $apiKey = ''): array
     {
         $ch = curl_init(rtrim($baseUrl, '/') . '/api/version');
+        $headers = ['Accept: application/json'];
+        if ($apiKey !== '') {
+            $headers[] = 'X-Api-Key: ' . $apiKey;
+        }
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 3,
-            CURLOPT_CONNECTTIMEOUT => 2,
+            CURLOPT_TIMEOUT        => 4,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_HTTPHEADER     => $headers,
         ]);
         $startTime = microtime(true);
         $res = curl_exec($ch);
@@ -155,9 +169,45 @@ class AdminController
         curl_close($ch);
 
         if ($httpCode >= 200 && $httpCode < 400) {
-            return ['status' => 'ONLINE', 'latency' => $latency, 'url' => $baseUrl];
+            return ['status' => 'ONLINE', 'latency' => $latency, 'url' => $baseUrl, 'http_code' => $httpCode];
         }
-        return ['status' => 'OFFLINE', 'latency' => 0, 'url' => $baseUrl];
+        if ($httpCode === 401 || $httpCode === 403) {
+            return ['status' => 'UNAUTHORIZED (API Key Invalid)', 'latency' => $latency, 'url' => $baseUrl, 'http_code' => $httpCode];
+        }
+        return ['status' => 'OFFLINE', 'latency' => 0, 'url' => $baseUrl, 'http_code' => $httpCode];
+    }
+
+    /** POST /admin/settings/waha — Simpan konfigurasi WAHA Server */
+    public function saveWahaSettings(): void
+    {
+        $admin = AdminMiddleware::handle();
+
+        if (!Csrf::verify($_POST['_csrf'] ?? null)) {
+            Response::redirect('/admin');
+        }
+
+        $baseUrl = trim((string) ($_POST['waha_base_url'] ?? ''));
+        $apiKey  = trim((string) ($_POST['waha_api_key'] ?? ''));
+        $timeout = (int) ($_POST['waha_timeout'] ?? 15);
+
+        if ($baseUrl === '') {
+            $_SESSION['flash_admin_error'] = 'Base URL WAHA tidak boleh kosong.';
+            Response::redirect('/admin');
+            return;
+        }
+
+        SettingRepository::set('WAHA_BASE_URL', $baseUrl);
+        SettingRepository::set('WAHA_API_KEY', $apiKey);
+        SettingRepository::set('WAHA_TIMEOUT', (string) max(5, min(60, $timeout)));
+
+        Audit::log($admin['id'], 'UPDATE_WAHA_SETTINGS', 'setting', 'WAHA', [
+            'baseUrl' => $baseUrl,
+            'hasApiKey' => !empty($apiKey),
+            'timeout' => $timeout,
+        ]);
+
+        $_SESSION['flash_admin_success'] = 'Pengaturan WAHA Server berhasil diperbarui!';
+        Response::redirect('/admin');
     }
 
     /** POST /admin/payment/approve */

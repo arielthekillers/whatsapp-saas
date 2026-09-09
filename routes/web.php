@@ -66,6 +66,7 @@ $router->post('/admin/user/status', [AdminController::class, 'updateUserStatus']
 $router->post('/admin/jobs/retry-failed', [AdminController::class, 'retryFailedJobs']);
 $router->post('/admin/announcement', [AdminController::class, 'saveAnnouncement']);
 $router->post('/admin/announcement/delete', [AdminController::class, 'deleteAnnouncement']);
+$router->post('/admin/settings/waha', [AdminController::class, 'saveWahaSettings']);
 $router->get('/admin/export-payments', [AdminController::class, 'exportPaymentsCsv']);
 
 
