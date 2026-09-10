@@ -27,12 +27,12 @@ if ($hasActiveSub && !empty($activeSub['end_at'])) {
 }
 ?>
 
-<div class="max-w-6xl mx-auto px-4 py-8">
+<div>
   <!-- Header Section -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div>
-      <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-        Halo, <?= htmlspecialchars($user['name']) ?> 👋
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight font-display">
+        Halo, <?= htmlspecialchars($user['name']) ?>
       </h1>
       <p class="text-sm text-gray-500 mt-1">
         Kelola sesi WhatsApp, pantau kuota pengiriman pesan, dan integrasikan API Anda.
@@ -57,36 +57,67 @@ if ($hasActiveSub && !empty($activeSub['end_at'])) {
   <!-- Subscription & Metric Cards -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     
+    <?php
+      // Peta Skema Warna Paket (Menyesuaikan dengan Billing):
+      $planNameUpper = strtoupper(trim((string)$planName));
+      $dashboardPlanTheme = match($planNameUpper) {
+        'LITE' => [
+          'badge'       => 'bg-emerald-100/80 text-emerald-800 border border-emerald-300 font-black',
+          'dot'         => 'bg-emerald-500',
+          'activeText'  => 'text-emerald-700',
+          'link'        => 'text-emerald-600 hover:text-emerald-700',
+        ],
+        'BUSINESS' => [
+          'badge'       => 'bg-amber-100/80 text-amber-900 border border-amber-300 font-black',
+          'dot'         => 'bg-amber-500',
+          'activeText'  => 'text-amber-700',
+          'link'        => 'text-amber-600 hover:text-amber-700',
+        ],
+        'ENTERPRISE' => [
+          'badge'       => 'bg-amber-100/80 text-amber-900 border border-amber-300 font-black',
+          'dot'         => 'bg-amber-500',
+          'activeText'  => 'text-amber-700',
+          'link'        => 'text-amber-600 hover:text-amber-700',
+        ],
+        default => [ // PRO / Default
+          'badge'       => 'bg-purple-100/80 text-purple-900 border border-purple-300 font-black',
+          'dot'         => 'bg-purple-500',
+          'activeText'  => 'text-purple-700',
+          'link'        => 'text-purple-600 hover:text-purple-700',
+        ],
+      };
+    ?>
+
     <!-- Card 1: Subscription Info -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between relative">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between relative hover:border-gray-200 transition-all">
       <div class="relative z-10 flex flex-col justify-between h-full">
         <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Paket Langganan</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Paket Langganan</span>
           <?php if ($hasActiveSub): ?>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-2xs <?= $dashboardPlanTheme['badge'] ?>">
+              <span class="w-1.5 h-1.5 rounded-full <?= $dashboardPlanTheme['dot'] ?> mr-1.5 animate-pulse"></span>
               AKTIF
             </span>
           <?php else: ?>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 uppercase tracking-wider">
               Belum Aktif
             </span>
           <?php endif; ?>
         </div>
 
         <div class="flex items-baseline gap-2 mb-2">
-          <h2 class="text-2xl font-black text-gray-900 font-display">
+          <h2 class="text-2xl font-black text-gray-900 font-display tracking-tight">
             <?= $planName ?>
           </h2>
           <?php if ($hasActiveSub): ?>
-            <span class="text-xs text-gray-500 font-medium">(<?= number_format($rateLimit) ?> req/min)</span>
+            <span class="text-xs text-gray-400 font-normal font-sans">(<?= number_format($rateLimit) ?> req/min)</span>
           <?php endif; ?>
         </div>
 
         <?php if ($hasActiveSub): ?>
           <p class="text-xs text-gray-500">
-            Berlaku hingga <span class="font-semibold text-gray-700"><?= $expiryFormatted ?></span> 
-            <span class="text-purple-600 font-medium">(<?= $daysRemaining ?> hari lagi)</span>
+            Berlaku hingga <strong class="font-bold text-gray-800"><?= $expiryFormatted ?></strong> 
+            <span class="<?= $dashboardPlanTheme['activeText'] ?> font-bold ml-1">(<?= $daysRemaining ?> hari lagi)</span>
           </p>
         <?php else: ?>
           <p class="text-xs text-gray-500">
@@ -98,11 +129,11 @@ if ($hasActiveSub && !empty($activeSub['end_at'])) {
       <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-xs">
         <?php if ($hasActiveSub): ?>
           <span class="text-gray-500">Upgrade atau ubah paket</span>
-          <a href="<?= url('/billing') ?>" class="text-purple-600 hover:text-purple-700 font-semibold inline-flex items-center gap-1">
+          <a href="<?= url('/billing') ?>" class="<?= $dashboardPlanTheme['link'] ?> font-extrabold inline-flex items-center gap-1">
             Kelola <span stroke-width="2">&rarr;</span>
           </a>
         <?php else: ?>
-          <a href="<?= url('/billing') ?>" class="w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-lg transition-all">
+          <a href="<?= url('/billing') ?>" class="w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-xl transition-all shadow-sm">
             Pilih Paket Langganan
           </a>
         <?php endif; ?>
@@ -162,26 +193,30 @@ if ($hasActiveSub && !empty($activeSub['end_at'])) {
   </div>
 
   <!-- Developer & Quick Resource Links -->
-  <div class="bg-gradient-to-r from-purple-700 to-blue-600 rounded-2xl shadow-lg p-6 mb-8 text-white relative overflow-hidden">
+  <div class="bg-gradient-to-r from-purple-700 to-indigo-700 rounded-2xl shadow-lg p-6 mb-8 text-white relative overflow-hidden">
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
       <div>
         <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 mb-2">
-          ⚡ Quick Integration
+          <svg class="w-3.5 h-3.5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path></svg>
+          Integrasi Cepat
         </div>
-        <h3 class="text-lg font-bold">Siap Mengirim Pesan Pertama via API?</h3>
+        <h3 class="text-lg font-bold font-display">Siap Mengirim Pesan Pertama via API?</h3>
         <p class="text-sm text-purple-100 mt-1 max-w-xl">
           Gunakan API Key dan Endpoint Webhook Anda untuk mengintegrasikan WhatsApp dengan aplikasi web, sistem CRM, atau bot.
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <a href="<?= url('/api-keys') ?>" class="bg-purple-800/40 hover:bg-purple-800/70 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition-all">
-          🔑 API Keys
+        <a href="<?= url('/api-keys') ?>" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition-all backdrop-blur-xs">
+          <svg class="w-4 h-4 text-purple-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
+          API Keys
         </a>
-        <a href="<?= url('/webhooks') ?>" class="bg-purple-800/40 hover:bg-purple-800/70 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition-all">
-          🔔 Webhooks
+        <a href="<?= url('/webhooks') ?>" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition-all backdrop-blur-xs">
+          <svg class="w-4 h-4 text-purple-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+          Webhooks
         </a>
-        <a href="<?= url('/docs') ?>" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-md border border-purple-400/40 transition-all">
-          📖 Dokumentasi API
+        <a href="<?= url('/docs') ?>" class="inline-flex items-center gap-2 bg-white text-purple-700 hover:bg-purple-50 text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition-all">
+          <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          Dokumentasi API
         </a>
       </div>
     </div>
