@@ -218,8 +218,25 @@ class SessionController
 
         if ($session) {
             try {
-                (new WahaService())->logoutSession($session['waha_session_name']);
+                $waha = new WahaService();
+                $wahaSessionName = $session['waha_session_name'];
+                
+                // 1. Logout dari akun WA
+                try {
+                    $waha->logoutSession($wahaSessionName);
+                } catch (Throwable $le) {
+                    // Ignore jika sudah ter-logout
+                }
+                
+                // 2. Stop engine WAHA agar status di WAHA dashboard berubah menjadi STOPPED
+                try {
+                    $waha->stopSession($wahaSessionName);
+                } catch (Throwable $se) {
+                    // Ignore jika sudah ter-stop
+                }
+
                 $this->sessions->updateStatus($id, 'LOGGED_OUT');
+                $this->sessions->updatePhoneNumber($id, '');
             } catch (Throwable $e) {
                 error_log('[waha] Gagal logout session #' . $id . ': ' . $e->getMessage());
             }
