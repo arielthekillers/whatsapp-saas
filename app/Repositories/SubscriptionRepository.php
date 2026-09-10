@@ -91,7 +91,7 @@ class SubscriptionRepository
         $this->promoteQueuedSubscriptions($userId);
 
         $stmt = $this->db->prepare(
-            'SELECT s.id AS subscription_id, s.end_at, s.status,
+            'SELECT s.id AS subscription_id, s.end_at, s.start_at, s.status,
                     p.id AS plan_id, p.name AS plan_name, p.price AS plan_price, p.session_limit, p.rate_limit_per_minute,
                     u.messages_used, u.messages_limit
              FROM subscriptions s

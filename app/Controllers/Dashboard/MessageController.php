@@ -86,9 +86,10 @@ class MessageController
             $user = AuthMiddleware::handle();
             $userId = (int) $user['id'];
 
-            $sessionId = (int) ($_POST['session_id'] ?? 0);
-            $recipient = trim((string) ($_POST['recipient'] ?? ''));
-            $type      = trim(strtolower((string) ($_POST['message_type'] ?? $_POST['type'] ?? 'text')));
+            $sessionId    = (int) ($_POST['session_id'] ?? 0);
+            $rawRecipient = trim((string) ($_POST['recipient'] ?? ''));
+            $recipient    = WahaService::formatPhoneNumber($rawRecipient);
+            $type         = trim(strtolower((string) ($_POST['message_type'] ?? $_POST['type'] ?? 'text')));
             $text      = trim((string) ($_POST['message_text'] ?? $_POST['text'] ?? ''));
             $mediaUrl  = trim((string) ($_POST['media_url'] ?? $_POST['url'] ?? ''));
             $filename  = trim((string) ($_POST['filename'] ?? ''));
@@ -112,7 +113,7 @@ class MessageController
             }
 
             // Cek Sesi WA
-            $session = $this->sessions->findByIdForUser($userId, $sessionId);
+            $session = $this->sessions->findForUser($userId, $sessionId);
             if (!$session) {
                 $_SESSION['flash_error'] = 'Sesi WhatsApp tidak ditemukan.';
                 Response::redirect('/messages');

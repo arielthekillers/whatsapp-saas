@@ -24,23 +24,22 @@ class UsageController
         $daysUsed = 0;
         $daysPct = 0;
         if ($subscription) {
-            $endAt = new \DateTime($subscription['end_at']);
-            $startAt = null;
-
-            // Ambil start_at dari tabel subscriptions
-            $stmtSub = $db->prepare('SELECT start_at FROM subscriptions WHERE id = ? LIMIT 1');
-            $stmtSub->execute([$subscription['subscription_id']]);
-            $subRow = $stmtSub->fetch(PDO::FETCH_ASSOC);
-            if ($subRow) {
-                $startAt = new \DateTime($subRow['start_at']);
-            }
+            $endAt = !empty($subscription['end_at']) ? new \DateTime($subscription['end_at']) : null;
+            $startAtStr = $subscription['start_at'] ?? null;
+            $startAt = $startAtStr ? new \DateTime($startAtStr) : null;
 
             $now = new \DateTime();
-            $daysRemaining = max(0, (int) $now->diff($endAt)->days);
-            if ($startAt) {
+            if ($endAt && $now < $endAt) {
+                $daysRemaining = (int) $now->diff($endAt)->days + 1; // Sertakan hari berjalan
+            } else {
+                $daysRemaining = 0;
+            }
+
+            if ($startAt && $endAt && $endAt > $startAt) {
                 $daysTotal = max(1, (int) $startAt->diff($endAt)->days);
-                $daysUsed = max(0, (int) $startAt->diff($now)->days);
-                $daysPct = min(100, (int) round($daysUsed / $daysTotal * 100));
+                $daysPct = min(100, max(5, (int) round(($daysRemaining / $daysTotal) * 100)));
+            } else {
+                $daysPct = 100; // Fallback jika start_at tidak tersedia, tampilkan full 100%
             }
         }
 

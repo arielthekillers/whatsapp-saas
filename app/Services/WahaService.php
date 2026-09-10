@@ -47,14 +47,33 @@ class WahaService
         }
     }
 
-    /** Format nomor telepon (628xxxx / 08xxxx) menjadi chatId WAHA (628xxxx@c.us). */
-    public static function toChatId(string $phoneNumber): string
+    /** Membersihkan & memformat nomor telepon menjadi bentuk internasional murni (mis. 628123456789). */
+    public static function formatPhoneNumber(string $phoneNumber): string
     {
         $digits = preg_replace('/\D/', '', $phoneNumber);
+        if ($digits === '') {
+            return '';
+        }
         if (str_starts_with($digits, '0')) {
             $digits = '62' . substr($digits, 1);
+        } elseif (str_starts_with($digits, '8')) {
+            $digits = '62' . $digits;
         }
-        return $digits . '@c.us';
+        return $digits;
+    }
+
+    /** Format nomor telepon menjadi chatId WAHA (628xxxx@c.us). */
+    public static function toChatId(string $phoneNumber): string
+    {
+        $formatted = self::formatPhoneNumber($phoneNumber);
+        return $formatted !== '' ? $formatted . '@c.us' : '';
+    }
+
+    /** Mengecek apakah nomor telepon terdaftar/aktif di WhatsApp (WAHA Contacts Check Exists). */
+    public function checkNumberExists(string $sessionName, string $phoneNumber): array
+    {
+        $phone = self::formatPhoneNumber($phoneNumber);
+        return $this->request('GET', '/api/contacts/check-exists?phone=' . rawurlencode($phone) . '&session=' . rawurlencode($sessionName));
     }
 
     // ---------------------------------------------------------------

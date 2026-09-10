@@ -20,41 +20,45 @@
       $pct    = min(100, (int) round($used / $limit * 100));
       $remaining = $limit - $used;
 
-      // Warna progress bar kuota pesan berdasarkan persentase
-      $barColor = $pct >= 90
-        ? 'from-red-500 to-red-600'
-        : ($pct >= 70 ? 'from-amber-400 to-orange-500' : 'from-purple-600 to-indigo-600');
+      // Warna progress bar kuota pesan berdasarkan persentase (Menggunakan Explicit Inline CSS Gradient)
+      $barStyle = $pct >= 90
+        ? 'background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%);'
+        : ($pct >= 70 ? 'background: linear-gradient(90deg, #FBBF24 0%, #F97316 100%);' : 'background: linear-gradient(90deg, #7C3AED 0%, #4F46E5 100%);');
 
-      // Peta Skema Warna Paket (Menyesuaikan dengan halaman Billing):
-      // LITE = Emerald / Green
-      // PRO = Purple / Indigo
-      // BUSINESS = Amber / Orange
-      // ENTERPRISE = Amber / Rose
+      // Peta Skema Warna Paket (Menyesuaikan persis dengan Billing):
       $planNameUpper = strtoupper(trim((string)$subscription['plan_name']));
       $planTheme = match($planNameUpper) {
         'LITE' => [
-          'badge'       => 'bg-emerald-100/80 text-emerald-800 border border-emerald-300 font-black',
-          'progressBar' => 'from-emerald-500 to-teal-500',
-          'activeText'  => 'text-emerald-700',
-          'headerIconBg'=> 'bg-emerald-50 text-emerald-600',
+          'cardBorder'   => 'border: 1px solid #10B981;',
+          'headerBg'     => 'background: linear-gradient(135deg, #059669 0%, #10B981 100%);',
+          'badgeBg'      => 'background: #047857; color: white;',
+          'progressBg'   => 'background: linear-gradient(90deg, #10B981 0%, #14B8A6 100%);',
+          'activeText'   => 'text-emerald-700',
+          'headerIconBg' => 'bg-emerald-50 text-emerald-600',
         ],
         'BUSINESS' => [
-          'badge'       => 'bg-amber-100/80 text-amber-900 border border-amber-300 font-black',
-          'progressBar' => 'from-amber-500 to-orange-500',
-          'activeText'  => 'text-amber-700',
-          'headerIconBg'=> 'bg-amber-50 text-amber-600',
+          'cardBorder'   => 'border: 1px solid #F59E0B;',
+          'headerBg'     => 'background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);',
+          'badgeBg'      => 'background: #B45309; color: white;',
+          'progressBg'   => 'background: linear-gradient(90deg, #F59E0B 0%, #F97316 100%);',
+          'activeText'   => 'text-amber-700',
+          'headerIconBg' => 'bg-amber-50 text-amber-600',
         ],
         'ENTERPRISE' => [
-          'badge'       => 'bg-amber-100/80 text-amber-900 border border-amber-300 font-black',
-          'progressBar' => 'from-amber-500 to-rose-500',
-          'activeText'  => 'text-amber-700',
-          'headerIconBg'=> 'bg-amber-50 text-amber-600',
+          'cardBorder'   => 'border: 1px solid #F59E0B;',
+          'headerBg'     => 'background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);',
+          'badgeBg'      => 'background: #B45309; color: white;',
+          'progressBg'   => 'background: linear-gradient(90deg, #F59E0B 0%, #F43F5E 100%);',
+          'activeText'   => 'text-amber-700',
+          'headerIconBg' => 'bg-amber-50 text-amber-600',
         ],
         default => [ // PRO / Default
-          'badge'       => 'bg-purple-100/80 text-purple-900 border border-purple-300 font-black',
-          'progressBar' => 'from-purple-600 to-indigo-600',
-          'activeText'  => 'text-purple-700',
-          'headerIconBg'=> 'bg-purple-50 text-purple-600',
+          'cardBorder'   => 'border: 2px solid #7C3AED;',
+          'headerBg'     => 'background: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%);',
+          'badgeBg'      => 'background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.3);',
+          'progressBg'   => 'background: linear-gradient(90deg, #7C3AED 0%, #6366F1 100%);',
+          'activeText'   => 'text-purple-700',
+          'headerIconBg' => 'bg-purple-50 text-purple-600',
         ],
       };
     ?>
@@ -118,7 +122,7 @@
 
           <!-- Progress Bar Kuota -->
           <div class="w-full bg-gray-100 rounded-full h-3 mb-4 overflow-hidden p-0.5 border border-gray-100">
-            <div class="h-2 rounded-full bg-gradient-to-r <?= $barColor ?> transition-all duration-700 shadow-xs" style="width: <?= $pct ?>%"></div>
+            <div class="h-2 rounded-full transition-all duration-700 shadow-xs" style="<?= $barStyle ?> width: <?= $pct ?>%"></div>
           </div>
 
           <div class="flex justify-between text-xs mb-2">
@@ -135,25 +139,33 @@
         <?php endif; ?>
       </div>
 
-      <!-- Status Langganan dengan Warna Menyesuaikan Paket Billing -->
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between hover:border-gray-200 transition-all">
+      <!-- Status Langganan dengan Header Gradien Menyesuaikan Billing -->
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 flex flex-col justify-between" style="<?= $planTheme['cardBorder'] ?>">
         <div>
-          <div class="flex items-center justify-between mb-5">
-            <h2 class="font-extrabold text-gray-900 font-display text-base tracking-tight">Status Langganan</h2>
-            <span class="text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-2xs <?= $planTheme['badge'] ?>">
-              <?= htmlspecialchars($subscription['plan_name']) ?>
-            </span>
+          <!-- Header Banner Berwarna Gradien Paket -->
+          <div class="p-5 text-white" style="<?= $planTheme['headerBg'] ?>">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/80">STATUS LANGGANAN</span>
+              <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs" style="<?= $planTheme['badgeBg'] ?>">
+                <?= htmlspecialchars($subscription['plan_name']) ?>
+              </span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <h2 class="text-2xl font-black font-display tracking-tight text-white">
+                <?= htmlspecialchars($subscription['plan_name']) ?>
+              </h2>
+            </div>
           </div>
 
-          <div class="space-y-4">
+          <div class="p-5 space-y-4">
             <!-- Hari Tersisa -->
             <div>
               <div class="flex justify-between text-xs font-semibold mb-2">
                 <span class="text-gray-400">Masa Aktif</span>
                 <span class="font-extrabold <?= $planTheme['activeText'] ?>"><?= $daysRemaining ?> hari tersisa</span>
               </div>
-              <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden p-0.5 border border-gray-100">
-                <div class="h-1.5 rounded-full bg-gradient-to-r <?= $planTheme['progressBar'] ?> transition-all duration-500 shadow-xs" style="width: <?= max(5, 100 - $daysPct) ?>%"></div>
+              <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden p-0.5 border border-gray-200">
+                <div class="h-2 rounded-full transition-all duration-500 shadow-xs" style="<?= $planTheme['progressBg'] ?> width: <?= max(2, $daysPct) ?>%;"></div>
               </div>
             </div>
 
@@ -170,7 +182,7 @@
           </div>
         </div>
 
-        <div class="text-xs text-gray-400 pt-4 border-t border-gray-100 flex items-center gap-1.5 mt-4">
+        <div class="p-5 pt-3 text-xs text-gray-400 border-t border-gray-100 flex items-center gap-1.5 bg-white">
           <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
           Berlaku hingga <strong class="text-gray-700 font-semibold ml-0.5"><?= date('d M Y', strtotime($subscription['end_at'])) ?></strong>
         </div>

@@ -58,75 +58,89 @@ if ($hasActiveSub && !empty($activeSub['end_at'])) {
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     
     <?php
-      // Peta Skema Warna Paket (Menyesuaikan dengan Billing):
+      // Peta Skema Warna Paket (Menyesuaikan persis dengan Billing):
       $planNameUpper = strtoupper(trim((string)$planName));
       $dashboardPlanTheme = match($planNameUpper) {
         'LITE' => [
-          'badge'       => 'bg-emerald-100/80 text-emerald-800 border border-emerald-300 font-black',
-          'dot'         => 'bg-emerald-500',
-          'activeText'  => 'text-emerald-700',
-          'link'        => 'text-emerald-600 hover:text-emerald-700',
+          'cardBorder'   => 'border: 1px solid #10B981;',
+          'headerBg'     => 'background: linear-gradient(135deg, #059669 0%, #10B981 100%);',
+          'badgeBg'      => 'background: #047857; color: white;',
+          'planTitle'    => 'text-white',
+          'activeText'   => 'text-emerald-700',
+          'link'         => 'text-emerald-600 hover:text-emerald-700',
         ],
         'BUSINESS' => [
-          'badge'       => 'bg-amber-100/80 text-amber-900 border border-amber-300 font-black',
-          'dot'         => 'bg-amber-500',
-          'activeText'  => 'text-amber-700',
-          'link'        => 'text-amber-600 hover:text-amber-700',
+          'cardBorder'   => 'border: 1px solid #F59E0B;',
+          'headerBg'     => 'background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);',
+          'badgeBg'      => 'background: #B45309; color: white;',
+          'planTitle'    => 'text-white',
+          'activeText'   => 'text-amber-700',
+          'link'         => 'text-amber-600 hover:text-amber-700',
         ],
         'ENTERPRISE' => [
-          'badge'       => 'bg-amber-100/80 text-amber-900 border border-amber-300 font-black',
-          'dot'         => 'bg-amber-500',
-          'activeText'  => 'text-amber-700',
-          'link'        => 'text-amber-600 hover:text-amber-700',
+          'cardBorder'   => 'border: 1px solid #F59E0B;',
+          'headerBg'     => 'background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);',
+          'badgeBg'      => 'background: #B45309; color: white;',
+          'planTitle'    => 'text-white',
+          'activeText'   => 'text-amber-700',
+          'link'         => 'text-amber-600 hover:text-amber-700',
         ],
         default => [ // PRO / Default
-          'badge'       => 'bg-purple-100/80 text-purple-900 border border-purple-300 font-black',
-          'dot'         => 'bg-purple-500',
-          'activeText'  => 'text-purple-700',
-          'link'        => 'text-purple-600 hover:text-purple-700',
+          'cardBorder'   => 'border: 2px solid #7C3AED;',
+          'headerBg'     => 'background: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%);',
+          'badgeBg'      => 'background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.3);',
+          'planTitle'    => 'text-white',
+          'activeText'   => 'text-purple-700',
+          'link'         => 'text-purple-600 hover:text-purple-700',
         ],
       };
     ?>
 
     <!-- Card 1: Subscription Info -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between relative hover:border-gray-200 transition-all">
-      <div class="relative z-10 flex flex-col justify-between h-full">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Paket Langganan</span>
-          <?php if ($hasActiveSub): ?>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-2xs <?= $dashboardPlanTheme['badge'] ?>">
-              <span class="w-1.5 h-1.5 rounded-full <?= $dashboardPlanTheme['dot'] ?> mr-1.5 animate-pulse"></span>
-              AKTIF
-            </span>
-          <?php else: ?>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 uppercase tracking-wider">
-              Belum Aktif
-            </span>
-          <?php endif; ?>
-        </div>
-
-        <div class="flex items-baseline gap-2 mb-2">
-          <h2 class="text-2xl font-black text-gray-900 font-display tracking-tight">
-            <?= $planName ?>
-          </h2>
-          <?php if ($hasActiveSub): ?>
-            <span class="text-xs text-gray-400 font-normal font-sans">(<?= number_format($rateLimit) ?> req/min)</span>
-          <?php endif; ?>
-        </div>
-
+    <div class="bg-white rounded-2xl flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100" style="<?= $hasActiveSub ? $dashboardPlanTheme['cardBorder'] : '' ?>">
+      <div>
         <?php if ($hasActiveSub): ?>
-          <p class="text-xs text-gray-500">
-            Berlaku hingga <strong class="font-bold text-gray-800"><?= $expiryFormatted ?></strong> 
-            <span class="<?= $dashboardPlanTheme['activeText'] ?> font-bold ml-1">(<?= $daysRemaining ?> hari lagi)</span>
-          </p>
+          <!-- Header Banner Berwarna Gradien Sesuai Paket -->
+          <div class="p-5 text-white" style="<?= $dashboardPlanTheme['headerBg'] ?>">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-white/80">PAKET LANGGANAN</span>
+              <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs" style="<?= $dashboardPlanTheme['badgeBg'] ?>">
+                AKTIF
+              </span>
+            </div>
+
+            <div class="flex items-baseline gap-2">
+              <h2 class="text-2xl font-black font-display tracking-tight text-white">
+                <?= $planName ?>
+              </h2>
+              <span class="text-xs text-white/80 font-normal font-sans">(<?= number_format($rateLimit) ?> req/min)</span>
+            </div>
+            
+            <p class="text-xs text-white/90 mt-1">
+              Berlaku hingga <strong class="font-bold text-white"><?= $expiryFormatted ?></strong> 
+              <span class="font-bold text-white/90 ml-1">(<?= $daysRemaining ?> hari lagi)</span>
+            </p>
+          </div>
         <?php else: ?>
-          <p class="text-xs text-gray-500">
-            Anda tidak memiliki paket aktif saat ini.
-          </p>
+          <!-- Standard Header Jika Belum Memiliki Paket Aktif -->
+          <div class="p-5 border-b border-gray-100">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Paket Langganan</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 uppercase tracking-wider">
+                Belum Aktif
+              </span>
+            </div>
+            <h2 class="text-2xl font-black text-gray-900 font-display tracking-tight">
+              <?= $planName ?>
+            </h2>
+            <p class="text-xs text-gray-500 mt-1">
+              Anda tidak memiliki paket aktif saat ini.
+            </p>
+          </div>
         <?php endif; ?>
       </div>
 
-      <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-xs">
+      <div class="p-5 pt-4 flex items-center justify-between text-xs bg-white">
         <?php if ($hasActiveSub): ?>
           <span class="text-gray-500">Upgrade atau ubah paket</span>
           <a href="<?= url('/billing') ?>" class="<?= $dashboardPlanTheme['link'] ?> font-extrabold inline-flex items-center gap-1">

@@ -240,7 +240,7 @@ class AdminController
         $this->db->beginTransaction();
         try {
             $stmt = $this->db->prepare('
-                SELECT p.*, pl.id AS plan_id, pl.message_limit, pl.duration_days, pl.name AS plan_name
+                SELECT p.*, pl.id AS plan_id, pl.message_limit, pl.duration_days, pl.name AS plan_name, pl.price AS plan_price
                 FROM payments p
                 JOIN plans pl ON pl.id = p.plan_id
                 WHERE p.id = :id AND p.status IN ("pending","verifying")
@@ -261,7 +261,11 @@ class AdminController
             $subRepo = new \App\Repositories\SubscriptionRepository();
             $currentActive = $subRepo->findActiveForUser($payment['user_id']);
 
-            $isUpgrade = ($currentActive === null) || ((float)$payment['price'] > (float)($currentActive['plan_price'] ?? 0));
+            $newPlanPrice = (float) ($payment['plan_price'] ?? $payment['amount'] ?? 0);
+            $activePlanPrice = (float) ($currentActive['plan_price'] ?? 0);
+            $isCurrentFree = empty($currentActive) || strtolower((string)($currentActive['plan_name'] ?? 'free')) === 'free';
+
+            $isUpgrade = $isCurrentFree || ($newPlanPrice >= $activePlanPrice);
 
             if ($isUpgrade) {
                 // INSTANT UPGRADE: Cancel old sub, activate new sub immediately

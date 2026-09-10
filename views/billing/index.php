@@ -6,8 +6,9 @@
     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
   }
   .active-duration-btn .badge-discount {
-    background-color: rgba(255, 255, 255, 0.2) !important;
+    background-color: #EF4444 !important;
     color: white !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   .duration-btn:not(.active-duration-btn) {
     color: #4B5563;
@@ -25,23 +26,30 @@
     <p class="text-sm text-gray-500 mt-1">Upgrade paket Anda untuk meningkatkan kuota pengiriman pesan dan batas sesi WhatsApp.</p>
   </div>
   
-  <!-- Sleek Segmented Switcher Control -->
-  <div class="flex justify-center mb-10">
-    <div class="inline-flex bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm gap-1.5">
-      <button type="button" onclick="selectDuration(1, 0.00, this)" class="duration-btn active-duration-btn text-xs font-bold px-4 py-2.5 rounded-xl transition-all focus:outline-none flex items-center gap-2">
-        1 Bulan
+  <!-- Sleek Segmented Switcher Control (Equal Width & Overlapping Top Badge) -->
+  <div class="flex justify-center mb-10 w-full max-w-xl mx-auto px-2 pt-2">
+    <div class="grid grid-cols-4 bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm w-full gap-1">
+      <!-- 1 Bulan -->
+      <button type="button" onclick="selectDuration(1, 0.00, this)" class="duration-btn active-duration-btn text-xs font-bold py-2.5 rounded-xl transition-all focus:outline-none flex items-center justify-center relative">
+        <span>1 Bulan</span>
       </button>
-      <button type="button" onclick="selectDuration(3, 0.05, this)" class="duration-btn text-xs font-bold px-4 py-2.5 rounded-xl transition-all focus:outline-none flex items-center gap-2">
+
+      <!-- 3 Bulan -->
+      <button type="button" onclick="selectDuration(3, 0.05, this)" class="duration-btn text-xs font-bold py-2.5 rounded-xl transition-all focus:outline-none flex items-center justify-center relative">
+        <span class="badge-discount absolute -top-4 z-10 bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-md tracking-tight transition-all border-2 border-white">-5%</span>
         <span>3 Bulan</span>
-        <span class="badge-discount bg-red-50 text-red-600 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-all">-5%</span>
       </button>
-      <button type="button" onclick="selectDuration(6, 0.10, this)" class="duration-btn text-xs font-bold px-4 py-2.5 rounded-xl transition-all focus:outline-none flex items-center gap-2">
+
+      <!-- 6 Bulan -->
+      <button type="button" onclick="selectDuration(6, 0.10, this)" class="duration-btn text-xs font-bold py-2.5 rounded-xl transition-all focus:outline-none flex items-center justify-center relative">
+        <span class="badge-discount absolute -top-4 z-10 bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-md tracking-tight transition-all border-2 border-white">-10%</span>
         <span>6 Bulan</span>
-        <span class="badge-discount bg-red-50 text-red-600 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-all">-10%</span>
       </button>
-      <button type="button" onclick="selectDuration(12, 0.20, this)" class="duration-btn text-xs font-bold px-4 py-2.5 rounded-xl transition-all focus:outline-none flex items-center gap-2">
+
+      <!-- 1 Tahun -->
+      <button type="button" onclick="selectDuration(12, 0.20, this)" class="duration-btn text-xs font-bold py-2.5 rounded-xl transition-all focus:outline-none flex items-center justify-center relative">
+        <span class="badge-discount absolute -top-4 z-10 bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-md tracking-tight transition-all border-2 border-white">-20%</span>
         <span>1 Tahun</span>
-        <span class="badge-discount bg-red-50 text-red-600 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md transition-all">-20%</span>
       </button>
     </div>
   </div>
@@ -58,9 +66,9 @@
     </div>
   <?php endif; ?>
 
-  <!-- Grid Paket -->
+  <!-- Grid & Carousel Slider Paket -->
   <div class="max-w-5xl mx-auto mb-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 justify-center items-stretch">
+    <div class="flex md:grid md:grid-cols-3 gap-5 justify-start md:justify-center items-stretch overflow-x-auto snap-x snap-mandatory pt-3 pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth no-scrollbar" style="overflow-y: visible;">
     <?php foreach ($allPlans as $p): ?>
       <?php 
         $isActive = ($activeSub && (int)$activeSub['plan_id'] === (int)$p['id']);
@@ -98,33 +106,41 @@
             ]
         };
 
-        $shadowStyle = $isPopular ? 'box-shadow: 0 20px 30px -10px rgba(124,58,237,0.2);' : 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);';
+        // Deskripsi Paket Sangat Menjual & Konsisten 2 Baris:
+        $sellingDescriptions = [
+            'LITE'       => 'Solusi hemat & handal untuk testing API, notifikasi otomatis, dan integrasi skala awal.',
+            'PRO'        => 'Pilihan paling favorit untuk sistem informasi, e-commerce, bot otomatis, & aplikasi bisnis.',
+            'BUSINESS'   => 'Solusi paling powerful untuk broadcast skala besar, multi-nomor WA, & infrastruktur enterprise.',
+        ];
+        $planDesc = $sellingDescriptions[$pName] ?? htmlspecialchars($p['description'] ?? '');
       ?>
-      <div class="bg-white rounded-3xl flex flex-col justify-between plan-card overflow-hidden transition-transform duration-300 hover:-translate-y-2 relative group hover:shadow-2xl w-full max-w-xs md:max-w-sm mx-auto" style="<?= $theme['cardBorder'] ?> <?= $shadowStyle ?>" data-base-price="<?= (float)$p['price'] ?>">
+      <div class="bg-white rounded-3xl flex flex-col justify-between plan-card overflow-hidden transition-transform duration-300 hover:-translate-y-2 relative group hover:shadow-2xl shrink-0 snap-center md:snap-align-none" style="min-width: 270px; max-width: 320px; width: 80vw; <?= $theme['cardBorder'] ?> <?= $shadowStyle ?>" data-base-price="<?= (float)$p['price'] ?>">
         
         <div>
           <!-- Header Card Berwarna Kustom & Gradien Mewah -->
-          <div class="p-6 text-white relative" style="<?= $theme['headerBg'] ?>">
-            <div class="flex items-center justify-between gap-2 mb-1.5">
-              <h3 class="text-2xl font-black font-display tracking-tight text-white"><?= htmlspecialchars($p['name']) ?></h3>
-              <?php if ($isActive): ?>
-                <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs" style="<?= $theme['badgeBg'] ?>">
-                  Aktif
-                </span>
-              <?php elseif ($isPopular): ?>
-                <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs" style="<?= $theme['badgeBg'] ?>">
-                  Terpopuler
-                </span>
-              <?php endif; ?>
-            </div>
+          <div class="p-6 text-white relative flex flex-col justify-between min-h-[220px]" style="<?= $theme['headerBg'] ?>">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <h3 class="text-2xl font-black font-display tracking-tight text-white"><?= htmlspecialchars($p['name']) ?></h3>
+                <?php if ($isActive): ?>
+                  <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs" style="<?= $theme['badgeBg'] ?>">
+                    Aktif
+                  </span>
+                <?php elseif ($isPopular): ?>
+                  <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs" style="<?= $theme['badgeBg'] ?>">
+                    Terpopuler
+                  </span>
+                <?php endif; ?>
+              </div>
 
-            <p class="text-xs text-white/80 leading-relaxed min-h-[32px] font-medium mb-4"><?= htmlspecialchars($p['description'] ?? '') ?></p>
+              <p class="text-xs text-white/90 leading-relaxed font-medium mb-4 h-10 overflow-hidden text-ellipsis line-clamp-2"><?= $planDesc ?></p>
+            </div>
             
             <div class="rounded-2xl p-4 backdrop-blur-md transition-all" style="<?= $theme['priceBg'] ?>">
               <!-- Element Harga Asli Satuan Tergaris (Strikethrough) -->
-              <div class="flex items-center gap-2 mb-1 original-price-container hidden">
-                <span class="text-xs text-white/70 line-through font-semibold original-price-display">Rp 0 / bln</span>
-                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-red-500 text-white shadow-sm discount-badge-text">Hemat 0%</span>
+              <div class="flex items-center justify-between gap-1 mb-1.5 original-price-container hidden overflow-hidden">
+                <span class="text-[9px] text-white/70 line-through font-semibold original-price-display">Rp 0/bln</span>
+                <span class="text-[8px] font-black px-1.5 py-0.5 rounded bg-red-500 text-white leading-none shadow-2xs discount-badge-text">-0%</span>
               </div>
               <div class="flex items-baseline gap-1">
                 <span class="text-3xl font-black font-display tracking-tight price-display">Rp <?= number_format((float)$p['price'], 0, ',', '.') ?></span>
@@ -369,10 +385,10 @@ function selectDuration(months, discount, button) {
         if (months > 1 && discount > 0) {
             // Tampilkan harga satuan asli tergaris tengah (Option A)
             if (origDisplay) {
-                origDisplay.innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(basePrice) + ' / bln';
+                origDisplay.innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(basePrice) + '/bln';
             }
             if (discountBadge) {
-                discountBadge.innerText = 'Hemat ' + Math.round(discount * 100) + '%';
+                discountBadge.innerText = '-' + Math.round(discount * 100) + '%';
             }
             if (origContainer) {
                 origContainer.classList.remove('hidden');

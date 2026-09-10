@@ -10,6 +10,7 @@ use App\Controllers\Api\UsageApiController;
 /** @var \App\Support\Router $router */
 
 $router->post('/v1/messages/send', [MessageApiController::class, 'send']);
+$router->get('/v1/contacts/check-exists', [MessageApiController::class, 'checkContact']);
 
 $router->get('/v1/sessions', [SessionApiController::class, 'index']);
 $router->post('/v1/sessions', [SessionApiController::class, 'store']);

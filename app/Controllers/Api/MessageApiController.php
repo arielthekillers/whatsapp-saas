@@ -26,7 +26,8 @@ class MessageApiController
         }
 
         $sessionName = trim((string) ($body['session'] ?? ''));
-        $to          = trim((string) ($body['to'] ?? ''));
+        $rawTo       = trim((string) ($body['to'] ?? ''));
+        $to          = WahaService::formatPhoneNumber($rawTo);
         $text        = (string) ($body['text'] ?? '');
         $type        = trim(strtolower((string) ($body['type'] ?? 'text'))); // text, image, file, location, contact
         
@@ -180,5 +181,40 @@ class MessageApiController
         ApiResponse::success([
             'message_id' => $wahaMessageId ?? (string) $messageId,
         ]);
+    }
+
+    public function checkContact(): void
+    {
+        $ctx    = ApiAuth::resolve();
+        $userId = $ctx['user_id'];
+
+        $sessionName = trim((string) ($_GET['session'] ?? ''));
+        $phone       = trim((string) ($_GET['phone'] ?? ''));
+
+        if ($sessionName === '' || $phone === '') {
+            ApiResponse::error('VALIDATION_ERROR', 'Parameter query session dan phone wajib diisi.', 422);
+        }
+
+        $sessionsRepo = new SessionRepository();
+        $session = $sessionsRepo->findByNameForUser($userId, $sessionName);
+        if ($session === null) {
+            ApiResponse::error('SESSION_NOT_FOUND', 'Sesi WA "' . $sessionName . '" tidak ditemukan.', 404);
+        }
+
+        if ($session['status'] !== 'WORKING') {
+            ApiResponse::error('SESSION_NOT_CONNECTED', 'Sesi WA "' . $sessionName . '" belum terhubung (Status: ' . $session['status'] . ').', 400);
+        }
+
+        $waha = new WahaService();
+        try {
+            $result = $waha->checkNumberExists($session['waha_session_name'], $phone);
+            ApiResponse::success([
+                'number'       => WahaService::formatPhoneNumber($phone),
+                'numberExists' => (bool) ($result['numberExists'] ?? false),
+                'chatId'       => $result['chatId'] ?? null,
+            ]);
+        } catch (Throwable $e) {
+            ApiResponse::error('WAHA_ERROR', 'Gagal mengecek nomor via WAHA API: ' . $e->getMessage(), 500);
+        }
     }
 }
