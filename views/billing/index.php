@@ -18,11 +18,11 @@
   }
 </style>
 
-<div class="max-w-5xl mx-auto px-4 py-8">
-  <!-- Centered Header -->
-  <div class="text-center mb-8">
-    <h1 class="text-2xl font-bold tracking-tight text-gray-900 font-display">Paket &amp; Langganan</h1>
-    <p class="text-gray-500 text-sm mt-1 max-w-2xl mx-auto">Upgrade paket Anda untuk meningkatkan kuota pengiriman pesan dan batas sesi WhatsApp.</p>
+<div>
+  <!-- Header Section -->
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight font-display">Paket &amp; Langganan</h1>
+    <p class="text-sm text-gray-500 mt-1">Upgrade paket Anda untuk meningkatkan kuota pengiriman pesan dan batas sesi WhatsApp.</p>
   </div>
   
   <!-- Sleek Segmented Switcher Control -->
@@ -59,97 +59,155 @@
   <?php endif; ?>
 
   <!-- Grid Paket -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+  <div class="max-w-5xl mx-auto mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 justify-center items-stretch">
     <?php foreach ($allPlans as $p): ?>
       <?php 
         $isActive = ($activeSub && (int)$activeSub['plan_id'] === (int)$p['id']);
-        $isPopular = ($p['name'] === 'PRO');
-        $borderClass = $isActive 
-          ? 'border-2 border-purple-500 shadow-lg relative' 
-          : ($isPopular ? 'border-2 border-blue-500 shadow-sm relative' : 'border border-gray-200 shadow-sm');
-      ?>
-      <div class="bg-white rounded-2xl p-6 flex flex-col justify-between plan-card <?= $borderClass ?>" data-base-price="<?= (float)$p['price'] ?>">
-        <?php if ($isActive): ?>
-          <span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Aktif</span>
-        <?php elseif ($isPopular): ?>
-          <span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Terpopuler</span>
-        <?php endif; ?>
+        $pName = strtoupper(trim($p['name']));
+        $isPopular = ($pName === 'PRO');
 
+        // Palet Warna Premium SaaS per Paket:
+        $theme = match($pName) {
+            'LITE' => [
+                'cardBorder'   => 'border: 1px solid #E5E7EB;',
+                'headerBg'     => 'background: linear-gradient(135deg, #059669 0%, #10B981 100%);',
+                'badgeBg'      => 'background: #047857; color: white;',
+                'priceBg'      => 'background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white;',
+                'sessionBox'   => 'background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857;',
+                'sessionIcon'  => 'text-emerald-600',
+                'btnClass'     => 'background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: white; box-shadow: 0 8px 20px -4px rgba(16,185,129,0.4);',
+            ],
+            'BUSINESS' => [
+                'cardBorder'   => 'border: 1px solid #E5E7EB;',
+                'headerBg'     => 'background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);',
+                'badgeBg'      => 'background: #B45309; color: white;',
+                'priceBg'      => 'background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white;',
+                'sessionBox'   => 'background: #FFFBEB; border: 1px solid #FDE68A; color: #B45309;',
+                'sessionIcon'  => 'text-amber-600',
+                'btnClass'     => 'background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%); color: white; box-shadow: 0 8px 20px -4px rgba(245,158,11,0.4);',
+            ],
+            default => [ // PRO / Default (Hero Card)
+                'cardBorder'   => 'border: 2px solid #7C3AED;',
+                'headerBg'     => 'background: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%);',
+                'badgeBg'      => 'background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.3);',
+                'priceBg'      => 'background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white;',
+                'sessionBox'   => 'background: #F3E8FF; border: 1px solid #DDD6FE; color: #6D28D9;',
+                'sessionIcon'  => 'text-purple-600',
+                'btnClass'     => 'background: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%); color: white; box-shadow: 0 8px 20px -4px rgba(124,58,237,0.5);',
+            ]
+        };
+
+        $shadowStyle = $isPopular ? 'box-shadow: 0 20px 30px -10px rgba(124,58,237,0.2);' : 'box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);';
+      ?>
+      <div class="bg-white rounded-3xl flex flex-col justify-between plan-card overflow-hidden transition-transform duration-300 hover:-translate-y-2 relative group hover:shadow-2xl w-full max-w-xs md:max-w-sm mx-auto" style="<?= $theme['cardBorder'] ?> <?= $shadowStyle ?>" data-base-price="<?= (float)$p['price'] ?>">
+        
         <div>
-          <h3 class="text-xl font-bold text-gray-900 font-display mb-1"><?= htmlspecialchars($p['name']) ?></h3>
-          <p class="text-xs text-gray-400 mb-4"><?= htmlspecialchars($p['description'] ?? '') ?></p>
-          
-          <div class="mb-4 bg-gray-50 rounded-xl p-3 border border-gray-100">
-            <span class="text-3xl font-extrabold text-gray-900 font-display price-display">Rp <?= number_format((float)$p['price'], 0, ',', '.') ?></span>
-            <span class="text-gray-400 text-xs">/ bln</span>
-            <p class="text-xs text-purple-600 font-bold mt-1.5 hidden total-display"></p>
+          <!-- Header Card Berwarna Kustom & Gradien Mewah -->
+          <div class="p-6 text-white relative" style="<?= $theme['headerBg'] ?>">
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <h3 class="text-2xl font-black font-display tracking-tight text-white"><?= htmlspecialchars($p['name']) ?></h3>
+              <?php if ($isActive): ?>
+                <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs" style="<?= $theme['badgeBg'] ?>">
+                  Aktif
+                </span>
+              <?php elseif ($isPopular): ?>
+                <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs" style="<?= $theme['badgeBg'] ?>">
+                  Terpopuler
+                </span>
+              <?php endif; ?>
+            </div>
+
+            <p class="text-xs text-white/80 leading-relaxed min-h-[32px] font-medium mb-4"><?= htmlspecialchars($p['description'] ?? '') ?></p>
+            
+            <div class="rounded-2xl p-4 backdrop-blur-md transition-all" style="<?= $theme['priceBg'] ?>">
+              <!-- Element Harga Asli Satuan Tergaris (Strikethrough) -->
+              <div class="flex items-center gap-2 mb-1 original-price-container hidden">
+                <span class="text-xs text-white/70 line-through font-semibold original-price-display">Rp 0 / bln</span>
+                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-red-500 text-white shadow-sm discount-badge-text">Hemat 0%</span>
+              </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-3xl font-black font-display tracking-tight price-display">Rp <?= number_format((float)$p['price'], 0, ',', '.') ?></span>
+                <span class="text-xs text-white/80 font-semibold">/ bulan</span>
+              </div>
+              <div class="mt-1.5 hidden total-display">
+                <div class="text-[11px] font-bold text-white/90 total-price-text">Rp 0 / 3 bln</div>
+              </div>
+            </div>
           </div>
 
-          <ul class="space-y-3 text-sm text-gray-600 mb-6">
-            <li class="flex items-center gap-2 font-semibold text-purple-700 bg-purple-50 p-2 rounded-lg border border-purple-100">
-              <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <!-- Fitur List dengan Visual Bersih -->
+          <div class="p-6 sm:p-7 space-y-4">
+            <div class="flex items-center gap-3 font-bold p-3 rounded-2xl text-xs" style="<?= $theme['sessionBox'] ?>">
+              <svg class="w-5 h-5 <?= $theme['sessionIcon'] ?> flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
               <span><strong><?= (int)$p['session_limit'] ?></strong> WhatsApp Session</span>
-            </li>
-            <li class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span><strong><?= number_format((float)$p['message_limit']) ?></strong> Pesan / bulan</span>
-            </li>
-            <li class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Rate Limit <strong><?= (int)$p['rate_limit_per_minute'] ?></strong> req/menit</span>
-            </li>
-            <li class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>API Key &amp; Webhook Instant</span>
-            </li>
-            <?php if ($p['name'] === 'PRO' || $p['name'] === 'BUSINESS'): ?>
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Kirim Gambar &amp; Dokumen (Media)</span>
+            </div>
+
+            <ul class="space-y-3.5 text-xs text-gray-600 pt-1">
+              <li class="flex items-center gap-2.5">
+                <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <span><strong><?= number_format((float)$p['message_limit']) ?></strong> Pesan / bulan</span>
               </li>
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Priority Server Processing</span>
+              <li class="flex items-center gap-2.5">
+                <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <span>Rate Limit <strong><?= (int)$p['rate_limit_per_minute'] ?></strong> req/menit</span>
               </li>
-            <?php endif; ?>
-            <?php if ($p['name'] === 'BUSINESS'): ?>
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Kirim Audio, Video &amp; Location</span>
+              <li class="flex items-center gap-2.5">
+                <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <span>API Key &amp; Webhook Instant</span>
               </li>
-              <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Custom Device Label &amp; Priority Support</span>
-              </li>
-            <?php endif; ?>
-          </ul>
+              <?php if ($pName === 'PRO' || $pName === 'BUSINESS'): ?>
+                <li class="flex items-center gap-2.5">
+                  <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                  <span>Kirim Gambar &amp; Dokumen (Media)</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                  <span>Priority Server Processing</span>
+                </li>
+              <?php endif; ?>
+              <?php if ($pName === 'BUSINESS'): ?>
+                <li class="flex items-center gap-2.5">
+                  <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                  <span>Kirim Audio, Video &amp; Location</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                  <span>Custom Device Label &amp; Priority Support</span>
+                </li>
+              <?php endif; ?>
+            </ul>
+          </div>
         </div>
 
-        <div>
+        <div class="px-6 pb-7 sm:px-7">
           <?php if ($isActive): ?>
-            <button disabled class="w-full bg-gray-100 text-gray-400 font-bold py-2.5 rounded-xl cursor-not-allowed text-sm">Paket Anda Saat Ini</button>
+            <button disabled class="w-full bg-gray-100 text-gray-400 font-bold py-3 rounded-2xl cursor-not-allowed text-xs">Paket Anda Saat Ini</button>
           <?php else: ?>
-            <button type="button" onclick="openCheckoutModal(<?= (int)$p['id'] ?>, '<?= htmlspecialchars($p['name'], ENT_QUOTES) ?>', <?= (float)$p['price'] ?>)" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all hover:scale-[1.01] shadow-lg shadow-purple-500/10">Pilih Paket</button>
+            <button type="button" onclick="openCheckoutModal(<?= (int)$p['id'] ?>, '<?= htmlspecialchars($p['name'], ENT_QUOTES) ?>', <?= (float)$p['price'] ?>)" class="w-full font-black py-3.5 rounded-2xl text-xs tracking-wider uppercase transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" style="<?= $theme['btnClass'] ?>">
+              Pilih Paket <?= htmlspecialchars($p['name']) ?> →
+            </button>
           <?php endif; ?>
         </div>
       </div>
     <?php endforeach; ?>
+    </div>
   </div>
 
   <!-- Modal Konfirmasi Pemesanan -->
@@ -287,30 +345,55 @@ function selectDuration(months, discount, button) {
     // 2. Update harga dan input di semua kartu plan
     var cards = document.querySelectorAll('.plan-card');
     cards.forEach(card => {
-        // Update hidden input jika ada
         var input = card.querySelector('.duration-input');
         if (input) {
             input.value = months;
         }
 
-        // Hitung harga terdiskon
         var basePrice = parseFloat(card.getAttribute('data-base-price'));
         if (!basePrice) return;
 
         var rawTotal = basePrice * months;
         var total = rawTotal * (1 - discount);
+        var savings = rawTotal - total;
 
         var priceDisplay = card.querySelector('.price-display');
         var totalDisplay = card.querySelector('.total-display');
+        var origContainer = card.querySelector('.original-price-container');
+        var origDisplay = card.querySelector('.original-price-display');
+        var discountBadge = card.querySelector('.discount-badge-text');
 
         // Tampilkan harga bulanan terhitung
         priceDisplay.innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(total / months));
         
-        if (months > 1) {
-            totalDisplay.innerText = 'Total: Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(total)) + ' (' + (months === 12 ? '1 Tahun' : months + ' Bulan') + ')';
-            totalDisplay.classList.remove('hidden');
+        if (months > 1 && discount > 0) {
+            // Tampilkan harga satuan asli tergaris tengah (Option A)
+            if (origDisplay) {
+                origDisplay.innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(basePrice) + ' / bln';
+            }
+            if (discountBadge) {
+                discountBadge.innerText = 'Hemat ' + Math.round(discount * 100) + '%';
+            }
+            if (origContainer) {
+                origContainer.classList.remove('hidden');
+            }
+            
+            var totalTxtEl = card.querySelector('.total-price-text');
+            var durText = months === 12 ? '1 thn' : months + ' bln';
+            
+            if (totalTxtEl) {
+                totalTxtEl.innerText = 'Total: Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(total)) + ' / ' + durText;
+            }
+            if (totalDisplay) {
+                totalDisplay.classList.remove('hidden');
+            }
         } else {
-            totalDisplay.classList.add('hidden');
+            if (origContainer) {
+                origContainer.classList.add('hidden');
+            }
+            if (totalDisplay) {
+                totalDisplay.classList.add('hidden');
+            }
         }
     });
 }
