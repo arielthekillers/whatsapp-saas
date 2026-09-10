@@ -5,13 +5,14 @@
 
   <div class="bg-white rounded-xl shadow p-6 text-center" id="session-card" data-id="<?= (int) $session['id'] ?>">
     <p class="text-sm text-gray-500 mb-1">Status</p>
-    <p class="text-lg font-semibold mb-4" id="status-text"><?= htmlspecialchars($session['status']) ?></p>
+    <p class="text-lg font-semibold mb-1" id="status-text"><?= htmlspecialchars($session['status']) ?></p>
+    <p class="text-xs text-purple-600 font-bold mb-4" id="phone-text"><?= htmlspecialchars($session['phone_number'] ?? '') ?></p>
 
     <div id="qr-container" class="mb-4 min-h-[240px] flex items-center justify-center">
       <?php if (!empty($session['qr_code'])): ?>
         <img src="<?= htmlspecialchars($session['qr_code']) ?>" class="mx-auto rounded-lg border" width="240" height="240" alt="QR Code">
       <?php elseif ($session['status'] === 'WORKING'): ?>
-        <p class="text-green-600 font-medium">✓ Terhubung</p>
+        <div class="py-6 text-center"><span class="text-4xl">✅</span><p class="text-green-600 font-bold mt-2">✓ Terhubung</p></div>
       <?php else: ?>
         <p class="text-gray-400 text-sm">Menunggu QR Code...</p>
       <?php endif; ?>
@@ -35,7 +36,9 @@
   var card = document.getElementById('session-card');
   var id = card.getAttribute('data-id');
   var statusText = document.getElementById('status-text');
+  var phoneText = document.getElementById('phone-text');
   var qrContainer = document.getElementById('qr-container');
+  var redirected = false;
 
   function poll() {
     fetch('<?= url('/sessions') ?>/' + id + '/status')
@@ -43,10 +46,19 @@
       .then(function (json) {
         if (json.success) {
           statusText.textContent = json.data.status;
+          if (json.data.phone) {
+            phoneText.textContent = json.data.phone;
+          }
           if (json.data.qr) {
             qrContainer.innerHTML = '<img src="' + json.data.qr + '" class="mx-auto rounded-lg border shadow-sm" width="240" height="240" alt="QR Code">';
           } else if (json.data.status === 'WORKING') {
-            qrContainer.innerHTML = '<div class="py-6 text-center"><span class="text-4xl">✅</span><p class="text-green-600 font-bold mt-2">WhatsApp Terhubung</p></div>';
+            qrContainer.innerHTML = '<div class="py-6 text-center"><span class="text-4xl">✅</span><p class="text-green-600 font-bold mt-2">WhatsApp Terhubung!</p><p class="text-xs text-gray-400 mt-1">Mengalihkan ke daftar sesi...</p></div>';
+            if (!redirected) {
+              redirected = true;
+              setTimeout(function () {
+                window.location.href = '<?= url('/sessions') ?>';
+              }, 1500);
+            }
           } else if (json.data.status === 'STOPPED' || json.data.status === 'FAILED') {
             qrContainer.innerHTML = '<div class="py-4 text-center"><p class="text-gray-500 text-sm">Sesi terhenti atau gagal. Silakan klik tombol Stop/Logout lalu buat ulang.</p></div>';
           }

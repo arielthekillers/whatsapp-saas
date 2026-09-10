@@ -165,11 +165,29 @@ class SessionController
             }
 
             $this->sessions->updateStatus($id, $status, $qrDataUri);
+
+            $detectedPhone = null;
+            if (!empty($remote['me']['id'])) {
+                $rawPhone = preg_replace('/\D/', '', explode('@', (string) $remote['me']['id'])[0]);
+                if ($rawPhone !== '') {
+                    $pushName = trim((string) ($remote['me']['pushName'] ?? ''));
+                    $detectedPhone = '+' . $rawPhone . ($pushName !== '' ? " ({$pushName})" : '');
+                    $this->sessions->updatePhoneNumber($id, $detectedPhone);
+                }
+            }
+
             if ($status === 'WORKING') {
                 $this->sessions->clearQr($id);
             }
 
-            Response::json(['success' => true, 'data' => ['status' => $status, 'qr' => $qrDataUri]]);
+            Response::json([
+                'success' => true, 
+                'data' => [
+                    'status' => $status, 
+                    'qr'     => $qrDataUri,
+                    'phone'  => $detectedPhone ?? ($session['phone_number'] ?? null)
+                ]
+            ]);
         } catch (Throwable $e) {
             error_log('[waha] Gagal refresh status session #' . $id . ': ' . $e->getMessage());
             Response::json(['success' => false, 'error' => ['code' => 'WAHA_ERROR', 'message' => 'Gagal menghubungi WAHA: ' . $e->getMessage()]], 200);
