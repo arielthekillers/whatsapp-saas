@@ -121,34 +121,26 @@ class MessageApiController
         $chatId = WahaService::toChatId($to);
         $waha = new WahaService();
 
-        $targetWahaSession = !empty($session['waha_session_name']) ? $session['waha_session_name'] : $session['name'];
+        $wahaSessionName = $session['waha_session_name'];
 
         try {
             // Pengiriman via WAHA sesuai Tipe Pesan
             switch ($type) {
                 case 'image':
-                    $result = $waha->sendImage($targetWahaSession, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : 'image/jpeg', $filename !== '' ? $filename : null, $text !== '' ? $text : null);
+                    $result = $waha->sendImage($wahaSessionName, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : 'image/jpeg', $filename !== '' ? $filename : null, $text !== '' ? $text : null);
                     break;
                 case 'file':
-                    $result = $waha->sendFile($targetWahaSession, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : null, $filename !== '' ? $filename : null);
+                    $result = $waha->sendFile($wahaSessionName, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : null, $filename !== '' ? $filename : null);
                     break;
                 case 'location':
-                    $result = $waha->sendLocation($targetWahaSession, $chatId, $latitude, $longitude, $locationTitle !== '' ? $locationTitle : null);
+                    $result = $waha->sendLocation($wahaSessionName, $chatId, $latitude, $longitude, $locationTitle !== '' ? $locationTitle : null);
                     break;
                 case 'contact':
-                    $result = $waha->sendContact($targetWahaSession, $chatId, $contacts);
+                    $result = $waha->sendContact($wahaSessionName, $chatId, $contacts);
                     break;
                 case 'text':
                 default:
-                    try {
-                        $result = $waha->sendText($targetWahaSession, $chatId, $text);
-                    } catch (Throwable $se) {
-                        if ($targetWahaSession !== $session['name']) {
-                            $result = $waha->sendText($session['name'], $chatId, $text);
-                        } else {
-                            throw $se;
-                        }
-                    }
+                    $result = $waha->sendText($wahaSessionName, $chatId, $text);
                     break;
             }
         } catch (Throwable $e) {
