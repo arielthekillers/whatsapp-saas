@@ -80,7 +80,7 @@ class MessageApiController
             ApiResponse::error('FEATURE_RESTRICTED', 'Kirim media/file dibatasi pada paket LITE. Silakan upgrade ke paket PRO atau ENTERPRISE.', 403);
         }
 
-        if (in_array($type, ['location', 'contact'], true) && $planName === 'PRO') {
+        if (in_array($type, ['location', 'contact'], true) && in_array($planName, ['LITE', 'PRO'], true)) {
             ApiResponse::error('FEATURE_RESTRICTED', 'Kirim pesan Lokasi dan Kontak dibatasi pada paket PRO. Silakan upgrade ke paket ENTERPRISE.', 403);
         }
 
