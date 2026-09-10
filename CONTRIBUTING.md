@@ -4,19 +4,19 @@ Terima kasih telah berkontribusi pada proyek **WhatsApp API SaaS (WAHA Platform)
 
 ---
 
-## 🚨 Aturan Utama: Commit & Push (GitHub Desktop)
+## 🚨 Aturan Utama: Commit & Push
 
 > [!IMPORTANT]
-> **AI / AGEN TIDAK BOLEH MELAKUKAN COMMIT DARI TERMINAL SEBELUM ADA PERINTAH EKSPLISIT.**
+> **1. COMMIT LOKAL:** Agen AI boleh dan berkewajiban melakukan `git commit` dari terminal **HANYA SETELAH ADA PERINTAH EKSPLISIT DARI USER** (misal: *"commit"*, *"lakukan commit"*).
 >
-> **PROSES COMMIT & PUSH AKAN DILAKUKAN SENDIRI OLEH USER VIA GITHUB DESKTOP.**
+> **2. PUSH KE GITHUB:** Agen AI **TIDAK BOLEH** melakukan `git push` ke server/remote repository. Proses push dilakukan sendiri oleh USER via **GitHub Desktop** atau terminal jika sudah siap dideploy.
 >
-> Hal ini bertujuan agar user memiliki kontrol penuh atas perubahan yang masuk dan mencegah pemicuan *automated deployment pipeline* (CI/CD / webhook server) yang berlebihan pada server.
+> Hal ini bertujuan agar user memiliki kontrol penuh atas proses rilis ke server produksi dan mencegah pemicuan *automated deployment pipeline* (CI/CD / webhook server) yang berlebihan.
 
 ### Prosedur Alur Kerja:
-1. **Pengembangan & Pengujian Lokal:** Agen AI / Developer melakukan perubahan kode dan pengujian di lingkungan lokal.
-2. **Review Perubahan:** Agen AI memberikan ringkasan perubahan serta saran pesan commit berstandar Conventional Commits kepada user.
-3. **Commit & Push via GitHub Desktop:** User meninjau perubahan di **GitHub Desktop**, memasukkan pesan commit, lalu melakukan Commit & Push secara manual jika sudah siap dideploy.
+1. **Pengembangan & Pengujian Lokal:** Agen AI melakukan perubahan kode dan pengujian di lingkungan lokal.
+2. **Perintah Commit dari User:** Setelah user meninjau perubahan dan memberikan perintah *"commit"*, Agen AI mengeksekusi `git add` & `git commit` menggunakan standar Conventional Commits di terminal lokal.
+3. **Push via GitHub Desktop / Terminal:** User melakukan `git push` ke remote repository / server secara manual di GitHub Desktop saat fitur siap dideploy.
 
 
 ---
