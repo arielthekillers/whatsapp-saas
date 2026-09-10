@@ -1,6 +1,9 @@
 <?php $title = 'API Keys'; require __DIR__ . '/../layouts/header.php'; require __DIR__ . '/../layouts/nav.php'; ?>
-<div class="max-w-3xl mx-auto px-4 py-8">
-  <h1 class="text-xl font-semibold mb-6">API Keys</h1>
+<div>
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight font-display">API Keys</h1>
+    <p class="text-sm text-gray-500 mt-1">Buat dan kelola API Key untuk autentikasi REST API WhatsApp Anda.</p>
+  </div>
 
   <?php if (!empty($newKey)): ?>
     <div class="mb-6 rounded-lg bg-green-50 border border-green-200 p-4">

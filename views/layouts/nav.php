@@ -162,16 +162,33 @@ if (!empty($_SESSION['user_id'])) {
       </div>
     </div>
 
-    <!-- Bottom Logout -->
-    <form method="POST" action="<?= url('/logout') ?>" class="border-t border-gray-100 pt-4">
-      <?= \App\Helpers\Csrf::field() ?>
-      <button type="submit" class="w-full flex items-center gap-3 text-sm font-bold text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-2.5 rounded-xl transition-all">
-        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-        <span>Keluar</span>
-      </button>
-    </form>
+    <!-- Sleek Integrated Active User Widget -->
+    <div class="border-t border-gray-100 pt-4">
+      <div class="flex items-center justify-between p-2 rounded-2xl bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
+        <a href="<?= url('/profile') ?>" class="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-80 transition-opacity">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-extrabold flex items-center justify-center text-xs shadow-xs font-display shrink-0">
+            <?= htmlspecialchars(strtoupper(substr($_SESSION['user_name'] ?? 'U', 0, 1))) ?>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-extrabold text-gray-900 truncate font-display leading-tight">
+              <?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?>
+            </p>
+            <p class="text-[9px] font-medium text-gray-400 truncate leading-tight mt-0.5 tracking-tight">
+              <?= htmlspecialchars($_SESSION['user_email'] ?? '') ?>
+            </p>
+          </div>
+        </a>
+
+        <form method="POST" action="<?= url('/logout') ?>" class="shrink-0">
+          <?= \App\Helpers\Csrf::field() ?>
+          <button type="submit" title="Keluar Sesi" class="p-1.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
   </aside>
 
   <!-- Mobile Header Navigation (Mobile Only) -->
@@ -189,6 +206,16 @@ if (!empty($_SESSION['user_id'])) {
 
   <!-- Mobile Dropdown Menu -->
   <div id="mobile-menu" class="hidden bg-white border-b border-gray-200 px-6 py-4 space-y-3.5 md:hidden">
+    <!-- Active User info (Mobile) -->
+    <div class="flex items-center gap-3 pb-3 border-b border-gray-100">
+      <div class="w-8 h-8 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center text-xs">
+        <?= htmlspecialchars(strtoupper(substr($_SESSION['user_name'] ?? 'U', 0, 1))) ?>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xs font-bold text-gray-900 truncate"><?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?></p>
+        <p class="text-[9px] text-gray-400 truncate tracking-tight"><?= htmlspecialchars($_SESSION['user_email'] ?? '') ?></p>
+      </div>
+    </div>
     <?php if ($isAdmin): ?>
       <a href="<?= url('/admin') ?>" class="block text-sm font-bold text-purple-700">Admin Dashboard</a>
       <a href="<?= url('/docs') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">API Docs</a>
@@ -211,7 +238,7 @@ if (!empty($_SESSION['user_id'])) {
 
   <!-- Content Container -->
   <div class="flex-1 bg-gray-50 flex flex-col justify-between min-h-screen">
-    <div class="p-6 md:p-10">
+    <div class="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full">
       <?php
         $announcement = null;
         try {

@@ -1,7 +1,8 @@
 <?php $title = 'Webhooks'; require __DIR__ . '/../layouts/header.php'; require __DIR__ . '/../layouts/nav.php'; ?>
-<div class="max-w-4xl mx-auto px-4 py-8">
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-bold tracking-tight text-gray-900 font-display">Webhooks</h1>
+<div>
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight font-display">Webhooks</h1>
+    <p class="text-sm text-gray-500 mt-1">Daftarkan URL callback untuk menerima event pesan masuk & status secara otomatis.</p>
   </div>
 
   <?php if (!empty($newSecret)): ?>

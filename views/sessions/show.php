@@ -1,7 +1,9 @@
 <?php $title = 'Session: ' . $session['name']; require __DIR__ . '/../layouts/header.php'; require __DIR__ . '/../layouts/nav.php'; ?>
-<div class="max-w-md mx-auto px-4 py-8">
-  <a href="<?= url('/sessions') ?>" class="text-sm text-gray-500 hover:underline">&larr; Kembali</a>
-  <h1 class="text-xl font-semibold mt-2 mb-6"><?= htmlspecialchars($session['name']) ?></h1>
+<div>
+  <div class="mb-6">
+    <a href="<?= url('/sessions') ?>" class="inline-flex items-center text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors mb-3">&larr; Kembali ke Daftar Sessions</a>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight font-display"><?= htmlspecialchars($session['name']) ?></h1>
+  </div>
 
   <div class="bg-white rounded-xl shadow p-6 text-center" id="session-card" data-id="<?= (int) $session['id'] ?>">
     <p class="text-sm text-gray-500 mb-1">Status</p>

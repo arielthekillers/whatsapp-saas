@@ -1,8 +1,8 @@
 <?php $title = 'Profil Akun'; require __DIR__ . '/../layouts/header.php'; require __DIR__ . '/../layouts/nav.php'; ?>
-<div class="max-w-xl mx-auto px-4 py-8">
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold tracking-tight text-gray-900 font-display">Profil Akun</h1>
-    <p class="text-gray-500 text-sm mt-1">Kelola data profil dan keamanan kata sandi akun Anda.</p>
+<div>
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight font-display">Profil Akun</h1>
+    <p class="text-sm text-gray-500 mt-1">Kelola data profil dan keamanan kata sandi akun Anda.</p>
   </div>
 
   <?php if (!empty($success)): ?>

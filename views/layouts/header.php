@@ -82,6 +82,12 @@ $ogImage   = htmlspecialchars($appUrl . '/og-image.jpg');
   .animate-toast {
     animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
+  .plan-card {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  }
+  .plan-card:hover {
+    transform: translateY(-8px) !important;
+  }
 </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen relative">

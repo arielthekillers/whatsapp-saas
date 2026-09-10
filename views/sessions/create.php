@@ -1,6 +1,10 @@
 <?php $title = 'Session Baru'; require __DIR__ . '/../layouts/header.php'; require __DIR__ . '/../layouts/nav.php'; ?>
-<div class="max-w-md mx-auto px-4 py-8">
-  <h1 class="text-xl font-semibold mb-6">Buat WhatsApp Session</h1>
+<div>
+  <div class="mb-6">
+    <a href="<?= url('/sessions') ?>" class="inline-flex items-center text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors mb-3">&larr; Kembali ke Sessions</a>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight font-display">Buat WhatsApp Session</h1>
+    <p class="text-sm text-gray-500 mt-1">Tambahkan label sesi WhatsApp baru untuk menghubungkan perangkat Anda.</p>
+  </div>
   <?php if (!empty($error)): ?>
     <div class="mb-4 rounded bg-red-50 text-red-700 text-sm px-4 py-2"><?= htmlspecialchars($error) ?></div>
   <?php endif; ?>
