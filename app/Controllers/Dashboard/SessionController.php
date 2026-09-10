@@ -192,18 +192,20 @@ class SessionController
             // Standarisasi variasi nama status WAHA
             if ($status === 'SCAN_QR_CODE') {
                 $status = 'SCAN_QR';
+            } elseif (in_array($status, ['CONNECTED', 'PAIRED', 'WORKING'], true)) {
+                $status = 'WORKING';
             }
 
-            // 2. Ambil QR Code jika status SCAN_QR atau STARTING
+            // 2. Ambil QR Code HANYA jika status masih SCAN_QR atau STARTING
             $qrDataUri = null;
-            if (in_array($status, ['SCAN_QR', 'SCAN_QR_CODE', 'STARTING'], true)) {
+            if ($status === 'SCAN_QR' || $status === 'STARTING') {
                 try {
                     $qrDataUri = $waha->getQrCodeBase64($wahaSessionName);
                     if (!empty($qrDataUri)) {
                         $status = 'SCAN_QR';
                     }
                 } catch (Throwable $qe) {
-                    // QR belum siap / dalam proses inisialisasi, abaikan error QR agar polling tidak mati
+                    // QR belum siap / dalam proses inisialisasi / sedang di-scan
                     $qrDataUri = null;
                 }
             }

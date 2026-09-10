@@ -72,24 +72,24 @@
               redirected = true;
               setTimeout(function () {
                 window.location.href = '<?= url('/sessions') ?>';
-              }, 1500);
+              }, 400);
             }
           } else if (json.data.status === 'STOPPED' || json.data.status === 'LOGGED_OUT' || json.data.status === 'FAILED') {
             qrContainer.innerHTML = '<div class="py-4 text-center"><p class="text-gray-500 text-sm">Sesi dalam kondisi terhenti / terputus.<br>Klik tombol <strong>▶ Mulai Sesi</strong> di bawah untuk memunculkan QR Code baru.</p></div>';
           }
           
           if (json.data.status !== 'WORKING' && json.data.status !== 'STOPPED' && json.data.status !== 'LOGGED_OUT') {
-            setTimeout(poll, 3000);
+            setTimeout(poll, 1200);
           }
         } else {
           if (json.error && json.error.message) {
             qrContainer.innerHTML = '<div class="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-xs text-left leading-relaxed"><strong>Koneksi WAHA:</strong><br>' + json.error.message + '</div>';
           }
-          setTimeout(poll, 6000);
+          setTimeout(poll, 3000);
         }
       })
       .catch(function (err) {
-        setTimeout(poll, 6000);
+        setTimeout(poll, 3000);
       });
   }
 
