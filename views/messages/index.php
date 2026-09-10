@@ -8,24 +8,17 @@ $flashError = $_SESSION['flash_error'] ?? null;
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 ?>
 
-<div class="space-y-8">
-  <!-- Top Header Banner -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
+<div>
+  <!-- Top Header Banner (Consistent with other modules) -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
-      <div class="flex items-center gap-3 mb-1">
-        <div class="p-2 rounded-xl bg-purple-50 text-purple-600 border border-purple-100">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
-        </div>
-        <h1 class="text-xl font-bold text-gray-900 font-display tracking-tight">Kirim &amp; Riwayat Pesan</h1>
-      </div>
-      <p class="text-xs text-gray-500 font-sans">Kirim pesan WhatsApp langsung dan pantau log riwayat pesan per sesi dengan mudah.</p>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight font-display">Pesan &amp; Riwayat Logs</h1>
+      <p class="text-sm text-gray-500 mt-1">Kirim pesan WhatsApp langsung dan pantau log riwayat pesan per sesi dengan mudah.</p>
     </div>
 
-    <!-- Active Sessions Badge / Quick Stats -->
+    <!-- Active Sessions Badge -->
     <div class="flex items-center gap-3">
-      <div class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 flex items-center gap-2">
+      <div class="px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 flex items-center gap-2 shadow-xs">
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
         <span><?= count($sessions) ?> Sesi WhatsApp Terdaftar</span>
       </div>
@@ -33,7 +26,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
   </div>
 
   <?php if ($flashSuccess): ?>
-    <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center gap-3 shadow-xs font-medium">
+    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center gap-3 shadow-xs font-medium">
       <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
@@ -42,7 +35,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
   <?php endif; ?>
 
   <?php if ($flashError): ?>
-    <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl flex items-center gap-3 shadow-xs font-medium">
+    <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl flex items-center gap-3 shadow-xs font-medium">
       <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
@@ -54,16 +47,9 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
     <!-- LEFT SIDE: Form Kirim Pesan -->
     <div class="lg:col-span-1 space-y-6">
       <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs">
-        <div class="flex items-center gap-2.5 pb-4 mb-5 border-b border-gray-100">
-          <div class="p-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-gray-900 font-display">Kirim Pesan Instan</h2>
-            <p class="text-[11px] text-gray-400">Pilih sesi &amp; jenis pesan</p>
-          </div>
+        <div class="pb-4 mb-5 border-b border-gray-100">
+          <h2 class="text-base font-bold text-gray-900 font-display">Kirim Pesan Instan</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Pilih sesi &amp; jenis pesan</p>
         </div>
 
         <?php if (empty($sessions)): ?>
@@ -135,16 +121,9 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
     <div class="lg:col-span-2 space-y-6">
       <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-5 border-b border-gray-100">
-          <div class="flex items-center gap-2.5">
-            <div class="p-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-600">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <div>
-              <h2 class="text-sm font-bold text-gray-900 font-display">Riwayat Logs Pesan</h2>
-              <p class="text-[11px] text-gray-400">Total <?= count($messages) ?> log pesan ditemukan</p>
-            </div>
+          <div>
+            <h2 class="text-base font-bold text-gray-900 font-display">Riwayat Logs Pesan</h2>
+            <p class="text-xs text-gray-500 mt-0.5">Total <?= count($messages) ?> log pesan ditemukan</p>
           </div>
 
           <!-- Multi-session Filter Form -->
