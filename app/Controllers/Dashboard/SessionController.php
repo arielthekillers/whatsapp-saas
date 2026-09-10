@@ -26,6 +26,50 @@ class SessionController
     {
         $user     = AuthMiddleware::handle();
         $sessions = $this->sessions->findAllForUser($user['id']);
+
+        // Sync status real-time dari server WAHA untuk setiap sesi
+        try {
+            $waha = new WahaService();
+            foreach ($sessions as &$s) {
+                try {
+                    $remote = $waha->getSession($s['waha_session_name']);
+                    $liveStatus = $remote['status'] ?? $s['status'];
+                    if ($liveStatus === 'SCAN_QR_CODE') {
+                        $liveStatus = 'SCAN_QR';
+                    }
+                    if ($liveStatus !== $s['status']) {
+                        $s['status'] = $liveStatus;
+                        $this->sessions->updateStatus((int)$s['id'], $liveStatus);
+                    }
+                    if (!empty($remote['me']['id'])) {
+                        $rawPhone = preg_replace('/\D/', '', explode('@', (string) $remote['me']['id'])[0]);
+                        if ($rawPhone !== '') {
+                            $pushName = trim((string) ($remote['me']['pushName'] ?? ''));
+                            $detectedPhone = '+' . $rawPhone . ($pushName !== '' ? " ({$pushName})" : '');
+                            $s['phone_number'] = $detectedPhone;
+                            $this->sessions->updatePhoneNumber((int)$s['id'], $detectedPhone);
+                        }
+                    } elseif ($liveStatus === 'STOPPED' || $liveStatus === 'LOGGED_OUT') {
+                        $s['phone_number'] = '-';
+                        $this->sessions->updatePhoneNumber((int)$s['id'], '');
+                    }
+                } catch (Throwable $se) {
+                    // Jika sesi tidak ditemukan di WAHA (HTTP 404), tandai sebagai STOPPED/LOGGED_OUT
+                    if (str_contains($se->getMessage(), '404') || str_contains($se->getMessage(), 'Not Found')) {
+                        if ($s['status'] === 'WORKING') {
+                            $s['status'] = 'STOPPED';
+                            $s['phone_number'] = '-';
+                            $this->sessions->updateStatus((int)$s['id'], 'STOPPED');
+                            $this->sessions->updatePhoneNumber((int)$s['id'], '');
+                        }
+                    }
+                }
+            }
+            unset($s);
+        } catch (Throwable $e) {
+            // Jika WAHA offline, tampilkan data dari database lokal
+        }
+
         require __DIR__ . '/../../../views/sessions/index.php';
     }
 
