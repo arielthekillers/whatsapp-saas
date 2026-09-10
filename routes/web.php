@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\Dashboard\MessageController;
 use App\Controllers\Dashboard\ApiKeyController;
 use App\Controllers\Dashboard\AuthController;
 use App\Controllers\Dashboard\DashboardController;
@@ -34,6 +35,9 @@ $router->post('/sessions/{id}/start', [SessionController::class, 'start']);
 $router->post('/sessions/{id}/stop', [SessionController::class, 'stop']);
 $router->post('/sessions/{id}/logout', [SessionController::class, 'logoutSession']);
 $router->post('/sessions/{id}/delete', [SessionController::class, 'delete']);
+
+$router->get('/messages', [MessageController::class, 'index']);
+$router->post('/messages/send', [MessageController::class, 'send']);
 
 $router->get('/api-keys', [ApiKeyController::class, 'index']);
 $router->post('/api-keys', [ApiKeyController::class, 'store']);

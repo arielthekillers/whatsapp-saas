@@ -51,8 +51,8 @@ class MessageApiController
             ApiResponse::error('VALIDATION_ERROR', 'Pesan bertipe text wajib mengisi field text.', 422);
         }
 
-        if (in_array($type, ['image', 'file'], true) && $mediaUrl === '') {
-            ApiResponse::error('VALIDATION_ERROR', 'Pesan bertipe image/file wajib menyertakan field url.', 422);
+        if (in_array($type, ['image', 'video', 'file'], true) && $mediaUrl === '') {
+            ApiResponse::error('VALIDATION_ERROR', 'Pesan bertipe image/video/file wajib menyertakan field url.', 422);
         }
 
         if ($type === 'location' && ($latitude === null || $longitude === null)) {
@@ -129,8 +129,11 @@ class MessageApiController
                 case 'image':
                     $result = $waha->sendImage($wahaSessionName, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : 'image/jpeg', $filename !== '' ? $filename : null, $text !== '' ? $text : null);
                     break;
+                case 'video':
+                    $result = $waha->sendVideo($wahaSessionName, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : 'video/mp4', $filename !== '' ? $filename : null, $text !== '' ? $text : null);
+                    break;
                 case 'file':
-                    $result = $waha->sendFile($wahaSessionName, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : null, $filename !== '' ? $filename : null);
+                    $result = $waha->sendFile($wahaSessionName, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : null, $filename !== '' ? $filename : null, $text !== '' ? $text : null);
                     break;
                 case 'location':
                     $result = $waha->sendLocation($wahaSessionName, $chatId, $latitude, $longitude, $locationTitle !== '' ? $locationTitle : null);

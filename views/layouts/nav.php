@@ -108,6 +108,12 @@ if (!empty($_SESSION['user_id'])) {
                 </svg>
                 <span>Sessions</span>
               </a>
+              <a href="<?= url('/messages') ?>" class="<?= getMenuClass('messages', $currentPath) ?>">
+                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                <span>Pesan</span>
+              </a>
               <a href="<?= url('/api-keys') ?>" class="<?= getMenuClass('api-keys', $currentPath) ?>">
                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px;">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2z" />
@@ -223,6 +229,7 @@ if (!empty($_SESSION['user_id'])) {
     <?php else: ?>
       <a href="<?= url('/dashboard') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Dashboard</a>
       <a href="<?= url('/sessions') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Sessions</a>
+      <a href="<?= url('/messages') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Pesan</a>
       <a href="<?= url('/api-keys') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">API Keys</a>
       <a href="<?= url('/webhooks') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Webhooks</a>
       <a href="<?= url('/billing') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Billing</a>

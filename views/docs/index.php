@@ -119,11 +119,15 @@
           </a>
           <a href="#send-image" class="flex items-center gap-2.5 font-semibold text-gray-600 hover:text-purple-600 py-1.5 transition-colors">
             <svg class="w-4 h-4 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            <span>Gambar &amp; Media</span>
+            <span>Gambar &amp; Foto</span>
+          </a>
+          <a href="#send-video" class="flex items-center gap-2.5 font-semibold text-gray-600 hover:text-purple-600 py-1.5 transition-colors">
+            <svg class="w-4 h-4 text-purple-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <span>Video (MP4) + Caption</span>
           </a>
           <a href="#send-file" class="flex items-center gap-2.5 font-semibold text-gray-600 hover:text-purple-600 py-1.5 transition-colors">
             <svg class="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-            <span>Dokumen / PDF</span>
+            <span>Dokumen / PDF + Caption</span>
           </a>
           <a href="#send-location" class="flex items-center gap-2.5 font-semibold text-gray-600 hover:text-purple-600 py-1.5 transition-colors">
             <svg class="w-4 h-4 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -338,17 +342,17 @@ print(response.json())</pre>
         </div>
       </section>
 
-      <!-- Section 5: Kirim Gambar & Media -->
+      <!-- Section 5: Kirim Gambar & Foto -->
       <section id="send-image" class="bg-white rounded-2xl border border-gray-100 shadow-xs p-6 space-y-4">
         <div class="flex items-center justify-between border-b border-gray-100 pb-3">
           <div>
-            <h2 class="text-xl font-extrabold text-gray-900 font-display">2. Kirim Gambar / Media</h2>
+            <h2 class="text-xl font-extrabold text-gray-900 font-display">2. Kirim Gambar / Foto</h2>
             <p class="text-xs font-mono text-purple-700 font-bold mt-1">POST <?= url('/v1/messages/send') ?></p>
           </div>
           <span class="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full font-black uppercase">POST</span>
         </div>
 
-        <p>Kirim file gambar (JPG, PNG, WEBP) melalui URL publik disertai teks caption.</p>
+        <p>Kirim file gambar (JPG, PNG, WEBP) melalui URL publik disertai teks caption di bawahnya.</p>
 
         <div class="relative rounded-2xl p-5 font-mono text-xs overflow-x-auto border border-slate-800 shadow-md" style="background-color: #0f172a; color: #f8fafc;">
           <button onclick="copyCode(this)" class="absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-slate-700">Copy</button>
@@ -357,22 +361,46 @@ print(response.json())</pre>
   <span class="json-key">"to"</span>: <span class="json-string">"081359774765"</span>,
   <span class="json-key">"type"</span>: <span class="json-string">"image"</span>,
   <span class="json-key">"url"</span>: <span class="json-string">"https://picsum.photos/600/400"</span>,
-  <span class="json-key">"text"</span>: <span class="json-string">"Keterangan / Caption Gambar"</span>
+  <span class="json-key">"text"</span>: <span class="json-string">"Temukan obrolan penting Anda dengan daftar 📋"</span>
 }</pre>
         </div>
       </section>
 
-      <!-- Section 6: Kirim Dokumen -->
-      <section id="send-file" class="bg-white rounded-2xl border border-gray-100 shadow-xs p-6 space-y-4">
+      <!-- Section 6: Kirim Video MP4 + Caption -->
+      <section id="send-video" class="bg-white rounded-2xl border border-gray-100 shadow-xs p-6 space-y-4">
         <div class="flex items-center justify-between border-b border-gray-100 pb-3">
           <div>
-            <h2 class="text-xl font-extrabold text-gray-900 font-display">3. Kirim Dokumen &amp; File PDF</h2>
+            <h2 class="text-xl font-extrabold text-gray-900 font-display">3. Kirim Video (MP4) + Caption Teks</h2>
             <p class="text-xs font-mono text-purple-700 font-bold mt-1">POST <?= url('/v1/messages/send') ?></p>
           </div>
           <span class="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full font-black uppercase">POST</span>
         </div>
 
-        <p>Kirimkan file PDF, ZIP, XLSX, atau dokumen umum lainnya via URL publik.</p>
+        <p>Kirimkan file video MP4 via URL publik lengkap dengan deskripsi/caption teks di bawah video (seperti pesan pengumuman WhatsApp).</p>
+
+        <div class="relative rounded-2xl p-5 font-mono text-xs overflow-x-auto border border-slate-800 shadow-md" style="background-color: #0f172a; color: #f8fafc;">
+          <button onclick="copyCode(this)" class="absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-slate-700">Copy</button>
+<pre>{
+  <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
+  <span class="json-key">"to"</span>: <span class="json-string">"081359774765"</span>,
+  <span class="json-key">"type"</span>: <span class="json-string">"video"</span>,
+  <span class="json-key">"url"</span>: <span class="json-string">"https://example.com/demo.mp4"</span>,
+  <span class="json-key">"text"</span>: <span class="json-string">"Temukan obrolan yang paling penting dengan daftar 📋\n\nAtur obrolan ke dalam daftar dan beralih antar daftar dengan sekali ketuk."</span>
+}</pre>
+        </div>
+      </section>
+
+      <!-- Section 7: Kirim Dokumen -->
+      <section id="send-file" class="bg-white rounded-2xl border border-gray-100 shadow-xs p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+          <div>
+            <h2 class="text-xl font-extrabold text-gray-900 font-display">4. Kirim Dokumen &amp; File PDF</h2>
+            <p class="text-xs font-mono text-purple-700 font-bold mt-1">POST <?= url('/v1/messages/send') ?></p>
+          </div>
+          <span class="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full font-black uppercase">POST</span>
+        </div>
+
+        <p>Kirimkan file PDF, ZIP, XLSX, atau dokumen umum lainnya via URL publik beserta teks penjelasan opsional.</p>
 
         <div class="relative rounded-2xl p-5 font-mono text-xs overflow-x-auto border border-slate-800 shadow-md" style="background-color: #0f172a; color: #f8fafc;">
           <button onclick="copyCode(this)" class="absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-slate-700">Copy</button>
@@ -381,7 +409,8 @@ print(response.json())</pre>
   <span class="json-key">"to"</span>: <span class="json-string">"081359774765"</span>,
   <span class="json-key">"type"</span>: <span class="json-string">"file"</span>,
   <span class="json-key">"url"</span>: <span class="json-string">"https://example.com/invoice-123.pdf"</span>,
-  <span class="json-key">"filename"</span>: <span class="json-string">"Invoice-123.pdf"</span>
+  <span class="json-key">"filename"</span>: <span class="json-string">"Invoice-123.pdf"</span>,
+  <span class="json-key">"text"</span>: <span class="json-string">"Berikut terlampir file invoice tagihan Anda."</span>
 }</pre>
         </div>
       </section>

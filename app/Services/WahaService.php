@@ -142,7 +142,21 @@ class WahaService
         ]);
     }
 
-    public function sendFile(string $sessionName, string $chatId, string $url, ?string $mimetype = null, ?string $filename = null): array
+    public function sendVideo(string $sessionName, string $chatId, string $url, string $mimetype = 'video/mp4', ?string $filename = null, ?string $caption = null): array
+    {
+        return $this->request('POST', '/api/sendVideo', [
+            'session' => $sessionName,
+            'chatId'  => $chatId,
+            'file'    => array_filter([
+                'mimetype' => $mimetype,
+                'url'      => $url,
+                'filename' => $filename,
+            ]),
+            'caption' => $caption,
+        ]);
+    }
+
+    public function sendFile(string $sessionName, string $chatId, string $url, ?string $mimetype = null, ?string $filename = null, ?string $caption = null): array
     {
         return $this->request('POST', '/api/sendFile', [
             'session' => $sessionName,
@@ -152,6 +166,7 @@ class WahaService
                 'url'      => $url,
                 'filename' => $filename,
             ]),
+            'caption' => $caption,
         ]);
     }
 
