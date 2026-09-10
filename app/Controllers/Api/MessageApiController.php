@@ -121,29 +121,39 @@ class MessageApiController
         $chatId = WahaService::toChatId($to);
         $waha = new WahaService();
 
+        $targetWahaSession = !empty($session['waha_session_name']) ? $session['waha_session_name'] : $session['name'];
+
         try {
             // Pengiriman via WAHA sesuai Tipe Pesan
             switch ($type) {
                 case 'image':
-                    $result = $waha->sendImage($session['waha_session_name'], $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : 'image/jpeg', $filename !== '' ? $filename : null, $text !== '' ? $text : null);
+                    $result = $waha->sendImage($targetWahaSession, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : 'image/jpeg', $filename !== '' ? $filename : null, $text !== '' ? $text : null);
                     break;
                 case 'file':
-                    $result = $waha->sendFile($session['waha_session_name'], $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : null, $filename !== '' ? $filename : null);
+                    $result = $waha->sendFile($targetWahaSession, $chatId, $mediaUrl, $mimetype !== '' ? $mimetype : null, $filename !== '' ? $filename : null);
                     break;
                 case 'location':
-                    $result = $waha->sendLocation($session['waha_session_name'], $chatId, $latitude, $longitude, $locationTitle !== '' ? $locationTitle : null);
+                    $result = $waha->sendLocation($targetWahaSession, $chatId, $latitude, $longitude, $locationTitle !== '' ? $locationTitle : null);
                     break;
                 case 'contact':
-                    $result = $waha->sendContact($session['waha_session_name'], $chatId, $contacts);
+                    $result = $waha->sendContact($targetWahaSession, $chatId, $contacts);
                     break;
                 case 'text':
                 default:
-                    $result = $waha->sendText($session['waha_session_name'], $chatId, $text);
+                    try {
+                        $result = $waha->sendText($targetWahaSession, $chatId, $text);
+                    } catch (Throwable $se) {
+                        if ($targetWahaSession !== $session['name']) {
+                            $result = $waha->sendText($session['name'], $chatId, $text);
+                        } else {
+                            throw $se;
+                        }
+                    }
                     break;
             }
         } catch (Throwable $e) {
             error_log('[waha] Gagal kirim pesan type ' . $type . ' user #' . $userId . ': ' . $e->getMessage());
-            ApiResponse::error('WAHA_ERROR', 'Gagal mengirim pesan via WhatsApp API: ' . $e->getMessage(), 502);
+            ApiResponse::error('WAHA_ERROR', 'Gagal mengirim pesan via WhatsApp API: ' . $e->getMessage(), 500);
         }
 
         $wahaMessageId = $result['id'] ?? ($result['_data']['id'] ?? null);
