@@ -29,18 +29,46 @@ class BillingController
     {
         $user = AuthMiddleware::handle();
 
-        $activeSub = $this->subscriptions->findActiveForUser($user['id']);
-        $allPlans  = $this->plans->findAllActive();
+        $activeSub = null;
+        try {
+            $activeSub = $this->subscriptions->findActiveForUser($user['id']);
+        } catch (\Throwable $e) {
+            $activeSub = null;
+        }
 
-        $stmt = $this->db->prepare('
-            SELECT p.*, pl.name AS plan_name
-            FROM payments p
-            LEFT JOIN plans pl ON pl.id = p.plan_id
-            WHERE p.user_id = :user_id
-            ORDER BY p.id DESC
-        ');
-        $stmt->execute([':user_id' => $user['id']]);
-        $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $allPlans = [];
+        try {
+            $allPlans  = $this->plans->findAllActive();
+        } catch (\Throwable $e) {
+            $allPlans = [];
+        }
+
+        $payments = [];
+        try {
+            $stmt = $this->db->prepare('
+                SELECT p.*, pl.name AS plan_name
+                FROM payments p
+                LEFT JOIN plans pl ON pl.id = p.plan_id
+                WHERE p.user_id = :user_id
+                ORDER BY p.id DESC
+            ');
+            $stmt->execute([':user_id' => $user['id']]);
+            $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            try {
+                // Fallback for legacy DB schema where plan_id column may not exist yet
+                $stmt = $this->db->prepare('
+                    SELECT p.*, NULL AS plan_name
+                    FROM payments p
+                    WHERE p.user_id = :user_id
+                    ORDER BY p.id DESC
+                ');
+                $stmt->execute([':user_id' => $user['id']]);
+                $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (\Throwable $e2) {
+                $payments = [];
+            }
+        }
 
         $success = $_SESSION['flash_billing_success'] ?? null;
         unset($_SESSION['flash_billing_success']);

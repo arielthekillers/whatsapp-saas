@@ -104,7 +104,7 @@ CREATE TABLE subscriptions (
     plan_id         INT UNSIGNED NOT NULL,
     start_at        DATETIME NOT NULL,
     end_at          DATETIME NOT NULL,
-    status          ENUM('active','expired','cancelled') NOT NULL DEFAULT 'active',
+    status          ENUM('active','cancelled','expired','queued') NOT NULL DEFAULT 'active',
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -307,15 +307,18 @@ CREATE TABLE rate_limit_counters (
 CREATE TABLE payments (
     id                  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id             INT UNSIGNED NOT NULL,
+    plan_id             INT UNSIGNED NULL,
     subscription_id     INT UNSIGNED NULL,
-    provider            VARCHAR(50) NOT NULL,       -- midtrans, xendit, manual
+    provider            VARCHAR(50) NOT NULL,       -- bank_transfer, midtrans, xendit, manual
     external_id         VARCHAR(150) NULL,
     amount              DECIMAL(12,2) NOT NULL,
-    status              ENUM('pending','paid','failed','expired','refunded') NOT NULL DEFAULT 'pending',
+    status              ENUM('pending','verifying','paid','failed','expired','cancelled') NOT NULL DEFAULT 'pending',
+    transfer_note       TEXT NULL,
     paid_at             DATETIME NULL,
     created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (plan_id) REFERENCES plans(id),
     FOREIGN KEY (subscription_id) REFERENCES subscriptions(id),
     INDEX idx_payment_user (user_id),
     INDEX idx_payment_status (status)

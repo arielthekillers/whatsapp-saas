@@ -44,22 +44,29 @@
         if (json.success) {
           statusText.textContent = json.data.status;
           if (json.data.qr) {
-            qrContainer.innerHTML = '<img src="' + json.data.qr + '" class="mx-auto rounded-lg border" width="240" height="240" alt="QR Code">';
+            qrContainer.innerHTML = '<img src="' + json.data.qr + '" class="mx-auto rounded-lg border shadow-sm" width="240" height="240" alt="QR Code">';
           } else if (json.data.status === 'WORKING') {
-            qrContainer.innerHTML = '<p class="text-green-600 font-medium">✓ Terhubung</p>';
+            qrContainer.innerHTML = '<div class="py-6 text-center"><span class="text-4xl">✅</span><p class="text-green-600 font-bold mt-2">WhatsApp Terhubung</p></div>';
+          } else if (json.data.status === 'STOPPED' || json.data.status === 'FAILED') {
+            qrContainer.innerHTML = '<div class="py-4 text-center"><p class="text-gray-500 text-sm">Sesi terhenti atau gagal. Silakan klik tombol Stop/Logout lalu buat ulang.</p></div>';
           }
           if (json.data.status !== 'WORKING') {
-            setTimeout(poll, 4000);
+            setTimeout(poll, 3000);
           }
         } else {
-          setTimeout(poll, 6000);
+          if (json.error && json.error.message) {
+            qrContainer.innerHTML = '<div class="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-xs text-left leading-relaxed"><strong>Koneksi WAHA:</strong><br>' + json.error.message + '</div>';
+          }
+          setTimeout(poll, 5000);
         }
       })
-      .catch(function () { setTimeout(poll, 6000); });
+      .catch(function (err) {
+        setTimeout(poll, 5000);
+      });
   }
 
   if (statusText.textContent.trim() !== 'WORKING') {
-    setTimeout(poll, 3000);
+    poll();
   }
 })();
 </script>

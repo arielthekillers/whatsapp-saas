@@ -120,13 +120,48 @@ class SessionController
         }
 
         try {
-            $waha   = new WahaService();
-            $remote = $waha->getSession($session['waha_session_name']);
-            $status = $remote['status'] ?? $session['status'];
+            $waha = new WahaService();
+            $wahaSessionName = $session['waha_session_name'];
+            $status = $session['status'];
+            
+            // 1. Ambil status remote dari WAHA
+            try {
+                $remote = $waha->getSession($wahaSessionName);
+                $status = $remote['status'] ?? $session['status'];
+            } catch (Throwable $e) {
+                // Jika session belum ada di WAHA (HTTP 404), buat dan jalankan otomatis
+                if (str_contains($e->getMessage(), '404') || str_contains($e->getMessage(), 'Not Found')) {
+                    try {
+                        $callbackUrl = rtrim((string) Env::get('APP_URL', 'https://wapify.biz.id'), '/') . '/webhook/waha';
+                        $remote = $waha->createAndStartSession($wahaSessionName, [
+                            ['url' => $callbackUrl, 'events' => ['session.status', 'message', 'message.ack']],
+                        ]);
+                        $status = $remote['status'] ?? 'STARTING';
+                    } catch (Throwable $e2) {
+                        $status = 'STARTING';
+                    }
+                } else {
+                    throw $e;
+                }
+            }
 
+            // Standarisasi variasi nama status WAHA
+            if ($status === 'SCAN_QR_CODE') {
+                $status = 'SCAN_QR';
+            }
+
+            // 2. Ambil QR Code jika status SCAN_QR atau STARTING
             $qrDataUri = null;
-            if (in_array($status, ['SCAN_QR_CODE', 'SCAN_QR'], true)) {
-                $qrDataUri = $waha->getQrCodeBase64($session['waha_session_name']);
+            if (in_array($status, ['SCAN_QR', 'SCAN_QR_CODE', 'STARTING'], true)) {
+                try {
+                    $qrDataUri = $waha->getQrCodeBase64($wahaSessionName);
+                    if (!empty($qrDataUri)) {
+                        $status = 'SCAN_QR';
+                    }
+                } catch (Throwable $qe) {
+                    // QR belum siap / dalam proses inisialisasi, abaikan error QR agar polling tidak mati
+                    $qrDataUri = null;
+                }
             }
 
             $this->sessions->updateStatus($id, $status, $qrDataUri);
@@ -137,7 +172,7 @@ class SessionController
             Response::json(['success' => true, 'data' => ['status' => $status, 'qr' => $qrDataUri]]);
         } catch (Throwable $e) {
             error_log('[waha] Gagal refresh status session #' . $id . ': ' . $e->getMessage());
-            Response::json(['success' => false, 'error' => ['code' => 'WAHA_ERROR', 'message' => 'Gagal menghubungi WAHA']], 502);
+            Response::json(['success' => false, 'error' => ['code' => 'WAHA_ERROR', 'message' => 'Gagal menghubungi WAHA: ' . $e->getMessage()]], 200);
         }
     }
 
