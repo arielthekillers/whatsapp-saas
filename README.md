@@ -110,5 +110,12 @@ curl -X POST http://localhost:8000/v1/messages/send \
 
 ---
 
+## 🤝 Kontribusi & Standar Commit
+
+Silakan baca [CONTRIBUTING.md](file:///e:/xampp/htdocs/whatsapp-saas/CONTRIBUTING.md) untuk panduan kontribusi, alur kerja Git, standar Conventional Commits, dan aturan deployment.
+
+---
+
 ## 📄 Lisensi
 [MIT License](LICENSE)
+
