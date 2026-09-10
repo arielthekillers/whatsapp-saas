@@ -46,20 +46,20 @@ Format pesan commit mengikuti standar **[Conventional Commits](https://www.conve
 ### 2. Scope (Cakupan - Opsional)
 Area atau komponen aplikasi yang diubah, misalnya: `(auth)`, `(billing)`, `(waha)`, `(api)`, `(admin)`, `(docs)`.
 
-### 3. Description (Deskripsi Ringkas)
-- Gunakan kalimat ringkas, jelas, dan menggunakan bahasa Indonesia atau Inggris (konsisten).
-- Gunakan kalimat imperatif/present tense (contoh: `tambah endpoint send message` atau `fix session timeout`).
-- Jangan diakhiri dengan tanda titik.
+### 3. Language & Description (Aturan Bahasa & Deskripsi)
+- **100% ENGLISH ONLY**: Semua pesan commit WAJIB ditulis dalam **Bahasa Inggris** (tidak boleh dicampur Bahasa Indonesia) agar seluruh *git commit history* di GitHub seragam dan profesional.
+- Gunakan kalimat ringkas, jelas, dan imperatif / present-tense (contoh: `feat(messages): add direct send form and multi-session message log UI` bukan `tambah fitur pesan`).
+- Jangan mengakhiri pesan commit dengan tanda titik (`.`).
 
 ---
 
-## 💡 Contoh Pesan Commit
+## 💡 Contoh Pesan Commit (100% English Examples)
 
-- `feat(billing): tambah fitur konfirmasi pembayaran manual`
-- `fix(waha): tangani error timeout saat scan QR code`
-- `docs: buat file contributing md dan atur standar commit`
-- `refactor(api): sederhanakan logika rate limiting di middleware`
-- `chore(docker): perbarui versi php ke 8.2-fpm`
+- `feat(messages): add direct send form and multi-session log view`
+- `fix(waha): resolve QR code polling loop timeout`
+- `docs(api): update media endpoints and caption parameters`
+- `refactor(ui): harmonize page header layouts across dashboard modules`
+- `chore(docker): update PHP base image to 8.2-fpm`
 
 ---
 

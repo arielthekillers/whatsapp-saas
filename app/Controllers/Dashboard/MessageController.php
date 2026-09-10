@@ -82,70 +82,70 @@ class MessageController
 
     public function send(): void
     {
-        $user = AuthMiddleware::handle();
-        $userId = (int) $user['id'];
-
-        $sessionId = (int) ($_POST['session_id'] ?? 0);
-        $recipient = trim((string) ($_POST['recipient'] ?? ''));
-        $type      = trim(strtolower((string) ($_POST['message_type'] ?? $_POST['type'] ?? 'text')));
-        $text      = trim((string) ($_POST['message_text'] ?? $_POST['text'] ?? ''));
-        $mediaUrl  = trim((string) ($_POST['media_url'] ?? $_POST['url'] ?? ''));
-        $filename  = trim((string) ($_POST['filename'] ?? ''));
-
-        if ($sessionId <= 0 || $recipient === '') {
-            $_SESSION['flash_error'] = 'Silakan pilih Sesi WhatsApp dan masukkan Nomor Tujuan.';
-            Response::redirect('/messages');
-            return;
-        }
-
-        if ($type === 'text' && $text === '') {
-            $_SESSION['flash_error'] = 'Pesan bertipe Teks wajib mengisi kolom isi pesan.';
-            Response::redirect('/messages');
-            return;
-        }
-
-        if (in_array($type, ['image', 'video', 'file'], true) && $mediaUrl === '') {
-            $_SESSION['flash_error'] = 'Pesan bertipe Media/File wajib menyertakan URL Media.';
-            Response::redirect('/messages');
-            return;
-        }
-
-        // Cek Sesi WA
-        $session = $this->sessions->findByIdForUser($userId, $sessionId);
-        if (!$session) {
-            $_SESSION['flash_error'] = 'Sesi WhatsApp tidak ditemukan.';
-            Response::redirect('/messages');
-            return;
-        }
-
-        if ($session['status'] !== 'WORKING') {
-            $_SESSION['flash_error'] = "Sesi WA '{$session['name']}' belum terhubung (Status: {$session['status']}).";
-            Response::redirect('/messages');
-            return;
-        }
-
-        // Cek Kuota
-        $activeSub = $this->subscriptions->findActiveForUser($userId);
-        if (!$activeSub) {
-            $_SESSION['flash_error'] = 'Anda tidak memiliki paket langganan aktif.';
-            Response::redirect('/messages');
-            return;
-        }
-
-        $quota = new QuotaService($this->subscriptions);
-        $res   = $quota->reserveMessage($userId);
-        if (!$res['ok']) {
-            $_SESSION['flash_error'] = $res['message'];
-            Response::redirect('/messages');
-            return;
-        }
-
-        // Kirim via WAHA Service
-        $chatId = WahaService::toChatId($recipient);
-        $waha   = new WahaService();
-        $wahaSessionName = $session['waha_session_name'];
-
         try {
+            $user = AuthMiddleware::handle();
+            $userId = (int) $user['id'];
+
+            $sessionId = (int) ($_POST['session_id'] ?? 0);
+            $recipient = trim((string) ($_POST['recipient'] ?? ''));
+            $type      = trim(strtolower((string) ($_POST['message_type'] ?? $_POST['type'] ?? 'text')));
+            $text      = trim((string) ($_POST['message_text'] ?? $_POST['text'] ?? ''));
+            $mediaUrl  = trim((string) ($_POST['media_url'] ?? $_POST['url'] ?? ''));
+            $filename  = trim((string) ($_POST['filename'] ?? ''));
+
+            if ($sessionId <= 0 || $recipient === '') {
+                $_SESSION['flash_error'] = 'Silakan pilih Sesi WhatsApp dan masukkan Nomor Tujuan.';
+                Response::redirect('/messages');
+                return;
+            }
+
+            if ($type === 'text' && $text === '') {
+                $_SESSION['flash_error'] = 'Pesan bertipe Teks wajib mengisi kolom isi pesan.';
+                Response::redirect('/messages');
+                return;
+            }
+
+            if (in_array($type, ['image', 'video', 'file'], true) && $mediaUrl === '') {
+                $_SESSION['flash_error'] = 'Pesan bertipe Media/File wajib menyertakan URL Media.';
+                Response::redirect('/messages');
+                return;
+            }
+
+            // Cek Sesi WA
+            $session = $this->sessions->findByIdForUser($userId, $sessionId);
+            if (!$session) {
+                $_SESSION['flash_error'] = 'Sesi WhatsApp tidak ditemukan.';
+                Response::redirect('/messages');
+                return;
+            }
+
+            if ($session['status'] !== 'WORKING') {
+                $_SESSION['flash_error'] = "Sesi WA '{$session['name']}' belum terhubung (Status: {$session['status']}).";
+                Response::redirect('/messages');
+                return;
+            }
+
+            // Cek Kuota
+            $activeSub = $this->subscriptions->findActiveForUser($userId);
+            if (!$activeSub) {
+                $_SESSION['flash_error'] = 'Anda tidak memiliki paket langganan aktif.';
+                Response::redirect('/messages');
+                return;
+            }
+
+            $quota = new QuotaService($this->subscriptions);
+            $res   = $quota->reserveMessage($userId);
+            if (!$res['ok']) {
+                $_SESSION['flash_error'] = $res['message'];
+                Response::redirect('/messages');
+                return;
+            }
+
+            // Kirim via WAHA Service
+            $chatId = WahaService::toChatId($recipient);
+            $waha   = new WahaService();
+            $wahaSessionName = $session['waha_session_name'];
+
             $wahaRes = [];
             switch ($type) {
                 case 'image':
@@ -163,7 +163,12 @@ class MessageController
                     break;
             }
 
-            $wahaMsgId = $wahaRes['id'] ?? null;
+            $rawMsgId = $wahaRes['id'] ?? ($wahaRes['_data']['id'] ?? null);
+            if (is_array($rawMsgId)) {
+                $rawMsgId = $rawMsgId['_serialized'] ?? json_encode($rawMsgId);
+            }
+            $wahaMsgId = is_string($rawMsgId) ? $rawMsgId : null;
+
             $payload = [
                 'type' => $type,
                 'text' => $text,
@@ -183,6 +188,8 @@ class MessageController
                 'sent',
                 $wahaMsgId
             );
+
+            (new \App\Repositories\UsageRepository())->log($userId, $sessionId, 'message_sent');
 
             $_SESSION['flash_success'] = 'Pesan WhatsApp berhasil dikirim ke ' . htmlspecialchars($recipient) . '!';
         } catch (Throwable $e) {
