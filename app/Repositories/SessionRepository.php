@@ -103,4 +103,10 @@ class SessionRepository
         $stmt = $this->db->prepare('UPDATE whatsapp_sessions SET phone_number = ? WHERE id = ?');
         $stmt->execute([$phoneNumber, $sessionId]);
     }
+
+    public function delete(int $sessionId): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM whatsapp_sessions WHERE id = ?');
+        $stmt->execute([$sessionId]);
+    }
 }

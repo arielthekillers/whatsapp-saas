@@ -30,8 +30,10 @@ $router->get('/sessions/create', [SessionController::class, 'showCreate']);
 $router->post('/sessions', [SessionController::class, 'store']);
 $router->get('/sessions/{id}', [SessionController::class, 'show']);
 $router->get('/sessions/{id}/status', [SessionController::class, 'refreshStatus']);
+$router->post('/sessions/{id}/start', [SessionController::class, 'start']);
 $router->post('/sessions/{id}/stop', [SessionController::class, 'stop']);
 $router->post('/sessions/{id}/logout', [SessionController::class, 'logoutSession']);
+$router->post('/sessions/{id}/delete', [SessionController::class, 'delete']);
 
 $router->get('/api-keys', [ApiKeyController::class, 'index']);
 $router->post('/api-keys', [ApiKeyController::class, 'store']);

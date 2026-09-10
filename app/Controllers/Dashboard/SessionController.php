@@ -288,4 +288,55 @@ class SessionController
 
         Response::redirect('/sessions/' . $id);
     }
+
+    public function start(int $id): void
+    {
+        $user    = AuthMiddleware::handle();
+        $session = $this->sessions->findForUser($user['id'], $id);
+
+        if ($session) {
+            try {
+                $waha = new WahaService();
+                $callbackUrl = rtrim((string) Env::get('APP_URL', 'https://wapify.biz.id'), '/') . '/webhook/waha';
+                try {
+                    $waha->createAndStartSession($session['waha_session_name'], [
+                        ['url' => $callbackUrl, 'events' => ['session.status', 'message', 'message.ack']],
+                    ]);
+                } catch (Throwable $se) {
+                    try {
+                        $waha->restartSession($session['waha_session_name']);
+                    } catch (Throwable $re) {}
+                }
+                $this->sessions->updateStatus($id, 'STARTING');
+            } catch (Throwable $e) {
+                error_log('[waha] Gagal start session #' . $id . ': ' . $e->getMessage());
+            }
+        }
+
+        Response::redirect('/sessions/' . $id);
+    }
+
+    public function delete(int $id): void
+    {
+        $user    = AuthMiddleware::handle();
+        $session = $this->sessions->findForUser($user['id'], $id);
+
+        if ($session) {
+            try {
+                $waha = new WahaService();
+                try {
+                    $waha->stopSession($session['waha_session_name']);
+                } catch (Throwable $se) {}
+                try {
+                    $waha->deleteSession($session['waha_session_name']);
+                } catch (Throwable $de) {}
+            } catch (Throwable $e) {
+                error_log('[waha] Gagal delete session di WAHA #' . $id . ': ' . $e->getMessage());
+            }
+
+            $this->sessions->delete($id);
+        }
+
+        Response::redirect('/sessions');
+    }
 }
