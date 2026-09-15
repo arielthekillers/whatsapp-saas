@@ -60,7 +60,6 @@ $router->get('/profile', [ProfileController::class, 'index']);
 $router->post('/profile/password', [ProfileController::class, 'updatePassword']);
 
 $router->get('/docs', function() {
-    $user = \App\Middleware\AuthMiddleware::handle();
     require __DIR__ . '/../views/docs/index.php';
 });
 

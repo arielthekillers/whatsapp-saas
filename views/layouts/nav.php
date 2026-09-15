@@ -76,7 +76,7 @@ if (!empty($_SESSION['user_id'])) {
           <div>
             <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2.5 px-3 whitespace-nowrap truncate">RESOURCES</p>
             <div class="space-y-1">
-              <a href="<?= url('/docs') ?>" class="<?= getMenuClass('docs', $currentPath) ?>">
+              <a href="<?= url('/docs') ?>" target="_blank" rel="noopener noreferrer" class="<?= getMenuClass('docs', $currentPath) ?>">
                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px;">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -156,7 +156,7 @@ if (!empty($_SESSION['user_id'])) {
           <div>
             <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2.5 px-3">Resources</p>
             <div class="space-y-1">
-              <a href="<?= url('/docs') ?>" class="<?= getMenuClass('docs', $currentPath) ?>">
+              <a href="<?= url('/docs') ?>" target="_blank" rel="noopener noreferrer" class="<?= getMenuClass('docs', $currentPath) ?>">
                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px;">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -176,36 +176,43 @@ if (!empty($_SESSION['user_id'])) {
 
     <!-- Sleek Integrated Active User Widget -->
     <div class="border-t border-gray-100 pt-4">
-      <div class="flex items-center justify-between p-2 rounded-2xl bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
-        <a href="<?= url('/profile') ?>" class="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-80 transition-opacity">
-          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-extrabold flex items-center justify-center text-xs shadow-xs font-display shrink-0">
-            <?= htmlspecialchars(strtoupper(substr($_SESSION['user_name'] ?? 'U', 0, 1))) ?>
-          </div>
-          <div class="min-w-0 flex-1">
-            <p class="text-xs font-extrabold text-gray-900 truncate font-display leading-tight">
-              <?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?>
-            </p>
-            <p class="text-[9px] font-medium text-gray-400 truncate leading-tight mt-0.5 tracking-tight">
-              <?= htmlspecialchars($_SESSION['user_email'] ?? '') ?>
-            </p>
-          </div>
-        </a>
+      <?php if (!empty($_SESSION['user_id'])): ?>
+        <div class="flex items-center justify-between p-2 rounded-2xl bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
+          <a href="<?= url('/profile') ?>" class="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-80 transition-opacity">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-extrabold flex items-center justify-center text-xs shadow-xs font-display shrink-0">
+              <?= htmlspecialchars(strtoupper(substr($_SESSION['user_name'] ?? 'U', 0, 1))) ?>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-extrabold text-gray-900 truncate font-display leading-tight">
+                <?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?>
+              </p>
+              <p class="text-[9px] font-medium text-gray-400 truncate leading-tight mt-0.5 tracking-tight">
+                <?= htmlspecialchars($_SESSION['user_email'] ?? '') ?>
+              </p>
+            </div>
+          </a>
 
-        <form method="POST" action="<?= url('/logout') ?>" class="shrink-0">
-          <?= \App\Helpers\Csrf::field() ?>
-          <button type="submit" title="Keluar Sesi" class="p-1.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
-        </form>
-      </div>
+          <form method="POST" action="<?= url('/logout') ?>" class="shrink-0">
+            <?= \App\Helpers\Csrf::field() ?>
+            <button type="submit" title="Keluar Sesi" class="p-1.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </form>
+        </div>
+      <?php else: ?>
+        <div class="flex flex-col gap-2">
+          <a href="<?= url('/login') ?>" class="w-full text-center text-xs font-bold text-gray-700 hover:text-purple-600 bg-gray-100 py-2.5 rounded-xl transition-colors">Masuk</a>
+          <a href="<?= url('/register') ?>" class="w-full text-center text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 py-2.5 rounded-xl transition-colors shadow-xs">Daftar Sekarang</a>
+        </div>
+      <?php endif; ?>
     </div>
   </aside>
 
   <!-- Mobile Header Navigation (Mobile Only) -->
   <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between md:hidden">
-    <a href="<?= url('/dashboard') ?>" class="flex items-center gap-2.5">
+    <a href="<?= url('/') ?>" class="flex items-center gap-2.5">
       <div class="bg-gradient-to-br from-purple-600 to-blue-600 p-1.5 rounded-lg text-white shadow-md">
         <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
       </div>
@@ -218,19 +225,27 @@ if (!empty($_SESSION['user_id'])) {
 
   <!-- Mobile Dropdown Menu -->
   <div id="mobile-menu" class="hidden bg-white border-b border-gray-200 px-6 py-4 space-y-3.5 md:hidden">
-    <!-- Active User info (Mobile) -->
-    <div class="flex items-center gap-3 pb-3 border-b border-gray-100">
-      <div class="w-8 h-8 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center text-xs">
-        <?= htmlspecialchars(strtoupper(substr($_SESSION['user_name'] ?? 'U', 0, 1))) ?>
+    <?php if (!empty($_SESSION['user_id'])): ?>
+      <!-- Active User info (Mobile) -->
+      <div class="flex items-center gap-3 pb-3 border-b border-gray-100">
+        <div class="w-8 h-8 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center text-xs">
+          <?= htmlspecialchars(strtoupper(substr($_SESSION['user_name'] ?? 'U', 0, 1))) ?>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs font-bold text-gray-900 truncate"><?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?></p>
+          <p class="text-[9px] text-gray-400 truncate tracking-tight"><?= htmlspecialchars($_SESSION['user_email'] ?? '') ?></p>
+        </div>
       </div>
-      <div class="min-w-0">
-        <p class="text-xs font-bold text-gray-900 truncate"><?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?></p>
-        <p class="text-[9px] text-gray-400 truncate tracking-tight"><?= htmlspecialchars($_SESSION['user_email'] ?? '') ?></p>
+    <?php else: ?>
+      <div class="pb-3 border-b border-gray-100 flex gap-2">
+        <a href="<?= url('/login') ?>" class="flex-1 text-center text-xs font-bold text-gray-700 bg-gray-100 py-2 rounded-lg">Masuk</a>
+        <a href="<?= url('/register') ?>" class="flex-1 text-center text-xs font-bold text-white bg-purple-600 py-2 rounded-lg">Daftar</a>
       </div>
-    </div>
+    <?php endif; ?>
+
     <?php if ($isAdmin): ?>
       <a href="<?= url('/admin') ?>" class="block text-sm font-bold text-purple-700">Admin Dashboard</a>
-      <a href="<?= url('/docs') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">API Docs</a>
+      <a href="<?= url('/docs') ?>" target="_blank" rel="noopener noreferrer" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">API Docs</a>
       <a href="<?= url('/profile') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Profile</a>
     <?php else: ?>
       <a href="<?= url('/dashboard') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Dashboard</a>
@@ -240,13 +255,16 @@ if (!empty($_SESSION['user_id'])) {
       <a href="<?= url('/messages') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Pesan &amp; Logs</a>
       <a href="<?= url('/billing') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Billing</a>
       <a href="<?= url('/usage') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Usage</a>
-      <a href="<?= url('/docs') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">API Docs</a>
+      <a href="<?= url('/docs') ?>" target="_blank" rel="noopener noreferrer" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">API Docs</a>
       <a href="<?= url('/profile') ?>" class="block text-sm font-semibold text-gray-600 hover:text-purple-600">Profile</a>
     <?php endif; ?>
-    <form method="POST" action="<?= url('/logout') ?>" class="block pt-2.5 border-t border-gray-100">
-      <?= \App\Helpers\Csrf::field() ?>
-      <button type="submit" class="text-sm font-bold text-red-500 hover:text-red-700">Keluar</button>
-    </form>
+
+    <?php if (!empty($_SESSION['user_id'])): ?>
+      <form method="POST" action="<?= url('/logout') ?>" class="block pt-2.5 border-t border-gray-100">
+        <?= \App\Helpers\Csrf::field() ?>
+        <button type="submit" class="text-sm font-bold text-red-500 hover:text-red-700">Keluar</button>
+      </form>
+    <?php endif; ?>
   </div>
 
   <!-- Content Container -->

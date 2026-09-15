@@ -122,6 +122,7 @@ require __DIR__ . '/../layouts/header.php'; ?>
         <a href="#features" class="hover:text-purple-600 transition-colors">Fitur</a>
         <a href="#pricing" class="hover:text-purple-600 transition-colors">Harga</a>
         <a href="#steps" class="hover:text-purple-600 transition-colors">Alur</a>
+        <a href="<?= url('/docs') ?>" class="hover:text-purple-600 transition-colors">Dokumentasi API</a>
         <a href="#faq" class="hover:text-purple-600 transition-colors">FAQ</a>
         <a href="#contact" class="hover:text-purple-600 transition-colors">Kontak</a>
       </nav>
@@ -161,6 +162,10 @@ require __DIR__ . '/../layouts/header.php'; ?>
         </a>
         <a href="#steps" onclick="closeMobileMenu()" class="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 flex items-center justify-between">
           <span>Alur</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <a href="<?= url('/docs') ?>" onclick="closeMobileMenu()" class="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 flex items-center justify-between">
+          <span>Dokumentasi API</span>
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </a>
         <a href="#faq" onclick="closeMobileMenu()" class="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 flex items-center justify-between">
@@ -224,7 +229,7 @@ require __DIR__ . '/../layouts/header.php'; ?>
             <span class="w-3 h-3 bg-yellow-400 rounded-full"></span>
             <span class="w-3 h-3 bg-green-400 rounded-full"></span>
           </div>
-          <span class="text-xs text-gray-400 font-mono">wapify.app/dashboard</span>
+          <span class="text-xs text-gray-400 font-mono">wapify.biz.id/dashboard</span>
         </div>
 
         <!-- Mockup Content -->
@@ -238,10 +243,10 @@ require __DIR__ . '/../layouts/header.php'; ?>
               </div>
               <div>
                 <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Status API Utama</p>
-                <p class="text-sm font-bold text-gray-800">Connected to WhatsApp API Server</p>
+                <h4 class="font-bold text-gray-900 text-sm">Connected to WhatsApp API Server</h4>
               </div>
             </div>
-            <span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-semibold">Active</span>
+            <span class="text-xs bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full">Active</span>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
@@ -257,10 +262,11 @@ require __DIR__ . '/../layouts/header.php'; ?>
 
           <div class="border border-gray-100 rounded-xl p-4">
             <p class="text-xs text-gray-400 mb-2">Simulasi Pengiriman Pesan (cURL)</p>
-            <pre class="bg-gray-900 text-gray-300 text-[10px] sm:text-xs font-mono p-3 rounded-lg overflow-x-auto">
-curl -X POST http://localhost/wapify/v1/messages/send \
+            <pre class="bg-gray-900 text-gray-300 text-[10px] sm:text-xs font-mono p-3 rounded-lg overflow-x-auto leading-relaxed">
+curl -X POST https://wapify.biz.id/v1/messages/send \
   -H "Authorization: Bearer wsk_xxxx..." \
-  -d '{"to": "6281359774765", "text": "Halo dari Wapify!"}'</pre>
+  -H "Content-Type: application/json" \
+  -d '{"session": "test", "to": "081234567890", "type": "text", "text": "Halo dari Wapify!"}'</pre>
           </div>
         </div>
       </div>
@@ -850,6 +856,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
         <ul class="space-y-2 text-sm">
           <li><a href="#features" class="hover:text-white transition-colors">Fitur Platform</a></li>
           <li><a href="#pricing" class="hover:text-white transition-colors">Paket &amp; Harga</a></li>
+          <li><a href="<?= url('/docs') ?>" class="hover:text-white transition-colors">Dokumentasi API</a></li>
           <li><a href="#faq" class="hover:text-white transition-colors">Bantuan / FAQ</a></li>
           <li><a href="<?= url('/login') ?>" class="hover:text-white transition-colors">Masuk Dashboard</a></li>
           <li><a href="<?= url('/register') ?>" class="hover:text-white transition-colors">Buat Akun Gratis</a></li>
