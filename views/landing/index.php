@@ -266,7 +266,7 @@ require __DIR__ . '/../layouts/header.php'; ?>
 curl -X POST https://wapify.biz.id/v1/messages/send \
   -H "Authorization: Bearer wsk_xxxx..." \
   -H "Content-Type: application/json" \
-  -d '{"session": "test", "to": "081234567890", "type": "text", "text": "Halo dari Wapify!"}'</pre>
+  -d '{"session": "test", "to": "08123456xxxx", "type": "text", "text": "Halo dari Wapify!"}'</pre>
           </div>
         </div>
       </div>

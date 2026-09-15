@@ -289,7 +289,7 @@
   -H <span class="json-string">"Content-Type: application/json"</span> \
   -d <span class="json-string">'{
     <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
-    <span class="json-key">"to"</span>: <span class="json-string">"081234567890"</span>,
+    <span class="json-key">"to"</span>: <span class="json-string">"08123456xxxx"</span>,
     <span class="json-key">"type"</span>: <span class="json-string">"text"</span>,
     <span class="json-key">"text"</span>: <span class="json-string">"Halo! Ini pesan pengujian dari API Wapify."</span>
   }'</span></pre>
@@ -303,7 +303,7 @@
 
 <span class="json-key">$data</span> = [
     <span class="json-string">'session'</span> =&gt; <span class="json-string">'test'</span>,
-    <span class="json-string">'to'</span>      =&gt; <span class="json-string">'081234567890'</span>,
+    <span class="json-string">'to'</span>      =&gt; <span class="json-string">'08123456xxxx'</span>,
     <span class="json-string">'type'</span>    =&gt; <span class="json-string">'text'</span>,
     <span class="json-string">'text'</span>    =&gt; <span class="json-string">'Halo! Ini pesan dari PHP script Wapify.'</span>
 ];
@@ -331,7 +331,7 @@ echo <span class="json-key">$response</span>;</pre>
   <span class="json-key">try</span> {
     <span class="json-key">const</span> res = <span class="json-key">await</span> axios.post(<span class="json-string">'https://wapify.biz.id/v1/messages/send'</span>, {
       <span class="json-key">session</span>: <span class="json-string">'test'</span>,
-      <span class="json-key">to</span>: <span class="json-string">'081234567890'</span>,
+      <span class="json-key">to</span>: <span class="json-string">'08123456xxxx'</span>,
       <span class="json-key">type</span>: <span class="json-string">'text'</span>,
       <span class="json-key">text</span>: <span class="json-string">'Halo dari Node.js Axios!'</span>
     }, {
@@ -361,7 +361,7 @@ headers = {
 }
 payload = {
     <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
-    <span class="json-key">"to"</span>: <span class="json-string">"081234567890"</span>,
+    <span class="json-key">"to"</span>: <span class="json-string">"08123456xxxx"</span>,
     <span class="json-key">"type"</span>: <span class="json-string">"text"</span>,
     <span class="json-key">"text"</span>: <span class="json-string">"Halo dari Python Requests!"</span>
 }
@@ -381,7 +381,7 @@ print(response.json())</pre>
   <span class="json-key">"data"</span>: {
     <span class="json-key">"message_id"</span>: <span class="json-string">"wamid.HBgLNjI4MTIzNDU2Nzg5M..."</span>,
     <span class="json-key">"status"</span>: <span class="json-string">"sent"</span>,
-    <span class="json-key">"to"</span>: <span class="json-string">"6281234567890"</span>
+    <span class="json-key">"to"</span>: <span class="json-string">"62812345xxxx"</span>
   }
 }</pre>
           </div>
@@ -417,7 +417,7 @@ print(response.json())</pre>
   -H <span class="json-string">"Content-Type: application/json"</span> \
   -d <span class="json-string">'{
     <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
-    <span class="json-key">"to"</span>: <span class="json-string">"081234567890"</span>,
+    <span class="json-key">"to"</span>: <span class="json-string">"08123456xxxx"</span>,
     <span class="json-key">"type"</span>: <span class="json-string">"image"</span>,
     <span class="json-key">"url"</span>: <span class="json-string">"https://picsum.photos/600/400"</span>,
     <span class="json-key">"text"</span>: <span class="json-string">"Temukan promo spesial Anda hari ini 🚀"</span>
@@ -428,7 +428,7 @@ print(response.json())</pre>
 <pre><span class="json-key">&lt;?php</span>
 <span class="json-key">$data</span> = [
     <span class="json-string">'session'</span> =&gt; <span class="json-string">'test'</span>,
-    <span class="json-string">'to'</span>      =&gt; <span class="json-string">'081234567890'</span>,
+    <span class="json-string">'to'</span>      =&gt; <span class="json-string">'08123456xxxx'</span>,
     <span class="json-string">'type'</span>    =&gt; <span class="json-string">'image'</span>,
     <span class="json-string">'url'</span>     =&gt; <span class="json-string">'https://picsum.photos/600/400'</span>,
     <span class="json-string">'text'</span>    =&gt; <span class="json-string">'Temukan promo spesial Anda hari ini 🚀'</span>
@@ -438,7 +438,7 @@ print(response.json())</pre>
             <div id="img-node" class="tab-content hidden">
 <pre><span class="json-key">const</span> res = <span class="json-key">await</span> axios.post(<span class="json-string">'https://wapify.biz.id/v1/messages/send'</span>, {
   <span class="json-key">session</span>: <span class="json-string">'test'</span>,
-  <span class="json-key">to</span>: <span class="json-string">'081234567890'</span>,
+  <span class="json-key">to</span>: <span class="json-string">'08123456xxxx'</span>,
   <span class="json-key">type</span>: <span class="json-string">'image'</span>,
   <span class="json-key">url</span>: <span class="json-string">'https://picsum.photos/600/400'</span>,
   <span class="json-key">text</span>: <span class="json-string">'Temukan promo spesial Anda hari ini 🚀'</span>
@@ -489,7 +489,7 @@ print(response.json())</pre>
   -H <span class="json-string">"Content-Type: application/json"</span> \
   -d <span class="json-string">'{
     <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
-    <span class="json-key">"to"</span>: <span class="json-string">"081234567890"</span>,
+    <span class="json-key">"to"</span>: <span class="json-string">"08123456xxxx"</span>,
     <span class="json-key">"type"</span>: <span class="json-string">"video"</span>,
     <span class="json-key">"url"</span>: <span class="json-string">"https://example.com/demo.mp4"</span>,
     <span class="json-key">"text"</span>: <span class="json-string">"Video Panduan Penggunaan Aplikasi Wapify"</span>
@@ -499,7 +499,7 @@ print(response.json())</pre>
 <pre><span class="json-key">&lt;?php</span>
 <span class="json-key">$data</span> = [
     <span class="json-string">'session'</span> =&gt; <span class="json-string">'test'</span>,
-    <span class="json-string">'to'</span>      =&gt; <span class="json-string">'081234567890'</span>,
+    <span class="json-string">'to'</span>      =&gt; <span class="json-string">'08123456xxxx'</span>,
     <span class="json-string">'type'</span>    =&gt; <span class="json-string">'video'</span>,
     <span class="json-string">'url'</span>     =&gt; <span class="json-string">'https://example.com/demo.mp4'</span>,
     <span class="json-string">'text'</span>    =&gt; <span class="json-string">'Video Panduan Penggunaan Aplikasi Wapify'</span>
@@ -549,7 +549,7 @@ print(response.json())</pre>
   -H <span class="json-string">"Content-Type: application/json"</span> \
   -d <span class="json-string">'{
     <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
-    <span class="json-key">"to"</span>: <span class="json-string">"081234567890"</span>,
+    <span class="json-key">"to"</span>: <span class="json-string">"08123456xxxx"</span>,
     <span class="json-key">"type"</span>: <span class="json-string">"file"</span>,
     <span class="json-key">"url"</span>: <span class="json-string">"https://example.com/invoice-123.pdf"</span>,
     <span class="json-key">"filename"</span>: <span class="json-string">"Invoice-123.pdf"</span>,
@@ -600,7 +600,7 @@ print(response.json())</pre>
   -H <span class="json-string">"Content-Type: application/json"</span> \
   -d <span class="json-string">'{
     <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
-    <span class="json-key">"to"</span>: <span class="json-string">"081234567890"</span>,
+    <span class="json-key">"to"</span>: <span class="json-string">"08123456xxxx"</span>,
     <span class="json-key">"type"</span>: <span class="json-string">"location"</span>,
     <span class="json-key">"latitude"</span>: <span class="json-number">-6.175392</span>,
     <span class="json-key">"longitude"</span>: <span class="json-number">106.827153</span>,
@@ -651,12 +651,12 @@ print(response.json())</pre>
   -H <span class="json-string">"Content-Type: application/json"</span> \
   -d <span class="json-string">'{
     <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
-    <span class="json-key">"to"</span>: <span class="json-string">"081234567890"</span>,
+    <span class="json-key">"to"</span>: <span class="json-string">"08123456xxxx"</span>,
     <span class="json-key">"type"</span>: <span class="json-string">"contact"</span>,
     <span class="json-key">"contacts"</span>: [
       {
         <span class="json-key">"name"</span>: <span class="json-string">"Customer Support Wapify"</span>,
-        <span class="json-key">"phone"</span>: <span class="json-string">"6281234567890"</span>
+        <span class="json-key">"phone"</span>: <span class="json-string">"62812345xxxx"</span>
       }
     ]
   }'</span></pre>
@@ -714,7 +714,7 @@ print(response.json())</pre>
     <span class="json-key">"id"</span>: <span class="json-number">1</span>,
     <span class="json-key">"name"</span>: <span class="json-string">"test"</span>,
     <span class="json-key">"status"</span>: <span class="json-string">"WORKING"</span>,
-    <span class="json-key">"phone_number"</span>: <span class="json-string">"+6281234567890"</span>,
+    <span class="json-key">"phone_number"</span>: <span class="json-string">"+62812345xxxx"</span>,
     <span class="json-key">"created_at"</span>: <span class="json-string">"2026-09-10 01:07:40"</span>
   }
 ]</pre>
@@ -746,14 +746,14 @@ print(response.json())</pre>
 
           <div class="p-4 sm:p-5 font-mono text-xs text-slate-100 overflow-x-auto">
             <div id="check-curl" class="tab-content">
-<pre>curl -X GET <span class="json-string">"https://wapify.biz.id/v1/contacts/check-exists?session=test&phone=081234567890"</span> \
+<pre>curl -X GET <span class="json-string">"https://wapify.biz.id/v1/contacts/check-exists?session=test&phone=08123456xxxx"</span> \
   -H <span class="json-string">"Authorization: Bearer YOUR_API_KEY"</span></pre>
             </div>
 
             <div id="check-php" class="tab-content hidden">
 <pre><span class="json-key">&lt;?php</span>
 <span class="json-key">$apiKey</span> = <span class="json-string">'YOUR_API_KEY'</span>;
-<span class="json-key">$url</span> = <span class="json-string">'https://wapify.biz.id/v1/contacts/check-exists?session=test&phone=081234567890'</span>;
+<span class="json-key">$url</span> = <span class="json-string">'https://wapify.biz.id/v1/contacts/check-exists?session=test&phone=08123456xxxx'</span>;
 
 <span class="json-key">$ch</span> = curl_init(<span class="json-key">$url</span>);
 curl_setopt(<span class="json-key">$ch</span>, CURLOPT_HTTPHEADER, [
@@ -772,7 +772,7 @@ echo <span class="json-key">$response</span>;</pre>
 
 <span class="json-key">const</span> checkContact = <span class="json-key">async</span> () =&gt; {
   <span class="json-key">try</span> {
-    <span class="json-key">const</span> res = <span class="json-key">await</span> axios.get(<span class="json-string">'https://wapify.biz.id/v1/contacts/check-exists?session=test&phone=081234567890'</span>, {
+    <span class="json-key">const</span> res = <span class="json-key">await</span> axios.get(<span class="json-string">'https://wapify.biz.id/v1/contacts/check-exists?session=test&phone=08123456xxxx'</span>, {
       <span class="json-key">headers</span>: { <span class="json-string">'Authorization'</span>: <span class="json-string">'Bearer YOUR_API_KEY'</span> }
     });
     console.log(res.data);
@@ -792,9 +792,9 @@ checkContact();</pre>
 <pre>{
   <span class="json-key">"status"</span>: <span class="json-string">"success"</span>,
   <span class="json-key">"data"</span>: {
-    <span class="json-key">"number"</span>: <span class="json-string">"6281234567890"</span>,
+    <span class="json-key">"number"</span>: <span class="json-string">"62812345xxxx"</span>,
     <span class="json-key">"numberExists"</span>: <span class="json-boolean">true</span>,
-    <span class="json-key">"chatId"</span>: <span class="json-string">"6281234567890@c.us"</span>
+    <span class="json-key">"chatId"</span>: <span class="json-string">"62812345xxxx@c.us"</span>
   }
 }</pre>
           </div>
@@ -821,7 +821,7 @@ checkContact();</pre>
   <span class="json-key">"session"</span>: <span class="json-string">"test"</span>,
   <span class="json-key">"data"</span>: {
     <span class="json-key">"message_id"</span>: <span class="json-string">"wamid.HBgLNjI4MTIzNDU2Nzg5M..."</span>,
-    <span class="json-key">"from"</span>: <span class="json-string">"6281234567890@c.us"</span>,
+    <span class="json-key">"from"</span>: <span class="json-string">"62812345xxxx@c.us"</span>,
     <span class="json-key">"body"</span>: <span class="json-string">"Halo CS Wapify, saya mau tanya paket"</span>,
     <span class="json-key">"timestamp"</span>: <span class="json-number">1725960000</span>
   }
@@ -896,7 +896,7 @@ function downloadPostmanCollection() {
                         "mode": "raw",
                         "raw": JSON.stringify({
                             "session": "test",
-                            "to": "081234567890",
+                            "to": "08123456xxxx",
                             "type": "text",
                             "text": "Halo! Pesan otomatis via Postman Collection."
                         }, null, 2)
@@ -916,7 +916,7 @@ function downloadPostmanCollection() {
                         "mode": "raw",
                         "raw": JSON.stringify({
                             "session": "test",
-                            "to": "081234567890",
+                            "to": "08123456xxxx",
                             "type": "image",
                             "url": "https://picsum.photos/600/400",
                             "text": "Gambar via Postman"
@@ -932,7 +932,7 @@ function downloadPostmanCollection() {
                     "header": [
                         { "key": "Authorization", "value": "Bearer {{API_KEY}}", "type": "text" }
                     ],
-                    "url": { "raw": "https://wapify.biz.id/v1/contacts/check-exists?session=test&phone=081234567890" }
+                    "url": { "raw": "https://wapify.biz.id/v1/contacts/check-exists?session=test&phone=08123456xxxx" }
                 }
             },
             {
