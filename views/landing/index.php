@@ -66,6 +66,38 @@ require __DIR__ . '/../layouts/header.php'; ?>
   .accordion-open .accordion-icon {
     transform: rotate(180deg);
   }
+
+  /* Hide scrollbar for mobile slider carousel */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Mobile slider carousel width for cards */
+  .landing-plan-card,
+  .landing-step-card,
+  .landing-testimonial-card,
+  .landing-feature-card {
+    flex-shrink: 0;
+    width: 82vw;
+    min-width: 270px;
+    max-width: 340px;
+    scroll-snap-align: center;
+  }
+  @media (min-width: 768px) {
+    .landing-plan-card,
+    .landing-step-card,
+    .landing-testimonial-card,
+    .landing-feature-card {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      scroll-snap-align: none !important;
+    }
+  }
 </style>
 
 <div class="relative overflow-hidden bg-gray-50 min-h-screen">
@@ -74,7 +106,7 @@ require __DIR__ . '/../layouts/header.php'; ?>
   <!-- Header / Nav -->
   <header class="sticky top-0 z-50 glass border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
+      <a href="#" class="flex items-center gap-3">
         <!-- Modern WA logo icon -->
         <div class="gradient-bg p-2.5 rounded-xl shadow-md text-white">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -83,8 +115,9 @@ require __DIR__ . '/../layouts/header.php'; ?>
           </svg>
         </div>
         <span class="text-2xl font-bold tracking-tight text-gray-900 font-display">Wapify</span>
-      </div>
+      </a>
 
+      <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-600">
         <a href="#features" class="hover:text-purple-600 transition-colors">Fitur</a>
         <a href="#pricing" class="hover:text-purple-600 transition-colors">Harga</a>
@@ -93,12 +126,58 @@ require __DIR__ . '/../layouts/header.php'; ?>
         <a href="#contact" class="hover:text-purple-600 transition-colors">Kontak</a>
       </nav>
 
-      <div class="flex items-center gap-3">
+      <!-- Desktop CTA Buttons -->
+      <div class="hidden md:flex items-center gap-3">
         <a href="<?= url('/login') ?>"
           class="text-sm font-semibold text-gray-700 hover:text-purple-600 transition-colors px-4 py-2">Masuk</a>
         <a href="<?= url('/register') ?>"
           class="gradient-bg text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-purple-500/20 hover:opacity-95 transition-all">Daftar
           Sekarang</a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button id="mobileMenuBtn" type="button" class="md:hidden p-2 rounded-xl text-gray-700 hover:text-purple-600 hover:bg-purple-50 focus:outline-none transition-colors" aria-label="Toggle Navigation Menu" onclick="toggleMobileMenu()">
+        <!-- Hamburger Icon -->
+        <svg id="hamburgerIcon" class="w-6 h-6 block" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <!-- Close (X) Icon -->
+        <svg id="closeIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200/80 bg-white/95 backdrop-blur-md px-6 py-5 shadow-xl space-y-4">
+      <nav class="flex flex-col space-y-3 font-semibold text-gray-700">
+        <a href="#features" onclick="closeMobileMenu()" class="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 flex items-center justify-between">
+          <span>Fitur</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#pricing" onclick="closeMobileMenu()" class="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 flex items-center justify-between">
+          <span>Harga</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#steps" onclick="closeMobileMenu()" class="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 flex items-center justify-between">
+          <span>Alur</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#faq" onclick="closeMobileMenu()" class="hover:text-purple-600 transition-colors py-2 border-b border-gray-100 flex items-center justify-between">
+          <span>FAQ</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#contact" onclick="closeMobileMenu()" class="hover:text-purple-600 transition-colors py-2 flex items-center justify-between">
+          <span>Kontak</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </nav>
+
+      <div class="pt-4 border-t border-gray-100 flex flex-col gap-3">
+        <a href="<?= url('/login') ?>"
+          class="w-full text-center font-semibold text-gray-700 hover:text-purple-600 bg-gray-100/80 hover:bg-gray-100 py-3 rounded-xl transition-colors">Masuk</a>
+        <a href="<?= url('/register') ?>"
+          class="w-full text-center gradient-bg text-white font-semibold py-3 rounded-xl shadow-md shadow-purple-500/20 hover:opacity-95 transition-all">Daftar Sekarang</a>
       </div>
     </div>
   </header>
@@ -118,7 +197,7 @@ require __DIR__ . '/../layouts/header.php'; ?>
         Revolusi Komunikasi Bisnis Anda Dengan <span class="gradient-text">Wapify</span>
       </h1>
       <p class="text-lg text-gray-600 max-w-xl mx-auto lg:mx-0">
-        Kirim pesan, broadcast, dan kelola chatbot dengan infrastruktur WAHA REST API yang sangat andal, cepat, dan
+        Kirim pesan, broadcast, dan kelola chatbot dengan infrastruktur WhatsApp REST API yang sangat andal, cepat, dan
         terjangkau untuk skala bisnis kecil hingga enterprise.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
@@ -159,7 +238,7 @@ require __DIR__ . '/../layouts/header.php'; ?>
               </div>
               <div>
                 <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Status API Utama</p>
-                <p class="text-sm font-bold text-gray-800">Connected to WAHA REST Server</p>
+                <p class="text-sm font-bold text-gray-800">Connected to WhatsApp API Server</p>
               </div>
             </div>
             <span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-semibold">Active</span>
@@ -197,10 +276,10 @@ curl -X POST http://localhost/wapify/v1/messages/send \
           kuota aman dan perlindungan rate-limit bawaan.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="flex md:grid md:grid-cols-2 gap-5 justify-start md:justify-center items-stretch overflow-x-auto snap-x snap-mandatory pt-3 pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth no-scrollbar" style="overflow-y: visible;">
         <!-- Card 1 -->
         <div
-          class="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-8 group">
+          class="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-8 group landing-feature-card">
           <div
             class="w-12 h-12 rounded-2xl gradient-bg-soft flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -220,7 +299,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
 
         <!-- Card 2 -->
         <div
-          class="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-8 group">
+          class="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-8 group landing-feature-card">
           <div
             class="w-12 h-12 rounded-2xl gradient-bg-soft flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -240,7 +319,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
 
         <!-- Card 3 -->
         <div
-          class="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-8 group">
+          class="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-8 group landing-feature-card">
           <div
             class="w-12 h-12 rounded-2xl gradient-bg-soft flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -260,7 +339,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
 
         <!-- Card 4 -->
         <div
-          class="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-8 group">
+          class="bg-gray-50/50 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl hover:-translate-y-1 transition-all rounded-3xl p-8 group landing-feature-card">
           <div
             class="w-12 h-12 rounded-2xl gradient-bg-soft flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -270,7 +349,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
           </div>
           <h3 class="text-xl font-bold text-gray-900 mb-3">Proteksi Kuota &amp; Rate-Limit</h3>
           <p class="text-gray-500 text-sm leading-relaxed mb-4">Reservasi kuota secara atomik langsung di database
-            sebelum diteruskan ke API WAHA. Dilengkapi filter rate-limiting per-menit otomatis.</p>
+            sebelum pengiriman pesan diteruskan. Dilengkapi filter rate-limiting per-menit otomatis.</p>
           <ul class="space-y-2 text-xs text-gray-500 font-medium">
             <li class="flex items-center gap-2">✓ Reservasi kuota atomik di DB</li>
             <li class="flex items-center gap-2">✓ Rate limit per menit berbasis plan</li>
@@ -290,72 +369,145 @@ curl -X POST http://localhost/wapify/v1/messages/send \
           proteksi rate-limit bawaan.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-        <?php foreach ($plans as $plan): ?>
-          <?php
-          $isPopular = $plan['name'] === 'PRO';
-          $borderClass = $isPopular ? 'border-2 border-purple-500 shadow-2xl scale-[1.03] relative z-10' : 'border border-gray-200 shadow-sm';
-          $btnClass = $isPopular ? 'gradient-bg text-white hover:opacity-95' : 'bg-gray-100 hover:bg-gray-200 text-gray-800';
-          ?>
-          <div class="bg-white rounded-3xl p-8 flex flex-col justify-between <?= $borderClass ?>">
-            <?php if ($isPopular): ?>
-              <span
-                class="absolute top-0 right-8 transform -translate-y-1/2 gradient-bg text-white text-xs font-bold px-3 py-1.5 rounded-full tracking-wider uppercase shadow-md">Recommended</span>
-            <?php endif; ?>
+      <div class="max-w-5xl mx-auto">
+        <div class="flex md:grid md:grid-cols-3 gap-5 justify-start md:justify-center items-stretch overflow-x-auto snap-x snap-mandatory pt-3 pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth no-scrollbar" style="overflow-y: visible;">
+          <?php foreach ($plans as $plan): ?>
+            <?php
+            $pName = strtoupper(trim($plan['name']));
+            $isPopular = ($pName === 'PRO');
 
-            <div class="space-y-6">
+            // Palet Warna Premium SaaS per Paket (Sama seperti Dashboard Billing)
+            $theme = match($pName) {
+                'LITE' => [
+                    'cardBorder'   => 'border: 1px solid #E5E7EB;',
+                    'headerBg'     => 'background: linear-gradient(135deg, #059669 0%, #10B981 100%);',
+                    'badgeBg'      => 'background: #047857; color: white;',
+                    'priceBg'      => 'background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white;',
+                    'sessionBox'   => 'background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857;',
+                    'sessionIcon'  => 'text-emerald-600',
+                    'btnClass'     => 'background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: white; box-shadow: 0 8px 20px -4px rgba(16,185,129,0.4);',
+                ],
+                'BUSINESS' => [
+                    'cardBorder'   => 'border: 1px solid #E5E7EB;',
+                    'headerBg'     => 'background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);',
+                    'badgeBg'      => 'background: #B45309; color: white;',
+                    'priceBg'      => 'background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white;',
+                    'sessionBox'   => 'background: #FFFBEB; border: 1px solid #FDE68A; color: #B45309;',
+                    'sessionIcon'  => 'text-amber-600',
+                    'btnClass'     => 'background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%); color: white; box-shadow: 0 8px 20px -4px rgba(245,158,11,0.4);',
+                ],
+                default => [ // PRO / Default (Hero Card)
+                    'cardBorder'   => 'border: 2px solid #7C3AED;',
+                    'headerBg'     => 'background: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%);',
+                    'badgeBg'      => 'background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.3);',
+                    'priceBg'      => 'background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white;',
+                    'sessionBox'   => 'background: #F3E8FF; border: 1px solid #DDD6FE; color: #6D28D9;',
+                    'sessionIcon'  => 'text-purple-600',
+                    'btnClass'     => 'background: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%); color: white; box-shadow: 0 8px 20px -4px rgba(124,58,237,0.5);',
+                ]
+            };
+
+            $sellingDescriptions = [
+                'LITE'       => 'Solusi hemat & handal untuk testing API, notifikasi otomatis, dan integrasi skala awal.',
+                'PRO'        => 'Pilihan paling favorit untuk sistem informasi, e-commerce, bot otomatis, & aplikasi bisnis.',
+                'BUSINESS'   => 'Solusi paling powerful untuk broadcast skala besar, multi-nomor WA, & infrastruktur enterprise.',
+            ];
+            $planDesc = $sellingDescriptions[$pName] ?? htmlspecialchars($plan['description'] ?? '');
+            ?>
+
+            <div class="bg-white rounded-3xl flex flex-col justify-between overflow-hidden transition-all duration-300 hover:-translate-y-2 relative group hover:shadow-2xl landing-plan-card <?= $isPopular ? 'md:scale-[1.02] shadow-xl z-10' : 'shadow-sm' ?>" style="<?= $theme['cardBorder'] ?>">
               <div>
-                <h3 class="text-xl font-bold text-gray-900"><?= htmlspecialchars($plan['name']) ?></h3>
-                <p class="text-xs text-gray-400 mt-1">
-                  <?= htmlspecialchars($plan['description'] ?? 'Akses fitur premium') ?></p>
+                <!-- Header Card Berwarna Kustom & Gradien Mewah -->
+                <div class="p-6 text-white relative flex flex-col justify-between min-h-[200px]" style="<?= $theme['headerBg'] ?>">
+                  <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                      <h3 class="text-2xl font-black font-display tracking-tight text-white"><?= htmlspecialchars($plan['name']) ?></h3>
+                      <?php if ($isPopular): ?>
+                        <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-xs" style="<?= $theme['badgeBg'] ?>">
+                          Terpopuler
+                        </span>
+                      <?php endif; ?>
+                    </div>
+
+                    <p class="text-xs text-white/90 leading-relaxed font-medium mb-4 h-10 overflow-hidden text-ellipsis line-clamp-2"><?= $planDesc ?></p>
+                  </div>
+                  
+                  <div class="rounded-2xl p-4 backdrop-blur-md transition-all" style="<?= $theme['priceBg'] ?>">
+                    <div class="flex items-baseline gap-1">
+                      <span class="text-3xl font-black font-display tracking-tight">Rp <?= number_format((float)$plan['price'], 0, ',', '.') ?></span>
+                      <span class="text-xs text-white/80 font-semibold">/ bulan</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Fitur List dengan Visual Bersih -->
+                <div class="p-6 sm:p-7 space-y-4">
+                  <div class="flex items-center gap-3 font-bold p-3 rounded-2xl text-xs" style="<?= $theme['sessionBox'] ?>">
+                    <svg class="w-5 h-5 <?= $theme['sessionIcon'] ?> flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <span><strong><?= (int)$plan['session_limit'] ?></strong> WhatsApp Session</span>
+                  </div>
+
+                  <ul class="space-y-3.5 text-xs text-gray-600 pt-1">
+                    <li class="flex items-center gap-2.5">
+                      <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                      </div>
+                      <span><strong><?= number_format((float)$plan['message_limit']) ?></strong> Pesan / bulan</span>
+                    </li>
+                    <li class="flex items-center gap-2.5">
+                      <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                      </div>
+                      <span>Rate Limit <strong><?= (int)$plan['rate_limit_per_minute'] ?></strong> req/menit</span>
+                    </li>
+                    <li class="flex items-center gap-2.5">
+                      <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                      </div>
+                      <span>API Key &amp; Webhook Instant</span>
+                    </li>
+                    <?php if ($pName === 'PRO' || $pName === 'BUSINESS'): ?>
+                      <li class="flex items-center gap-2.5">
+                        <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <span>Kirim Gambar &amp; Dokumen (Media)</span>
+                      </li>
+                      <li class="flex items-center gap-2.5">
+                        <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <span>Priority Server Processing</span>
+                      </li>
+                    <?php endif; ?>
+                    <?php if ($pName === 'BUSINESS'): ?>
+                      <li class="flex items-center gap-2.5">
+                        <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <span>Kirim Audio, Video &amp; Location</span>
+                      </li>
+                      <li class="flex items-center gap-2.5">
+                        <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <span>Custom Device Label &amp; Priority Support</span>
+                      </li>
+                    <?php endif; ?>
+                  </ul>
+                </div>
               </div>
 
-              <div class="flex items-baseline text-gray-900">
-                <span class="text-3xl font-extrabold tracking-tight">Rp</span>
-                <span
-                  class="text-5xl font-black tracking-tight mx-1"><?= number_format($plan['price'], 0, ',', '.') ?></span>
-                <span class="text-sm font-semibold text-gray-500">/ <?= (int) $plan['duration_days'] ?> hari</span>
+              <div class="px-6 pb-7 sm:px-7 mt-4">
+                <a href="<?= url('/register') ?>" class="block w-full text-center font-black py-3.5 rounded-2xl text-xs tracking-wider uppercase transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" style="<?= $theme['btnClass'] ?>">
+                  Pilih Paket <?= htmlspecialchars($plan['name']) ?> →
+                </a>
               </div>
-
-              <ul class="space-y-3.5 border-t pt-6">
-                <li class="flex items-center text-sm font-semibold text-purple-700 bg-purple-50 p-2.5 rounded-xl border border-purple-100 gap-3">
-                  <svg class="w-5 h-5 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
-                  <span><strong><?= (int) $plan['session_limit'] ?></strong> WhatsApp Session</span>
-                </li>
-                <li class="flex items-center text-sm text-gray-600 gap-3">
-                  <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span><strong><?= number_format($plan['message_limit']) ?></strong> Pesan / bulan</span>
-                </li>
-                <li class="flex items-center text-sm text-gray-600 gap-3">
-                  <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Rate limit: <strong><?= (int) $plan['rate_limit_per_minute'] ?></strong> req/menit</span>
-                </li>
-                <li class="flex items-center text-sm text-gray-600 gap-3">
-                  <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>API Keys &amp; Webhook Instant</span>
-                </li>
-              </ul>
             </div>
-
-            <div class="mt-8">
-              <a href="<?= url('/register') ?>"
-                class="block w-full text-center font-bold py-3.5 px-4 rounded-xl transition-all <?= $btnClass ?>">
-                Pilih Paket
-              </a>
-            </div>
-          </div>
-        <?php endforeach; ?>
+          <?php endforeach; ?>
+        </div>
       </div>
     </div>
   </section>
@@ -373,10 +525,10 @@ curl -X POST http://localhost/wapify/v1/messages/send \
         <!-- Horizontal connecting line (hidden on mobile, visible on desktop) -->
         <div class="hidden md:block absolute top-[44px] left-[15%] right-[15%] h-0.5 bg-purple-200 z-0"></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+        <div class="flex md:grid md:grid-cols-3 gap-5 justify-start md:justify-center items-stretch overflow-x-auto snap-x snap-mandatory pt-3 pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth no-scrollbar relative z-10" style="overflow-y: visible;">
           <!-- Step 1 -->
           <div
-            class="bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl transition-all rounded-3xl p-8 flex flex-col items-center text-center group">
+            class="bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl transition-all rounded-3xl p-8 flex flex-col items-center text-center group landing-step-card">
             <!-- Step number bubble -->
             <div
               class="w-12 h-12 rounded-full gradient-bg border-4 border-white text-white flex items-center justify-center font-bold shadow-lg mb-6 hover:scale-110 transition-transform">
@@ -389,12 +541,12 @@ curl -X POST http://localhost/wapify/v1/messages/send \
             </div>
             <h3 class="text-lg font-bold text-gray-900 mb-2">Buat Akun</h3>
             <p class="text-sm text-gray-500 leading-relaxed">Mulai dengan mengisi pendaftaran. Akun baru Anda otomatis
-              mendapatkan subscription plan **FREE** agar kuota langsung aktif.</p>
+              mendapatkan subscription plan <strong>FREE</strong> agar kuota langsung aktif.</p>
           </div>
 
           <!-- Step 2 -->
           <div
-            class="bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl transition-all rounded-3xl p-8 flex flex-col items-center text-center group">
+            class="bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl transition-all rounded-3xl p-8 flex flex-col items-center text-center group landing-step-card">
             <div
               class="w-12 h-12 rounded-full gradient-bg border-4 border-white text-white flex items-center justify-center font-bold shadow-lg mb-6 hover:scale-110 transition-transform">
               2</div>
@@ -411,7 +563,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
 
           <!-- Step 3 -->
           <div
-            class="bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl transition-all rounded-3xl p-8 flex flex-col items-center text-center group">
+            class="bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-purple-100 hover:shadow-xl transition-all rounded-3xl p-8 flex flex-col items-center text-center group landing-step-card">
             <div
               class="w-12 h-12 rounded-full gradient-bg border-4 border-white text-white flex items-center justify-center font-bold shadow-lg mb-6 hover:scale-110 transition-transform">
               3</div>
@@ -438,9 +590,9 @@ curl -X POST http://localhost/wapify/v1/messages/send \
         <p class="text-gray-500">Bergabunglah dengan ribuan bisnis yang puas berkembang bersama Wapify.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="flex md:grid md:grid-cols-3 gap-5 justify-start md:justify-center items-stretch overflow-x-auto snap-x snap-mandatory pt-3 pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth no-scrollbar" style="overflow-y: visible;">
         <!-- Testimonial 1 -->
-        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between">
+        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between landing-testimonial-card">
           <div class="space-y-4">
             <div class="flex text-yellow-400">
               <!-- 5 Stars -->
@@ -462,7 +614,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
         </div>
 
         <!-- Testimonial 2 -->
-        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between">
+        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between landing-testimonial-card">
           <div class="space-y-4">
             <div class="flex text-yellow-400">
               <?php for ($i = 0; $i < 5; $i++): ?>
@@ -483,7 +635,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
         </div>
 
         <!-- Testimonial 3 -->
-        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between">
+        <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between landing-testimonial-card">
           <div class="space-y-4">
             <div class="flex text-yellow-400">
               <?php for ($i = 0; $i < 5; $i++): ?>
@@ -625,14 +777,16 @@ curl -X POST http://localhost/wapify/v1/messages/send \
       <h2 class="text-3xl sm:text-4xl font-extrabold">Siap untuk Memulai?</h2>
       <p class="text-purple-100 max-w-xl mx-auto">Bergabunglah dengan ribuan bisnis yang sudah berkembang dengan
         efisiensi integrasi otomatis dari Wapify. Mulai uji coba gratis hari ini!</p>
-      <div class="flex gap-4 justify-center pt-4">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 max-w-xs sm:max-w-none mx-auto">
         <a href="<?= url('/register') ?>"
-          class="bg-white text-purple-700 font-bold px-8 py-3.5 rounded-xl hover:scale-105 transition-all shadow-xl">Daftar
-          Sekarang</a>
+          class="w-full sm:w-auto text-center bg-white text-purple-700 font-bold px-6 py-3 rounded-xl hover:scale-[1.02] transition-all shadow-xl text-sm whitespace-nowrap">
+          Daftar Sekarang
+        </a>
         <a href="https://wa.me/6281359774765?text=Halo%20Wapify%2C%20saya%20tertarik%20dengan%20layanan%20integrasi%20WhatsApp%20API.%20Bisa%20tolong%20berikan%20informasi%20lebih%20lanjut%3F"
           target="_blank"
-          class="bg-purple-600/40 text-white border border-purple-400 font-bold px-8 py-3.5 rounded-xl hover:bg-purple-600/60 transition-all">Hubungi
-          Sales</a>
+          class="w-full sm:w-auto text-center bg-purple-600/40 text-white border border-purple-400 font-bold px-6 py-3 rounded-xl hover:bg-purple-600/60 transition-all text-sm whitespace-nowrap">
+          Hubungi Sales
+        </a>
       </div>
     </div>
   </section>
@@ -653,7 +807,7 @@ curl -X POST http://localhost/wapify/v1/messages/send \
         </div>
         <p class="text-sm">Platform SaaS integrasi WhatsApp REST API paling andal dan cepat untuk menskalakan
           operasional bisnis Anda.</p>
-        <p class="text-xs pt-4 text-gray-600">&copy; <?= date('Y') ?> Wapify By Sintesa Corp. Hak Cipta Dilindungi.</p>
+        <p class="text-xs pt-4 text-gray-500">&copy; <?= date('Y') ?> Wapify By <a href="https://sintesacorp.id" target="_blank" rel="noopener noreferrer" class="hover:text-white underline underline-offset-2 transition-colors">Sintesa Corp</a>. Hak Cipta Dilindungi.</p>
       </div>
 
       <!-- Col 2: Contact Info -->
@@ -706,6 +860,34 @@ curl -X POST http://localhost/wapify/v1/messages/send \
 </div>
 
 <script>
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu') || document.getElementById('mobileMenu');
+    const hamburgerIcon = document.getElementById('hamburgerIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    if (!menu) return;
+
+    if (menu.classList.contains('hidden')) {
+      menu.classList.remove('hidden');
+      hamburgerIcon?.classList.add('hidden');
+      closeIcon?.classList.remove('hidden');
+    } else {
+      menu.classList.add('hidden');
+      hamburgerIcon?.classList.remove('hidden');
+      closeIcon?.classList.add('hidden');
+    }
+  }
+
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobile-menu') || document.getElementById('mobileMenu');
+    const hamburgerIcon = document.getElementById('hamburgerIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    if (!menu) return;
+
+    menu.classList.add('hidden');
+    hamburgerIcon?.classList.remove('hidden');
+    closeIcon?.classList.add('hidden');
+  }
+
   function toggleAccordion(button) {
     const item = button.closest('.accordion-item');
     const isOpen = item.classList.contains('accordion-open');

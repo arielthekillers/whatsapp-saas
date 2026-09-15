@@ -2,15 +2,28 @@
     
     <!-- Footer Credit -->
     <footer class="py-6 text-center text-xs text-gray-400 border-t border-gray-100 bg-white px-6">
-      &copy; <?= date('Y') ?> Wapify By Sintesa Corporation. Hak Cipta Dilindungi.
+      &copy; <?= date('Y') ?> Wapify By <a href="https://sintesacorp.id" target="_blank" rel="noopener noreferrer" class="hover:text-purple-600 underline underline-offset-2 transition-colors">Sintesa Corp</a>. Hak Cipta Dilindungi.
     </footer>
   </div> <!-- Close flex-1 bg-gray-50 flex flex-col justify-between min-h-screen -->
 </div> <!-- Close min-h-screen flex flex-col md:flex-row -->
 
 <script>
 function toggleMobileMenu() {
-  var menu = document.getElementById('mobile-menu');
+  var menu = document.getElementById('mobile-menu') || document.getElementById('mobileMenu');
+  if (!menu) return;
   menu.classList.toggle('hidden');
+
+  var hamburgerIcon = document.getElementById('hamburgerIcon');
+  var closeIcon = document.getElementById('closeIcon');
+  if (hamburgerIcon && closeIcon) {
+    if (menu.classList.contains('hidden')) {
+      hamburgerIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    } else {
+      hamburgerIcon.classList.add('hidden');
+      closeIcon.classList.remove('hidden');
+    }
+  }
 }
 
 // Toast notification helper

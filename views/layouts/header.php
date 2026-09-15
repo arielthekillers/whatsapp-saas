@@ -5,7 +5,7 @@ $appUrl = rtrim((string) Env::get('APP_URL', 'https://wapify.biz.id'), '/');
 $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
 $canonicalUrl = htmlspecialchars($appUrl . $currentPath);
 $metaTitle = htmlspecialchars($title ?? 'Wapify — Platform WhatsApp API SaaS & Broadcast Terpercaya');
-$metaDesc  = htmlspecialchars($description ?? 'Kirim pesan, broadcast, dan kelola WhatsApp API dengan cepat, aman, dan terjangkau menggunakan infrastruktur WAHA REST API.');
+$metaDesc  = htmlspecialchars($description ?? 'Kirim pesan, broadcast, dan kelola WhatsApp API dengan cepat, aman, dan terjangkau menggunakan infrastruktur REST API yang andal.');
 $ogImage   = htmlspecialchars($appUrl . '/og-image.jpg');
 ?>
 <!DOCTYPE html>
@@ -17,7 +17,7 @@ $ogImage   = htmlspecialchars($appUrl . '/og-image.jpg');
 
 <!-- Primary SEO Meta Tags -->
 <meta name="description" content="<?= $metaDesc ?>">
-<meta name="keywords" content="whatsapp api, waha api, whatsapp saas, broadcast whatsapp, whatsapp gateway indonesia, api whatsapp murah, bot whatsapp">
+<meta name="keywords" content="whatsapp api, whatsapp saas, broadcast whatsapp, whatsapp gateway indonesia, api whatsapp murah, bot whatsapp">
 <meta name="author" content="Wapify">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="<?= $canonicalUrl ?>">
@@ -59,7 +59,7 @@ $ogImage   = htmlspecialchars($appUrl . '/og-image.jpg');
     "price": "29000",
     "priceCurrency": "IDR"
   },
-  "description": "Layanan WhatsApp API SaaS berbasis WAHA REST API terjangkau untuk pengiriman pesan, broadcast, dan integrasi webhook."
+  "description": "Layanan WhatsApp API SaaS terjangkau untuk pengiriman pesan, broadcast, dan integrasi webhook."
 }
 </script>
 
