@@ -1,6 +1,6 @@
 <?php $title = 'Admin Panel'; require __DIR__ . '/../layouts/header.php'; require __DIR__ . '/../layouts/nav.php'; ?>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 text-gray-800">
+<div class="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 py-2 sm:py-6 space-y-5 text-gray-800">
 
   <!-- Clean Title Bar -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-200">
@@ -35,82 +35,101 @@
     </div>
   <?php endif; ?>
 
-  <!-- Vibrant Stat Cards Grid (With Inline Gradient Fallback) -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <style>
+    @media (max-width: 639px) {
+      .stat-card-title { font-size: 9.5px !important; line-height: 1.2 !important; letter-spacing: -0.01em !important; }
+      .stat-card-value { font-size: 18px !important; line-height: 1.2 !important; }
+      .stat-card-value-sm { font-size: 13px !important; line-height: 1.2 !important; }
+      .stat-card-sub { font-size: 9px !important; line-height: 1.2 !important; }
+      .stat-card-icon { width: 14px !important; height: 14px !important; }
+      .job-card-title { font-size: 9px !important; letter-spacing: -0.01em !important; }
+    }
+  </style>
+
+  <!-- Vibrant Stat Cards Grid (2 columns on mobile, 4 columns on desktop) -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
     <!-- Stat 1: Total Pelanggan (Purple/Indigo) -->
-    <div style="background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);" class="relative overflow-hidden rounded-2xl p-5 text-white shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.01]">
+    <div style="background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);" class="relative overflow-hidden rounded-2xl p-2.5 sm:p-4 text-white shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.01] flex flex-col justify-between">
       <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-      <div class="flex items-center justify-between relative z-10">
-        <div>
-          <span class="text-xs font-semibold uppercase tracking-wider text-purple-100">Total Pelanggan</span>
-          <h3 class="text-3xl font-extrabold mt-1 tracking-tight text-white"><?= number_format($totalUsers) ?></h3>
-          <p class="text-[11px] text-purple-100/80 mt-1">User terdaftar</p>
+      <div class="flex items-start justify-between gap-2 relative z-10">
+        <div class="pr-4 sm:pr-0">
+          <span class="stat-card-title sm:text-[11px] font-bold uppercase tracking-wider text-purple-100 block leading-tight">Total Pelanggan</span>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md text-white flex items-center justify-center shrink-0 border border-white/20 shadow-inner">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <div class="absolute right-2.5 top-2.5 sm:static sm:w-9 sm:h-9 sm:rounded-xl sm:bg-white/20 sm:backdrop-blur-md text-white/90 sm:text-white flex items-center justify-center shrink-0 sm:border sm:border-white/20 sm:shadow-inner z-10">
+          <svg class="stat-card-icon sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
         </div>
+      </div>
+      <div class="relative z-10 mt-1.5 sm:mt-2">
+        <h3 class="stat-card-value sm:text-2xl font-extrabold tracking-tight text-white leading-none"><?= number_format($totalUsers) ?></h3>
+        <p class="stat-card-sub sm:text-[11px] text-purple-100/80 mt-0.5 sm:mt-1 leading-tight">User terdaftar</p>
       </div>
     </div>
 
     <!-- Stat 2: WhatsApp Sessions (Blue) -->
-    <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);" class="relative overflow-hidden rounded-2xl p-5 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.01]">
+    <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);" class="relative overflow-hidden rounded-2xl p-2.5 sm:p-4 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.01] flex flex-col justify-between">
       <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-      <div class="flex items-center justify-between relative z-10">
-        <div>
-          <span class="text-xs font-semibold uppercase tracking-wider text-blue-100">WhatsApp Sessions</span>
-          <h3 class="text-3xl font-extrabold mt-1 tracking-tight text-white"><?= number_format($totalSessions) ?></h3>
-          <p class="text-[11px] text-blue-100/80 mt-1">Sesi terhubung</p>
+      <div class="flex items-start justify-between gap-2 relative z-10">
+        <div class="pr-4 sm:pr-0">
+          <span class="stat-card-title sm:text-[11px] font-bold uppercase tracking-wider text-blue-100 block leading-tight">WhatsApp Sessions</span>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md text-white flex items-center justify-center shrink-0 border border-white/20 shadow-inner">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        <div class="absolute right-2.5 top-2.5 sm:static sm:w-9 sm:h-9 sm:rounded-xl sm:bg-white/20 sm:backdrop-blur-md text-white/90 sm:text-white flex items-center justify-center shrink-0 sm:border sm:border-white/20 sm:shadow-inner z-10">
+          <svg class="stat-card-icon sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
         </div>
+      </div>
+      <div class="relative z-10 mt-1.5 sm:mt-2">
+        <h3 class="stat-card-value sm:text-2xl font-extrabold tracking-tight text-white leading-none"><?= number_format($totalSessions) ?></h3>
+        <p class="stat-card-sub sm:text-[11px] text-blue-100/80 mt-0.5 sm:mt-1 leading-tight">Sesi terhubung</p>
       </div>
     </div>
 
     <!-- Stat 3: Total Pendapatan (Emerald Green) -->
-    <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%);" class="relative overflow-hidden rounded-2xl p-5 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01]">
+    <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%);" class="relative overflow-hidden rounded-2xl p-2.5 sm:p-4 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] flex flex-col justify-between">
       <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-      <div class="flex items-center justify-between relative z-10">
-        <div>
-          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-100">Total Pendapatan</span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold mt-1 tracking-tight text-white">Rp <?= number_format($totalRevenue, 0, ',', '.') ?></h3>
-          <p class="text-[11px] text-emerald-100/80 mt-1">Omset lunas</p>
+      <div class="flex items-start justify-between gap-2 relative z-10">
+        <div class="pr-4 sm:pr-0">
+          <span class="stat-card-title sm:text-[11px] font-bold uppercase tracking-wider text-emerald-100 block leading-tight">Total Pendapatan</span>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md text-white flex items-center justify-center shrink-0 border border-white/20 shadow-inner">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="absolute right-2.5 top-2.5 sm:static sm:w-9 sm:h-9 sm:rounded-xl sm:bg-white/20 sm:backdrop-blur-md text-white/90 sm:text-white flex items-center justify-center shrink-0 sm:border sm:border-white/20 sm:shadow-inner z-10">
+          <svg class="stat-card-icon sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
+      </div>
+      <div class="relative z-10 mt-1.5 sm:mt-2">
+        <h3 class="stat-card-value-sm sm:text-xl lg:text-2xl font-extrabold tracking-tight text-white leading-none">Rp <?= number_format($totalRevenue, 0, ',', '.') ?></h3>
+        <p class="stat-card-sub sm:text-[11px] text-emerald-100/80 mt-0.5 sm:mt-1 leading-tight">Omset lunas</p>
       </div>
     </div>
 
     <!-- Stat 4: Menunggu Verifikasi (Amber/Red) -->
-    <div style="background: linear-gradient(135deg, #D97706 0%, #DC2626 100%);" class="relative overflow-hidden rounded-2xl p-5 text-white shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.01]">
+    <div style="background: linear-gradient(135deg, #D97706 0%, #DC2626 100%);" class="relative overflow-hidden rounded-2xl p-2.5 sm:p-4 text-white shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.01] flex flex-col justify-between">
       <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-      <div class="flex items-center justify-between relative z-10">
-        <div>
-          <span class="text-xs font-semibold uppercase tracking-wider text-amber-100">Menunggu Verifikasi</span>
-          <h3 class="text-3xl font-extrabold mt-1 tracking-tight text-white"><?= number_format($pendingPayments) ?></h3>
-          <p class="text-[11px] text-amber-100/80 mt-1">Invoice perlu diaudit</p>
+      <div class="flex items-start justify-between gap-2 relative z-10">
+        <div class="pr-4 sm:pr-0">
+          <span class="stat-card-title sm:text-[11px] font-bold uppercase tracking-wider text-amber-100 block leading-tight">Menunggu Verifikasi</span>
         </div>
-        <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md text-white flex items-center justify-center shrink-0 border border-white/20 shadow-inner">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        <div class="absolute right-2.5 top-2.5 sm:static sm:w-9 sm:h-9 sm:rounded-xl sm:bg-white/20 sm:backdrop-blur-md text-white/90 sm:text-white flex items-center justify-center shrink-0 sm:border sm:border-white/20 sm:shadow-inner z-10">
+          <svg class="stat-card-icon sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
         </div>
+      </div>
+      <div class="relative z-10 mt-1.5 sm:mt-2">
+        <h3 class="stat-card-value sm:text-2xl font-extrabold tracking-tight text-white leading-none"><?= number_format($pendingPayments) ?></h3>
+        <p class="stat-card-sub sm:text-[11px] text-amber-100/80 mt-0.5 sm:mt-1 leading-tight">Invoice perlu diaudit</p>
       </div>
     </div>
   </div>
 
-  <!-- Clean Segmented Tab Nav -->
+  <!-- TAB NAVIGATION BAR -->
   <div class="border-b border-gray-200">
-    <nav class="-mb-px flex space-x-6 overflow-x-auto text-xs" aria-label="Tabs">
-      <button type="button" onclick="switchAdminTab('overview', this)" class="admin-tab-btn border-purple-600 text-purple-600 py-2.5 border-b-2 font-semibold inline-flex items-center gap-2 whitespace-nowrap focus:outline-none">
+    <nav class="flex gap-4 sm:gap-8 overflow-x-auto text-xs sm:text-sm no-scrollbar">
+      <button type="button" onclick="switchAdminTab('overview', this)" class="admin-tab-btn border-purple-600 text-purple-700 font-bold py-2.5 border-b-2 inline-flex items-center gap-2 whitespace-nowrap focus:outline-none">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-        Overview
+        <span>Overview</span>
       </button>
 
       <button type="button" onclick="switchAdminTab('verifikasi', this)" class="admin-tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2.5 border-b-2 font-medium inline-flex items-center gap-2 whitespace-nowrap focus:outline-none">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <span>Verifikasi Pembayaran</span>
-        <?php if (!empty($pendingList)): ?>
-          <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full"><?= count($pendingList) ?></span>
+        <?php if ($pendingPayments > 0): ?>
+          <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full"><?= $pendingPayments ?></span>
         <?php endif; ?>
       </button>
 
@@ -141,10 +160,10 @@
         
         <!-- WAHA Status Card (Dynamic Green if ONLINE, Gray if OFFLINE) -->
         <?php $isOnline = ($wahaStatus['status'] === 'ONLINE'); ?>
-        <div style="<?= $isOnline ? 'background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); border: 1px solid #86EFAC;' : 'background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%); border: 1px solid #E5E7EB;' ?>" class="rounded-2xl p-5 shadow-xs space-y-4 transition-all flex-1 flex flex-col justify-between">
-          <div class="flex items-center justify-between">
+        <div style="<?= $isOnline ? 'background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); border: 1px solid #86EFAC;' : 'background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%); border: 1px solid #E5E7EB;' ?>" class="rounded-2xl p-4 sm:p-5 shadow-xs space-y-4 transition-all flex-1 flex flex-col justify-between">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-              <div style="<?= $isOnline ? 'background: #10B981; color: white;' : 'background: #6B7280; color: white;' ?>" class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base shadow-sm">
+              <div style="<?= $isOnline ? 'background: #10B981; color: white;' : 'background: #6B7280; color: white;' ?>" class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base shadow-sm shrink-0">
                 ⚡
               </div>
               <div>
@@ -153,7 +172,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 self-start sm:self-auto">
               <span style="<?= $isOnline ? 'background: #10B981; color: white;' : 'background: #6B7280; color: white;' ?>" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-xs">
                 <?php if ($isOnline): ?>
                   <span class="relative flex h-2 w-2">
@@ -171,23 +190,23 @@
             </div>
           </div>
 
-          <div style="<?= $isOnline ? 'background: rgba(255,255,255,0.7); border: 1px solid #A7F3D0;' : 'background: rgba(255,255,255,0.7); border: 1px solid #E5E7EB;' ?>" class="rounded-xl p-3 text-xs space-y-1.5 backdrop-blur-xs">
-            <div class="flex justify-between items-center">
-              <span class="text-gray-500">Base URL API:</span>
-              <code class="font-mono <?= $isOnline ? 'text-emerald-800' : 'text-gray-700' ?> font-semibold"><?= htmlspecialchars($wahaStatus['url']) ?></code>
+          <div style="<?= $isOnline ? 'background: rgba(255,255,255,0.7); border: 1px solid #A7F3D0;' : 'background: rgba(255,255,255,0.7); border: 1px solid #E5E7EB;' ?>" class="rounded-xl p-3 text-xs space-y-2 backdrop-blur-xs">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+              <span class="text-gray-500 font-medium">Base URL API:</span>
+              <code class="font-mono <?= $isOnline ? 'text-emerald-800' : 'text-gray-700' ?> font-semibold break-all text-[11px] sm:text-xs"><?= htmlspecialchars($wahaStatus['url']) ?></code>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-500">Latency Ping:</span>
-              <span class="font-bold <?= $isOnline ? 'text-emerald-700' : 'text-gray-600' ?> font-mono"><?= $wahaStatus['latency'] ?> ms</span>
+            <div class="flex justify-between items-center pt-1 border-t border-emerald-100/60 sm:border-t-0 sm:pt-0">
+              <span class="text-gray-500 font-medium">Latency Ping:</span>
+              <span class="font-bold <?= $isOnline ? 'text-emerald-700' : 'text-gray-600' ?> font-mono text-[11px] sm:text-xs"><?= $wahaStatus['latency'] ?> ms</span>
             </div>
           </div>
         </div>
 
         <!-- Background Job Queue Card -->
-        <div class="bg-white rounded-2xl border border-gray-200/80 p-5 shadow-xs space-y-4 flex-1 flex flex-col justify-between">
-          <div class="flex items-center justify-between">
+        <div class="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-xs space-y-4 flex-1 flex flex-col justify-between">
+          <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">⚙️</div>
+              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">⚙️</div>
               <div>
                 <h3 class="font-bold text-gray-900 text-sm">Background Job Queue</h3>
                 <p class="text-xs text-gray-500">Antrean tugas pesan &amp; webhook</p>
@@ -203,18 +222,18 @@
             <?php endif; ?>
           </div>
 
-          <div class="grid grid-cols-3 gap-3 text-center text-xs">
-            <div class="bg-amber-50/70 border border-amber-200/70 rounded-xl p-3">
-              <span class="text-amber-700 block text-xs font-bold uppercase tracking-wider">Pending</span>
-              <span class="font-extrabold text-amber-900 text-lg font-mono mt-0.5 block"><?= number_format($jobStats['pending']) ?></span>
+          <div class="grid grid-cols-3 gap-1.5 sm:gap-3 text-center text-xs">
+            <div class="bg-amber-50/70 border border-amber-200/70 rounded-xl p-2 sm:p-3">
+              <span class="text-amber-700 block text-[9.5px] sm:text-xs font-bold uppercase tracking-tight job-card-title truncate">Pending</span>
+              <span class="font-extrabold text-amber-900 text-base sm:text-lg font-mono mt-0.5 block"><?= number_format($jobStats['pending']) ?></span>
             </div>
-            <div class="bg-emerald-50/70 border border-emerald-200/70 rounded-xl p-3">
-              <span class="text-emerald-700 block text-xs font-bold uppercase tracking-wider">Completed</span>
-              <span class="font-extrabold text-emerald-900 text-lg font-mono mt-0.5 block"><?= number_format($jobStats['completed']) ?></span>
+            <div class="bg-emerald-50/70 border border-emerald-200/70 rounded-xl p-2 sm:p-3">
+              <span class="text-emerald-700 block text-[9.5px] sm:text-xs font-bold uppercase tracking-tight job-card-title truncate">Completed</span>
+              <span class="font-extrabold text-emerald-900 text-base sm:text-lg font-mono mt-0.5 block"><?= number_format($jobStats['completed']) ?></span>
             </div>
-            <div class="bg-rose-50/70 border border-rose-200/70 rounded-xl p-3">
-              <span class="text-rose-700 block text-xs font-bold uppercase tracking-wider">Failed</span>
-              <span class="font-extrabold text-rose-900 text-lg font-mono mt-0.5 block"><?= number_format($jobStats['failed']) ?></span>
+            <div class="bg-rose-50/70 border border-rose-200/70 rounded-xl p-2 sm:p-3">
+              <span class="text-rose-700 block text-[9.5px] sm:text-xs font-bold uppercase tracking-tight job-card-title truncate">Failed</span>
+              <span class="font-extrabold text-rose-900 text-base sm:text-lg font-mono mt-0.5 block"><?= number_format($jobStats['failed']) ?></span>
             </div>
           </div>
         </div>
@@ -495,18 +514,18 @@
 
   <!-- TAB 5: PENGATURAN WAHA SERVER -->
   <div id="tab-waha" class="admin-tab-content hidden space-y-6">
-    <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 max-w-3xl space-y-6">
+    <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-4 sm:p-6 max-w-3xl space-y-6">
       
-      <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg">⚙️</div>
+          <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg shrink-0">⚙️</div>
           <div>
-            <h2 class="text-base font-bold text-gray-900">Konfigurasi WAHA REST API Gateway</h2>
-            <p class="text-xs text-gray-500">Atur Base URL, API Key, dan Timeout koneksi ke server WAHA WhatsApp.</p>
+            <h2 class="text-base font-bold text-gray-900 leading-snug">Konfigurasi WAHA REST API Gateway</h2>
+            <p class="text-xs text-gray-500 mt-0.5">Atur Base URL, API Key, dan Timeout koneksi ke server WAHA WhatsApp.</p>
           </div>
         </div>
 
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold <?= ($wahaStatus['status'] === 'ONLINE') ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' ?>">
+        <span class="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold <?= ($wahaStatus['status'] === 'ONLINE') ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' ?>">
           <?= $wahaStatus['status'] ?>
         </span>
       </div>
@@ -517,26 +536,26 @@
         <div>
           <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">WAHA Base URL API</label>
           <input type="url" name="waha_base_url" value="<?= htmlspecialchars($wahaSettings['baseUrl'] ?? '') ?>" required placeholder="http://36.95.108.50:3000 atau http://waha:3000" class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition-all shadow-xs">
-          <p class="text-[11px] text-gray-500 mt-1">URL endpoint server WAHA lengkap dengan port (misal: <code>http://36.95.108.50:3000</code>).</p>
+          <p style="font-size: 10.5px; line-height: 1.35;" class="text-gray-400 mt-1">URL endpoint server WAHA lengkap dengan port (misal: <code>http://36.95.108.50:3000</code>).</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">WAHA API Key (Secret Key)</label>
             <input type="text" name="waha_api_key" value="<?= htmlspecialchars($wahaSettings['apiKey'] ?? '') ?>" placeholder="secret123" class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition-all shadow-xs">
-            <p class="text-[11px] text-gray-500 mt-1">Dikirim sebagai header <code>X-Api-Key</code> ke server WAHA.</p>
+            <p style="font-size: 10.5px; line-height: 1.35;" class="text-gray-400 mt-1">Dikirim sebagai header <code>X-Api-Key</code> ke server WAHA.</p>
           </div>
 
           <div>
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">HTTP Connection Timeout (detik)</label>
             <input type="number" name="waha_timeout" value="<?= (int) ($wahaSettings['timeout'] ?? 15) ?>" min="5" max="60" class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 transition-all shadow-xs">
-            <p class="text-[11px] text-gray-500 mt-1">Batas waktu koneksi request (Default: 15 detik).</p>
+            <p style="font-size: 10.5px; line-height: 1.35;" class="text-gray-400 mt-1">Batas waktu koneksi request (Default: 15 detik).</p>
           </div>
         </div>
 
-        <div class="pt-3 border-t border-gray-100 flex items-center justify-between">
+        <div class="pt-3 border-t border-gray-100 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3">
           <span class="text-xs text-gray-400">Pengaturan ini akan tersimpan permanen di Database.</span>
-          <button type="submit" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-xs hover:shadow-md">
+          <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-xs hover:shadow-md">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
             Simpan Pengaturan WAHA
           </button>

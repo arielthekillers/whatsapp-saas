@@ -211,7 +211,7 @@ if (!empty($_SESSION['user_id'])) {
   </aside>
 
   <!-- Mobile Header Navigation (Mobile Only) -->
-  <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between md:hidden">
+  <header class="bg-white border-b border-gray-200 px-4 py-3.5 flex items-center justify-between md:hidden">
     <a href="<?= url('/') ?>" class="flex items-center gap-2.5">
       <div class="bg-gradient-to-br from-purple-600 to-blue-600 p-1.5 rounded-lg text-white shadow-md">
         <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
@@ -224,7 +224,7 @@ if (!empty($_SESSION['user_id'])) {
   </header>
 
   <!-- Mobile Dropdown Menu -->
-  <div id="mobile-menu" class="hidden bg-white border-b border-gray-200 px-6 py-4 space-y-3.5 md:hidden">
+  <div id="mobile-menu" class="hidden bg-white border-b border-gray-200 px-4 py-4 space-y-3.5 md:hidden">
     <?php if (!empty($_SESSION['user_id'])): ?>
       <!-- Active User info (Mobile) -->
       <div class="flex items-center gap-3 pb-3 border-b border-gray-100">
@@ -269,7 +269,7 @@ if (!empty($_SESSION['user_id'])) {
 
   <!-- Content Container -->
   <div class="flex-1 bg-gray-50 flex flex-col justify-between min-h-screen">
-    <div class="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full">
+    <div class="p-2.5 sm:p-6 md:p-8 max-w-7xl mx-auto w-full">
       <?php
         $announcement = null;
         try {
