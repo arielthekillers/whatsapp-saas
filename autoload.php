@@ -24,7 +24,7 @@ if (!function_exists('url')) {
             $projectRoot = str_replace('\\', '/', __DIR__);
             $docRoot = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? '');
             $basePath = '';
-            if ($docRoot !== '' && str_starts_with($projectRoot, $docRoot)) {
+            if ($docRoot !== '' && str_starts_with(strtolower($projectRoot), strtolower($docRoot))) {
                 $basePath = substr($projectRoot, strlen($docRoot));
             }
             $basePath = rtrim($basePath, '/');

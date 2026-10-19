@@ -33,9 +33,9 @@ class Router
         // Strip project base directory if running in subdirectory
         $projectRoot = str_replace('\\', '/', dirname(dirname(__DIR__)));
         $docRoot = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? '');
-        if ($docRoot !== '' && str_starts_with($projectRoot, $docRoot)) {
+        if ($docRoot !== '' && str_starts_with(strtolower($projectRoot), strtolower($docRoot))) {
             $basePath = substr($projectRoot, strlen($docRoot));
-            if ($basePath !== '' && str_starts_with($path, $basePath)) {
+            if ($basePath !== '' && str_starts_with(strtolower($path), strtolower($basePath))) {
                 $path = substr($path, strlen($basePath));
             }
         }

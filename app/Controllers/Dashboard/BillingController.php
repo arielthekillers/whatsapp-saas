@@ -115,7 +115,7 @@ class BillingController
         $totalAmount = ($basePrice * $months) * (1.0 - $discount);
 
         $externalId  = 'INV-' . strtoupper(bin2hex(random_bytes(6)));
-        $providerVal = 'bank_transfer:' . $months;
+        $providerVal = 'qris:' . $months;
 
         $stmt = $this->db->prepare('
             INSERT INTO payments (user_id, plan_id, provider, external_id, amount, status)
@@ -134,7 +134,7 @@ class BillingController
 
     /**
      * GET /billing/pay/{externalId}
-     * Shows bank transfer instructions and confirmation form.
+     * Shows QRIS payment instructions and confirmation form.
      */
     public function pay(string $externalId): void
     {
@@ -158,10 +158,10 @@ class BillingController
             Response::redirect('/billing');
         }
 
-        // Bank info dari .env
-        $bankName          = Env::get('BANK_NAME', 'BCA');
-        $bankAccount       = Env::get('BANK_ACCOUNT_NUMBER', '-');
-        $bankHolder        = Env::get('BANK_ACCOUNT_HOLDER', 'Sintesa Corporation');
+        // QRIS & Support info dari .env
+        $qrisMerchantName  = Env::get('QRIS_MERCHANT_NAME', 'Sintesa Digital');
+        $qrisNmid          = Env::get('QRIS_NMID', 'ID1026617983899');
+        $qrisImagePath     = Env::get('QRIS_IMAGE_PATH', '/images/qris.jpeg');
         $bankWhatsapp      = Env::get('BANK_WHATSAPP', '');
 
         require __DIR__ . '/../../../views/billing/pay.php';
@@ -180,15 +180,26 @@ class BillingController
         }
 
         $senderName    = trim($_POST['sender_name'] ?? '');
+        $paymentApp    = trim($_POST['payment_app'] ?? '');
         $transferDate  = trim($_POST['transfer_date'] ?? '');
         $transferNote  = trim($_POST['transfer_note'] ?? '');
 
         if (empty($senderName) || empty($transferDate)) {
-            $_SESSION['flash_billing_error'] = 'Nama pengirim dan tanggal transfer wajib diisi.';
+            $_SESSION['flash_billing_error'] = 'Nama pengirim dan tanggal pembayaran wajib diisi.';
             Response::redirect('/billing/pay/' . $externalId);
         }
 
-        // Simpan bukti/catatan konfirmasi ke metadata payment
+        $noteParts = ["Pengirim: {$senderName}"];
+        if ($paymentApp !== '') {
+            $noteParts[] = "Aplikasi: {$paymentApp}";
+        }
+        $noteParts[] = "Tanggal: {$transferDate}";
+        if ($transferNote !== '') {
+            $noteParts[] = "Catatan: {$transferNote}";
+        }
+        $formattedNote = implode(' | ', $noteParts);
+
+        // Simpan catatan konfirmasi ke metadata payment
         $stmt = $this->db->prepare('
             UPDATE payments
             SET status = "verifying",
@@ -196,7 +207,7 @@ class BillingController
             WHERE external_id = :external_id AND user_id = :user_id AND status = "pending"
         ');
         $stmt->execute([
-            ':note'        => "Pengirim: {$senderName} | Tanggal: {$transferDate}" . ($transferNote ? " | Catatan: {$transferNote}" : ''),
+            ':note'        => $formattedNote,
             ':external_id' => $externalId,
             ':user_id'     => $user['id'],
         ]);
@@ -206,7 +217,7 @@ class BillingController
             Response::redirect('/billing');
         }
 
-        $_SESSION['flash_billing_success'] = 'Konfirmasi transfer berhasil dikirim! Tim kami akan memverifikasi pembayaran Anda dalam 1×24 jam kerja.';
+        $_SESSION['flash_billing_success'] = 'Konfirmasi pembayaran QRIS berhasil dikirim! Tim kami akan memverifikasi pembayaran Anda dalam 1×24 jam kerja.';
         Response::redirect('/billing');
     }
 

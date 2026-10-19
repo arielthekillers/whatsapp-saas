@@ -319,7 +319,7 @@
               <tr>
                 <th class="px-5 py-3 font-semibold">Invoice &amp; Pelanggan</th>
                 <th class="px-5 py-3 font-semibold">Paket &amp; Durasi</th>
-                <th class="px-5 py-3 font-semibold">Catatan Transfer</th>
+                <th class="px-5 py-3 font-semibold">Catatan Pembayaran</th>
                 <th class="px-5 py-3 font-semibold">Total Nominal</th>
                 <th class="px-5 py-3 font-semibold text-right">Tindakan</th>
               </tr>
