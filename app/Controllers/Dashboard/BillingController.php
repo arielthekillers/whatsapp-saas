@@ -180,19 +180,18 @@ class BillingController
         }
 
         $senderName    = trim($_POST['sender_name'] ?? '');
-        $paymentApp    = trim($_POST['payment_app'] ?? '');
         $transferDate  = trim($_POST['transfer_date'] ?? '');
+        if ($transferDate === '') {
+            $transferDate = date('Y-m-d');
+        }
         $transferNote  = trim($_POST['transfer_note'] ?? '');
 
-        if (empty($senderName) || empty($transferDate)) {
-            $_SESSION['flash_billing_error'] = 'Nama pengirim dan tanggal pembayaran wajib diisi.';
+        if (empty($senderName)) {
+            $_SESSION['flash_billing_error'] = 'Nama pengirim pembayaran wajib diisi.';
             Response::redirect('/billing/pay/' . $externalId);
         }
 
         $noteParts = ["Pengirim: {$senderName}"];
-        if ($paymentApp !== '') {
-            $noteParts[] = "Aplikasi: {$paymentApp}";
-        }
         $noteParts[] = "Tanggal: {$transferDate}";
         if ($transferNote !== '') {
             $noteParts[] = "Catatan: {$transferNote}";
